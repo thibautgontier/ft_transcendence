@@ -34,7 +34,7 @@ jobs:
       - name: check running
         run: |
           docker ps --format "{{.State}}" --filter name=backend | grep running
-          docker ps --format "{{.State}}" --filter name=database | grep running
+        # docker ps --format "{{.State}}" --filter name=database | grep running
           
       - name: docker-compose down
         run: docker-compose down
