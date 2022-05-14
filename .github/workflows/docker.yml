@@ -28,11 +28,6 @@ jobs:
       - name: docker-compose build
         run: docker-compose -f "docker-compose.yml" up -d --build
         
-      - name: docker-compose logs
-        run: |
-          docker-compose logs
-          docker-compose logs --tail=0 --follow  
-        
       - name: check running
         run: |
           docker ps --format "{{.State}}" --filter name=backend | grep running
