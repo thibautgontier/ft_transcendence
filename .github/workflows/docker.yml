@@ -23,6 +23,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+        run: |
+          mkdir -p ~/data/database/
+	        mkdir -p ~/data/pgadmin/
+
       - name: docker-compose build
         run: docker-compose -f "docker-compose.yml" up -d --build
 
