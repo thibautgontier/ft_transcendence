@@ -1,4 +1,6 @@
 build:
+	mkdir -p ~/data/database/
+	mkdir -p ~/data/pgadmin/
 	docker-compose -f "docker-compose.yml" up -d --build
 
 down:
@@ -16,7 +18,6 @@ clear: down
 	docker volume rm $(shell docker volume ls -q)
 
 rebuild: clear build
-
 
 prune:
 	docker system prune -a

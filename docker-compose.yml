@@ -1,26 +1,29 @@
 version: "3.9"
-services:
 
+services:
   backend:
     image: backend
     container_name: backend
-    build: 
+    build:
       context: ./
       dockerfile: ./docker/backend/Dockerfile
     restart: on-failure
     tty: true
     stdin_open: true
+    environment:
+      - DATABASE_USER=test
+      - DATABASE_PASSWORD=test
     ports:
       - "3000:3000"
     networks:
       - default
-  #   depends_on:
-  #     - database
+    depends_on:
+      - database
 
   frontend:
     image: frontend
     container_name: frontend
-    build: 
+    build:
       context: ./
       dockerfile: ./docker/frontend/Dockerfile
     restart: on-failure
@@ -31,35 +34,61 @@ services:
     networks:
       - default
 
-  # database:
-  #   image: postgres
-  #   container_name: database
-  #   restart: on-failure
-  #   tty: true
-  #   stdin_open: true
-  #   environment:
-  #   env_file:
-  #     - ./docker/database/.env
-  # #   # volumes:
-  # #     # - database:/var/lib/mysql
-  # #   # ports:
-  # #     # - "3306:3306"
-  #   networks:
-  #     - default
+  database:
+    image: postgres
+    container_name: database
+    restart: on-failure
+    tty: true
+    stdin_open: true
+    environment:
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_USER=user
+    volumes:
+      - database:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - default
 
-# volumes:
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: on-failure
+    tty: true
+    stdin_open: true
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=lucocozz@student.42.fr
+      - PGADMIN_DEFAULT_PASSWORD=1234
+      - PGADMIN_DEFAULT_USER=user
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - default
+
+volumes:
+  database:
+    name: transcendence_database
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/${USER}/data/database/
+      o: bind
+
+  pgadmin:
+    name: transcendence_pgadmin
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/${USER}/data/pgadmin/
+      o: bind
+
 #   website:
 #     driver: local
 #     driver_opts:
 #       type: none
 #       device: /home/${USER}/data/website/
-#       o: bind
-
-#   database:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       device: /home/${USER}/data/database/
 #       o: bind
 
 networks:
