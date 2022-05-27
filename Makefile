@@ -1,7 +1,5 @@
 build:
-	mkdir -p ~/data/database/
-	mkdir -p ~/data/pgadmin/
-	docker-compose -f "docker-compose.yml" up -d --build
+	docker-compose up --build -d
 
 down:
 	docker-compose down

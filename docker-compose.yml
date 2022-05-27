@@ -41,8 +41,8 @@ services:
     stdin_open: true
     env_file:
       - ./docker/database/.env
-    volumes:
-      - database:/var/lib/postgresql/data
+    # volumes:
+    #   - database:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
@@ -56,36 +56,36 @@ services:
     stdin_open: true
     env_file:
       - ./docker/database/.env
-    volumes:
-      - pgadmin:/var/lib/pgadmin
+    # volumes:
+    #   - pgadmin:/var/lib/pgadmin
     ports:
       - "5050:80"
     networks:
       - default
 
-volumes:
-  database:
-    name: transcendence_database
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/${USER}/data/database/
-      o: bind
-
-  pgadmin:
-    name: transcendence_pgadmin
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/${USER}/data/pgadmin/
-      o: bind
-
-#   website:
+# volumes:
+#   database:
+#     name: transcendence_database
 #     driver: local
 #     driver_opts:
 #       type: none
-#       device: /home/${USER}/data/website/
+#       device: /home/${USER}/data/database/
 #       o: bind
+
+#   pgadmin:
+#     name: transcendence_pgadmin
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: /home/${USER}/data/pgadmin/
+#       o: bind
+
+# #   website:
+# #     driver: local
+# #     driver_opts:
+# #       type: none
+# #       device: /home/${USER}/data/website/
+# #       o: bind
 
 networks:
   default:
