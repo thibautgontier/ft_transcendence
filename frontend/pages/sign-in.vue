@@ -11,7 +11,8 @@ export default Vue.extend({
   name: 'SignInPage',
   methods: {
     async signIn() {
-      await this.$axios.$get("/api/auth/42/sign-in");
+      const respons = await this.$axios.$get("auth/sign-in");
+      console.log(respons);
     },
   },
 });
