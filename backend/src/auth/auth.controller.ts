@@ -6,7 +6,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('sign-in')
-  signIn(): string {
+  signIn(): Promise<any> {
     return this.authService.signIn();
   }
 }

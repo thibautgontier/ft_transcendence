@@ -62,30 +62,29 @@ services:
       - "5050:80"
     networks:
       - default
+  # volumes:
+  #   database:
+  #     name: transcendence_database
+  #     driver: local
+  #     driver_opts:
+  #       type: none
+  #       device: /home/${USER}/data/database/
+  #       o: bind
 
-# volumes:
-#   database:
-#     name: transcendence_database
-#     driver: local
-#     driver_opts:
-#       type: none
-#       device: /home/${USER}/data/database/
-#       o: bind
+  #   pgadmin:
+  #     name: transcendence_pgadmin
+  #     driver: local
+  #     driver_opts:
+  #       type: none
+  #       device: /home/${USER}/data/pgadmin/
+  #       o: bind
 
-#   pgadmin:
-#     name: transcendence_pgadmin
-#     driver: local
-#     driver_opts:
-#       type: none
-#       device: /home/${USER}/data/pgadmin/
-#       o: bind
-
-# #   website:
-# #     driver: local
-# #     driver_opts:
-# #       type: none
-# #       device: /home/${USER}/data/website/
-# #       o: bind
+  # #   website:
+  # #     driver: local
+  # #     driver_opts:
+  # #       type: none
+  # #       device: /home/${USER}/data/website/
+  # #       o: bind
 
 networks:
   default:

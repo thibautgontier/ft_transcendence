@@ -1,0 +1,26 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // url      = env("DATABASE_URL")
+  url      = "postgres://user:1234@localhost:5432/transcendence?schema=public"
+}
+
+model User {
+  // id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name       String
+  email      String
+  hashPwd    String
+  hashRToken String?
+
+  @@map("users")
+}

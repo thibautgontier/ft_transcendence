@@ -6,13 +6,15 @@
 
 <script lang="ts">
 import Vue from 'vue';
+// import axios from 'axios';
 
 export default Vue.extend({
   name: 'SignInPage',
   methods: {
-    async signIn() {
-      const respons = await this.$axios.$get("auth/sign-in");
-      console.log(respons);
+    signIn() {
+      // axios.get("https://api.intra.42.fr/oauth/authorize");
+      const toto = this.$axios.$get("auth/sign-in");
+      console.log(toto);
     },
   },
 });
