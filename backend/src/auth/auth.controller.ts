@@ -1,12 +1,18 @@
-import { Controller, Get } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { Controller, Get, Redirect, UseGuards } from '@nestjs/common';
+import { FtOauthGuard } from './guards/ft-oauth.guard';
 
-@Controller('api/auth')
+@Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  @Get('/42/login')
+  @UseGuards(FtOauthGuard)
+  ftAuth() {
+    return;
+  }
 
-  @Get('sign-in')
-  signIn(): Promise<any> {
-    return this.authService.signIn();
+  @Get('/42/return')
+  @UseGuards(FtOauthGuard)
+  @Redirect('/')
+  ftAuthCallback() {
+    return;
   }
 }
