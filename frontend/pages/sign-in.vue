@@ -13,7 +13,7 @@ export default Vue.extend({
   methods: {
     signIn() {
       // axios.get("https://api.intra.42.fr/oauth/authorize");
-      // const toto = this.$axios.$get("auth/sign-in");
+      this.$axios.$get("auth/42/login");
     },
   },
 });

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { FtStrategy } from './ft.strategy';
+import { FtStrategy } from './strategies/ft.strategy';
 import { AuthController } from './auth.controller';
 import { SessionSerializer } from './session.serializer';
 

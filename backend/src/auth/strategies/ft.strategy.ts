@@ -18,10 +18,10 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     accessToken: string,
     refreshToken: string,
     profile: Profile,
-    cb: VerifyCallback,
+    callBack: VerifyCallback,
   ): Promise<any> {
     request.session.accessToken = accessToken;
     console.log('accessToken', accessToken, 'refreshToken', refreshToken);
-    return cb(null, profile);
+    return callBack(null, profile);
   }
 }

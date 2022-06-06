@@ -6,6 +6,6 @@
 
 <style scoped>
 .v-application {
-  background: linear-gradient(180deg, #050E13 0%, #113143 41.15%, #1C5474 81.77%);
+  background: linear-gradient(180deg, #050e13 0%, #113143 41.15%, #1C5474 81.77%);
 }
 </style>
