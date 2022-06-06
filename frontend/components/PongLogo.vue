@@ -17,3 +17,12 @@
     </svg>
   </div>
 </template>
+
+<!-- <style scoped>
+.logo {
+  position: absolute;
+  margin-left: 50%;
+  margin-top: 20%;
+  transform: translate(-50%, 0);
+}
+</style> -->
