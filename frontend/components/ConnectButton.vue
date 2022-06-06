@@ -1,5 +1,9 @@
 <template>
-	<v-app>
-		<v-btn color="secondary">42 Connect</v-btn>
-	</v-app>
+	<v-btn color="secondary">{{message}}</v-btn>
 </template>
+
+<script>
+	export default {
+		props: ['message']
+	}
+</script>
