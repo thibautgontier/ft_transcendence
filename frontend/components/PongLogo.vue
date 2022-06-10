@@ -1,7 +1,6 @@
 <template>
-  <div class="relative mx-auto">
+  <div class="relative mx-auto logo">
     <svg
-      class="h-32"
       width="318"
       height="142"
       viewBox="0 0 318 142"

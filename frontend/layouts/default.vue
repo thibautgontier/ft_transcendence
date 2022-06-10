@@ -2,14 +2,14 @@
   <v-app dark>
     <!-- <v-app-bar flat color="transparent"> </v-app-bar> -->
     <v-main>
-      <v-flex class="flex-direction:column">
         <v-col class="d-flex justify-center">
-          <PongLogo />
-          <ConnectButton message="42 Connect" d-inline-blo />
+          <PongLogo size=100% />
         </v-col>
-        <!-- <v-col class="d-flex justify-center"> -->
-        <!-- </v-col> -->
-      </v-flex>
+        <v-col class="d-flex justify-center" style="margin-top:40%">
+			<ConnectButton ButtonType="42 Connect" />
+			<ConnectButton ButtonType="Something else" />
+			<!-- <CanvasTest /> -->
+		</v-col>
     </v-main>
   </v-app>
 </template>
