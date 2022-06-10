@@ -5,10 +5,10 @@
         <v-col class="d-flex justify-center">
           <PongLogo size=100% />
         </v-col>
+			<CanvasTest />
         <v-col class="d-flex justify-center" style="margin-top:40%">
 			<ConnectButton ButtonType="42 Connect" />
 			<ConnectButton ButtonType="Something else" />
-			<!-- <CanvasTest /> -->
 		</v-col>
     </v-main>
   </v-app>
