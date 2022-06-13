@@ -18,7 +18,7 @@
 				else
 				{
 					console.log("something else");
-					this.text = "test"
+					this.text = "I changed!"
 				}
 			}
 		}

@@ -1,0 +1,1 @@
+raccourcis claviers pour acceder aux differents menus via des event modifiers (v-on:keyup.<meta>.<touche>="fonction a executer")

@@ -5,11 +5,15 @@
         <v-col class="d-flex justify-center">
           <PongLogo size=100% />
         </v-col>
-			<CanvasTest />
-        <v-col class="d-flex justify-center" style="margin-top:40%">
+		<v-btn v-bind:color="canvas === false ? 'accent' : 'success'" v-on:click="canvas = !canvas" class="d-flex justify-center">Canvas Test</v-btn>
+		<CanvasTest v-if="canvas" />
+		<v-btn v-bind:color="buttons === false ? 'accent' : 'success'" v-on:click="buttons = !buttons" class="d-flex justify-center">Buttons Test</v-btn>
+		<v-col v-if="buttons" class="d-flex justify-center">
 			<ConnectButton ButtonType="42 Connect" />
-			<ConnectButton ButtonType="Something else" />
+			<ConnectButton ButtonType="Click me" />
 		</v-col>
+		<v-btn v-bind:color="friends === false ? 'accent' : 'success'" v-on:click="friends = !friends" class="d-flex justify-center">Friends Test</v-btn>
+		<SocialMenu v-if="friends" />
     </v-main>
   </v-app>
 </template>
@@ -30,3 +34,21 @@
   /* transform: translate(-50%, 0); */
 }
 </style>
+
+<script>
+	export default {
+		data () { 
+			return {
+				canvas: false,
+				buttons: false,
+				friends: false,
+			}
+		},
+		methods: {
+
+		},
+		computed: {
+
+		}
+	}
+</script>
