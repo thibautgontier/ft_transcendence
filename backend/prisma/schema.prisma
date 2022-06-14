@@ -12,15 +12,146 @@ datasource db {
 }
 
 model User {
-  // id        String   @id @default(cuid())
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int          @id @default(autoincrement())
+  email         String       @unique
+  nickname      String       @unique
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  token         String       @unique
+  refreshToken  String       @unique
+  avatar        String?      @default("")
+  status        logStatus    @default(disconnected)
+  twoFA         Boolean      @default(false)
+  game          Int          @unique
+  gameRef       GameProfile? @relation(fields: [game], references: [id])
+  socialFriends Social[]     @relation("friends")
+  socialBlocked Social[]     @relation("blocked")
+  socialUsers   Social[]     @relation("users")
+  partyPO       Party?       @relation("playerOne")
+  partyPT       Party?       @relation("playerTwo")
+  partyWinner   Party?       @relation("winner")
+  notifyUserID  Notify?
+  channelUsers  Channel[]    @relation("users")
+  channelOwner  Channel[]    @relation("owner")
+  channelAdmins Channel[]    @relation("admins")
+  channelMuted  Channel[]    @relation("mutedUsers")
+  messageUser   Message[]
+  matchsUsers   Matchs[]
+}
 
-  login      String  @unique
-  email      String  @unique
-  hash       String
-  hashRToken String?
+model Social {
+  id          Int      @id @default(autoincrement())
+  channels    Int?
+  channelsRef Channel? @relation(fields: [channels], references: [id])
+  friends     Int?
+  friendsRef  User?    @relation(name: "friends", fields: [friends], references: [id])
+  blocked     Int?
+  blockedRef  User?    @relation(name: "blocked", fields: [blocked], references: [id])
+  notifys     Int?
+  notifysRef  Notify?  @relation(fields: [notifys], references: [id])
+  users       Int?
+  usersRef    User?    @relation(name: "users", fields: [users], references: [id])
+}
 
-  @@map("users")
+model GameProfile {
+  id         Int    @id @default(autoincrement())
+  level      Float  @default(0)
+  xp         Float  @default(0)
+  nbParty    Int    @default(0)
+  nbWin      Int    @default(0)
+  history    Int?
+  historyRef Party? @relation(fields: [history], references: [id])
+  userGame   User?
+}
+
+model Party {
+  id           Int           @id @default(autoincrement())
+  createdAt    DateTime      @default(now())
+  playerOne    Int           @unique
+  playerOneRef User          @relation(name: "playerOne", fields: [playerOne], references: [id])
+  playerTwo    Int?          @unique
+  playerTwoRef User?         @relation(name: "playerTwo", fields: [playerTwo], references: [id])
+  winner       Int?          @unique
+  winnerRef    User?         @relation(name: "winner", fields: [winner], references: [id])
+  status       partyStatus   @default(starting)
+  gameHistory  GameProfile[]
+  notifyParty  Notify?
+  matchsParty  Matchs[]
+}
+
+model Channel {
+  id             Int         @id @default(autoincrement())
+  type           channelType @default(private)
+  users          Int         @unique
+  usersRef       User        @relation(name: "users", fields: [users], references: [id])
+  owner          Int         @unique
+  ownerRef       User        @relation(name: "owner", fields: [owner], references: [id])
+  admins         Int         @unique
+  adminsRef      User        @relation(name: "admins", fields: [admins], references: [id])
+  mutedUsers     Int?        @unique
+  mutedUsersRef  User?       @relation(name: "mutedUsers", fields: [mutedUsers], references: [id])
+  messages       Int?        @unique
+  messagesRef    Message?    @relation(fields: [messages], references: [id])
+  password       String?     @default("")
+  socialChannels Social[]
+  notifyChannel  Notify?
+}
+
+model Notify {
+  id           Int        @id @default(autoincrement())
+  title        String     @default("")
+  content      String     @default("")
+  type         notifyType
+  createdAt    DateTime   @default(now())
+  userID       Int?       @unique
+  userIDRef    User?      @relation(fields: [userID], references: [id])
+  channelID    Int?       @unique
+  channelIDRef Channel?   @relation(fields: [channelID], references: [id])
+  partyID      Int?       @unique
+  partyIDRef   Party?     @relation(fields: [partyID], references: [id])
+  social       Social[]
+}
+
+model Message {
+  id             Int       @id @default(autoincrement())
+  user           Int       @unique
+  userRef        User      @relation(fields: [user], references: [id])
+  content        String    @default("")
+  createdAt      DateTime  @default(now())
+  channelMessage Channel[]
+}
+
+model Matchs {
+  id       Int    @id @default(autoincrement())
+  users    Int?   @unique
+  usersRef User?  @relation(fields: [users], references: [id])
+  party    Int?   @unique
+  partyRef Party? @relation(fields: [party], references: [id])
+}
+
+enum logStatus {
+  online
+  disconnected
+  doNotDistrub
+  AFK
+  invisible
+  inGame
+}
+
+enum partyStatus {
+  starting
+  running
+  finish
+}
+
+enum channelType {
+  private
+  protected
+  public
+}
+
+enum notifyType {
+  newMessage
+  playRequest
+  friendRequest
 }

@@ -14,7 +14,7 @@
       }
     }
   }
-</script>
+</script>your_very_long_client_i
 
 <style scoped>
 .v-application {
