@@ -31,6 +31,7 @@
 	<v-navigation-drawer
 	v-model="drawer"
 	absolute
+	temporary
 	width="20%"
 	>
 
@@ -51,7 +52,7 @@
           v-for="item in items"
           :key="item.title"
           link
-		  @click.stop="submenu = !submenu"
+		  @click.stop="item.submenu = !item.submenu"
         >
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>
@@ -62,13 +63,13 @@
           </v-list-item-content>
 
           <v-list-item-content>
+
 			  	<v-navigation-drawer
-				v-model="submenu"
+				v-model="item.submenu"
 				absolute
 				temporary
 				width="100%"
 				height="100%"
-				margin-left="20%"
 				>
 					{{ item.link }}
 			    </v-navigation-drawer>
@@ -92,11 +93,10 @@
 				],
 				user: 'Jacquet Benjamin',
 				drawer: null,
-				submenu: null,
 				items: [
-					{ title: 'Friends', link: '<FriendsMenu />', icon: 'mdi-account-multiple' },
-					{ title: 'Chats',  link: '<ChatMenu />', icon: 'mdi-forum' },
-					{ title: 'Settings', link: '<SettingsMenu />', icon: 'mdi-cog' },
+					{ title: 'Friends', submenu:null, link: '<FriendsMenu />', icon: 'mdi-account-multiple' },
+					{ title: 'Chats', submenu:null, link: '<ChatMenu />', icon: 'mdi-forum' },
+					{ title: 'Settings', submenu:null, link: '<SettingsMenu />', icon: 'mdi-cog' },
 				],
 				links: ['Home', 'Contacts', 'Settings'],
 			}

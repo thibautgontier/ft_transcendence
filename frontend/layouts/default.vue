@@ -2,6 +2,7 @@
   <v-app dark>
     <!-- <v-app-bar flat color="transparent"> </v-app-bar> -->
     <v-main>
+		<Discord />
         <v-col class="d-flex justify-center">
           <PongLogo size=100% />
         </v-col>
