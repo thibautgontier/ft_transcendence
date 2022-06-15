@@ -1,5 +1,5 @@
 <template>
-	<v-btn v-on:click="log" class="button" color="secondary">{{text}}</v-btn>
+	<v-btn v-on:click="log" class="button" color="secondary">{{ text }}</v-btn>
 </template>
 
 <script>

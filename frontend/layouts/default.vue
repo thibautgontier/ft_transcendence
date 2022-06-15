@@ -2,7 +2,7 @@
   <v-app dark>
     <!-- <v-app-bar flat color="transparent"> </v-app-bar> -->
     <v-main>
-		<Discord />
+		<!-- <Discord /> -->
         <v-col class="d-flex justify-center">
           <PongLogo size=100% />
         </v-col>
@@ -15,6 +15,7 @@
 		</v-col>
 		<v-btn v-bind:color="friends === false ? 'accent' : 'success'" v-on:click="friends = !friends" class="d-flex justify-center">Friends Test</v-btn>
 		<SocialMenu v-if="friends" />
+		<PongBall />
     </v-main>
   </v-app>
 </template>
