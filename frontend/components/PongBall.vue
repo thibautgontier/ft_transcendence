@@ -34,10 +34,6 @@
 </script>
 
 <style scoped>
-	.fade {
-		animation: fade 7s ease-out infinite;
-	}
-
 	.pong {
 		position: absolute;
 		animation: pong 30s infinite linear;
@@ -51,20 +47,19 @@
 
 	@keyframes pong {
 		0% {
-			opacity: 1;
 			top: 34%;
 			left: 52%;
 		}
 		10.9% {
-			opacity: 0.5;
+			opacity: 0.05;
 		}
 		11% {
 			opacity: 1;
 			top: 52%;
-			left: 90%;
+			left: 85%;
 		}
 		21.9% {
-			opacity: 0.5;
+			opacity: 0.05;
 		}
 		22% {
 			opacity: 1;
@@ -72,7 +67,7 @@
 			left: 0%;
 		}
 		32.9%{
-			opacity: 0.5;
+			opacity: 0.05;
 		}
 		33% {
 			opacity: 1;
@@ -80,15 +75,15 @@
 			left: 27%;
 		}
 		43.9%{
-			opacity: 0.5;
+			opacity: 0.05;
 		}
 		44% {
 			opacity: 1;
 			top: 70%;
-			left: 80%;
+			left: 85%;
 		}
 		54.9%{
-			opacity: 0.5;
+			opacity: 0.05;
 		}
 		55% {
 			opacity: 1;
@@ -96,31 +91,31 @@
 			left: 0%;
 		}
 		65.9%{
-			opacity: 0.5;
+			opacity: 0.05;
 		}
 		66% {
 			opacity: 1;
 			top: 13%;
-			left: 100%;
+			left: 85%;
 		}
 		76.9%{
-			opacity: 0.5;
+			opacity: 0.05;
 		}
 		77% {
 			opacity: 1;
-			top: 1%;
+			top: 0%;
 			left: 70%;
 		}
 		87.9%{
-			opacity: 0.5;
+			opacity: 0.05;
 		}
 		88% {
 			opacity: 1;
 			top: 22%;
-			left: 8%;
+			left: 0%;
 		}
 		99.9%{
-			opacity: 0.5;
+			opacity: 0.05;
 		}
 		100% {
 			opacity: 1;
