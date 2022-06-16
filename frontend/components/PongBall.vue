@@ -1,5 +1,5 @@
 <template>
-<div class="fade">
+<div class="fade absolute mx-auto">
     	<svg width="200"
 		height="200"
 		viewBox="0 0 100 100"
@@ -29,19 +29,63 @@
 </template>
 
 <style scoped>
+	.fade {
+		animation: fade 7s ease-out infinite;
+	}
+
+	.pong {
+		position: absolute;
+		animation: pong 30s infinite linear;
+	}
 
 	@keyframes fade {
-		/* 0% { opacity: 1; }
-		25% { opacity: 0.2; }
-		50% { opacity: 1; }
-		100% { opacity: 0.2; } */
-		from { opacity: 1; }
-		to { opacity: 0.05; }
-	}
-	.fade {
-		animation: fade 7s infinite;
+		0% { opacity: 1; }
+		50% { opacity: 0.05; }
+		100% { opacity: 1; }
 	}
 
+	@keyframes pong {
+		0% {
+			top: 34%;
+			left: 52%;
+		}
+		8.3% {
+			top: 52%;
+			left: 90%;
+		}
+		24.9% {
+			top: 85%;
+			left: 0%;
+		}
+		30% {
+			top: 70%;
+			left: 27%;
+		}
+		41.5% {
+			top: 70%;
+			left: 80%;
+		}
+		58.1% {
+			top: 55%;
+			left: 0%;
+		}
+		74.7% {
+			top: 13%;
+			left: 100%;
+		}
+		79% {
+			top: 1%;
+			left: 70%;
+		}
+		91.3% {
+			top: 22%;
+			left: 8%;
+		}
+		100% {
+			top: 34%;
+			left: 52%;
+		}
+	}
 </style>
 
 <script>
