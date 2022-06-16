@@ -34,15 +34,12 @@
 </script>
 
 <style scoped>
+
 	.pong {
 		position: absolute;
 		animation: pong 30s infinite linear;
-	}
-
-	@keyframes fade {
-		0% { opacity: 1; }
-		50% { opacity: 0.05; }
-		100% { opacity: 1; }
+		height: fit-content;
+		width: fit-content;
 	}
 
 	@keyframes pong {
