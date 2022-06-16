@@ -1,6 +1,7 @@
 <template>
-<div class="fade absolute mx-auto">
-    	<svg width="200"
+	<div class="pong absolute mx-auto">
+		<svg
+		width="200"
 		height="200"
 		viewBox="0 0 100 100"
 		fill="none"
@@ -28,6 +29,10 @@
     </div>
 </template>
 
+<script>
+
+</script>
+
 <style scoped>
 	.fade {
 		animation: fade 7s ease-out infinite;
@@ -46,48 +51,81 @@
 
 	@keyframes pong {
 		0% {
+			opacity: 1;
 			top: 34%;
 			left: 52%;
 		}
-		8.3% {
+		10.9% {
+			opacity: 0.5;
+		}
+		11% {
+			opacity: 1;
 			top: 52%;
 			left: 90%;
 		}
-		24.9% {
+		21.9% {
+			opacity: 0.5;
+		}
+		22% {
+			opacity: 1;
 			top: 85%;
 			left: 0%;
 		}
-		30% {
+		32.9%{
+			opacity: 0.5;
+		}
+		33% {
+			opacity: 1;
 			top: 70%;
 			left: 27%;
 		}
-		41.5% {
+		43.9%{
+			opacity: 0.5;
+		}
+		44% {
+			opacity: 1;
 			top: 70%;
 			left: 80%;
 		}
-		58.1% {
+		54.9%{
+			opacity: 0.5;
+		}
+		55% {
+			opacity: 1;
 			top: 55%;
 			left: 0%;
 		}
-		74.7% {
+		65.9%{
+			opacity: 0.5;
+		}
+		66% {
+			opacity: 1;
 			top: 13%;
 			left: 100%;
 		}
-		79% {
+		76.9%{
+			opacity: 0.5;
+		}
+		77% {
+			opacity: 1;
 			top: 1%;
 			left: 70%;
 		}
-		91.3% {
+		87.9%{
+			opacity: 0.5;
+		}
+		88% {
+			opacity: 1;
 			top: 22%;
 			left: 8%;
 		}
+		99.9%{
+			opacity: 0.5;
+		}
 		100% {
+			opacity: 1;
 			top: 34%;
 			left: 52%;
 		}
 	}
 </style>
-
-<script>
-
-</script>
