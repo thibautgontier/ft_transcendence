@@ -31,7 +31,7 @@ model User {
   partyPT       Party?       @relation("playerTwo")
   partyWinner   Party?       @relation("winner")
   notifyUserID  Notify?
-  channelUsers  Channel[]    @relation("users")
+  ChannelUsers  Channel[]    @relation("chanUsers")
   channelOwner  Channel[]    @relation("owner")
   channelAdmins Channel[]    @relation("admins")
   channelMuted  Channel[]    @relation("mutedUsers")
@@ -83,7 +83,7 @@ model Channel {
   id             Int         @id @default(autoincrement())
   type           channelType @default(private)
   users          Int         @unique
-  usersRef       User        @relation(name: "users", fields: [users], references: [id])
+  usersRef       User        @relation(name: "chanUsers", fields: [users], references: [id])
   owner          Int         @unique
   ownerRef       User        @relation(name: "owner", fields: [owner], references: [id])
   admins         Int         @unique
