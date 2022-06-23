@@ -12,31 +12,31 @@ datasource db {
 }
 
 model User {
-  id            Int          @id @default(autoincrement())
-  email         String       @unique
-  nickname      String       @unique
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  token         String       @unique
-  refreshToken  String       @unique
-  avatar        String?      @default("")
-  status        logStatus    @default(disconnected)
-  twoFA         Boolean      @default(false)
-  game          Int          @unique
-  gameRef       GameProfile? @relation(fields: [game], references: [id])
-  socialFriends Social[]     @relation("friends")
-  socialBlocked Social[]     @relation("blocked")
-  socialUsers   Social[]     @relation("users")
-  partyPO       Party?       @relation("playerOne")
-  partyPT       Party?       @relation("playerTwo")
-  partyWinner   Party?       @relation("winner")
-  notifyUserID  Notify?
-  ChannelUsers  Channel[]    @relation("chanUsers")
-  channelOwner  Channel[]    @relation("owner")
-  channelAdmins Channel[]    @relation("admins")
-  channelMuted  Channel[]    @relation("mutedUsers")
-  messageUser   Message[]
-  matchsUsers   Matchs[]
+  id             Int         @id @default(autoincrement())
+  email          String?     @unique
+  nickname       String?     @unique
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  token          String      @unique
+  refreshToken   String      @unique
+  avatar         String?
+  status         logStatus   @default(offline)
+  twoFA          Boolean     @default(false)
+  gameProfile    Int         @unique
+  gameProfileRef GameProfile @relation(fields: [gameProfile], references: [id])
+  socialFriends  Social[]    @relation("friends")
+  socialBlocked  Social[]    @relation("blocked")
+  socialUsers    Social[]    @relation("users")
+  partyPO        Party?      @relation("playerOne")
+  partyPT        Party?      @relation("playerTwo")
+  partyWinner    Party?      @relation("winner")
+  notifyUserID   Notify?
+  ChannelUsers   Channel[]   @relation("chanUsers")
+  channelOwner   Channel[]   @relation("owner")
+  channelAdmins  Channel[]   @relation("admins")
+  channelMuted   Channel[]   @relation("mutedUsers")
+  messageUser    Message[]
+  matchsUsers    Matchs[]
 }
 
 model Social {
@@ -131,7 +131,7 @@ model Matchs {
 
 enum logStatus {
   online
-  disconnected
+  offline
   doNotDistrub
   AFK
   invisible
