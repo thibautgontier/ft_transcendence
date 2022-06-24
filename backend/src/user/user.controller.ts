@@ -7,19 +7,21 @@ import {
   Query,
   Res,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserService } from './user.service';
 import { UserFilterDto } from './dto/user-filter.dto';
 import { Response } from 'express';
+import { UserUpdateDto } from './dto/user-update.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  async getAll(@Query('gameProfile') gameProfile?: boolean): Promise<User[]> {
-    return this.userService.getAll(gameProfile);
+  async getAll(@Query() query?: UserFilterDto): Promise<User[]> {
+    return this.userService.getAll(query);
   }
 
   @Get('id/:id')
@@ -32,10 +34,10 @@ export class UserController {
     return await this.userService.findToken(token);
   }
 
-  @Get('filter')
-  async getByFilter(@Query() query?: UserFilterDto): Promise<User[]> {
-    return await this.userService.getByFilter(query.status, query.twoFA);
-  }
+  // @Get('filter')
+  // async getByFilter(@Query() query?: UserFilterDto): Promise<User[]> {
+  //   return await this.userService.getByFilter(query.status, query.twoFA);
+  // }
 
   @Post('create')
   async createUser(
@@ -55,5 +57,13 @@ export class UserController {
     @Param('id') id: number,
   ): Promise<User | null> {
     return await this.userService.deleteUser(res, Number(id));
+  }
+
+  @Put('update/:id')
+  async updateUser(
+    @Param('id') id: number,
+    @Body() body: UserUpdateDto,
+  ): Promise<User | null> {
+    return await this.userService.updateUser(Number(id), body);
   }
 }

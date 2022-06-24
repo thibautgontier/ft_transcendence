@@ -1,16 +1,22 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { User, logStatus } from '@prisma/client';
+import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Response } from 'express';
+import { UserUpdateDto } from './dto/user-update.dto';
+import { UserFilterDto } from './dto/user-filter.dto';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getAll(gameProfile: boolean): Promise<User[]> {
+  async getAll(query: UserFilterDto): Promise<User[]> {
     return this.prisma.user.findMany({
+      where: {
+        status: query.status,
+        twoFA: query.twoFA,
+      },
       include: {
-        gameProfileRef: gameProfile,
+        gameProfileRef: query.gameProfile,
       },
     });
   }
@@ -23,11 +29,11 @@ export class UserService {
     return this.prisma.user.findUnique({ where: { token: token } });
   }
 
-  async getByFilter(status: logStatus, twoFA: boolean): Promise<User[]> {
-    return this.prisma.user.findMany({
-      where: { status: status, twoFA: twoFA },
-    });
-  }
+  // async getByFilter(status: logStatus, twoFA: boolean): Promise<User[]> {
+  //   return this.prisma.user.findMany({
+  //     where: { status: status, twoFA: twoFA },
+  //   });
+  // }
 
   async createUser(
     res: Response,
@@ -67,5 +73,20 @@ export class UserService {
       });
       return null;
     }
+  }
+
+  async updateUser(id: number, body: UserUpdateDto): Promise<User | null> {
+    return await this.prisma.user.update({
+      where: { id: id },
+      data: {
+        email: body.email,
+        nickname: body.nickname,
+        token: body.token,
+        refreshToken: body.refreshToken,
+        avatar: body.avatar,
+        status: body.status,
+        twoFA: body.twoFA,
+      },
+    });
   }
 }
