@@ -12,29 +12,29 @@ datasource db {
 }
 
 model User {
-  id             Int         @id @default(autoincrement())
-  email          String?     @unique
-  nickname       String?     @unique
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  token          String      @unique
-  refreshToken   String      @unique
+  id             Int          @id @default(autoincrement())
+  email          String?      @unique
+  nickname       String?      @unique
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  token          String       @unique
+  refreshToken   String       @unique
   avatar         String?
-  status         logStatus   @default(offline)
-  twoFA          Boolean     @default(false)
-  gameProfile    Int         @unique
-  gameProfileRef GameProfile @relation(fields: [gameProfile], references: [id])
-  socialFriends  Social[]    @relation("friends")
-  socialBlocked  Social[]    @relation("blocked")
-  socialUsers    Social[]    @relation("users")
-  partyPO        Party?      @relation("playerOne")
-  partyPT        Party?      @relation("playerTwo")
-  partyWinner    Party?      @relation("winner")
+  status         logStatus    @default(offline)
+  twoFA          Boolean      @default(false)
+  gameProfile    Int?         @unique
+  gameProfileRef GameProfile? @relation(fields: [gameProfile], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  socialFriends  Social[]     @relation("friends")
+  socialBlocked  Social[]     @relation("blocked")
+  socialUsers    Social[]     @relation("users")
+  partyPO        Party?       @relation("playerOne")
+  partyPT        Party?       @relation("playerTwo")
+  partyWinner    Party?       @relation("winner")
   notifyUserID   Notify?
-  ChannelUsers   Channel[]   @relation("chanUsers")
-  channelOwner   Channel[]   @relation("owner")
-  channelAdmins  Channel[]   @relation("admins")
-  channelMuted   Channel[]   @relation("mutedUsers")
+  ChannelUsers   Channel[]    @relation("chanUsers")
+  channelOwner   Channel[]    @relation("owner")
+  channelAdmins  Channel[]    @relation("admins")
+  channelMuted   Channel[]    @relation("mutedUsers")
   messageUser    Message[]
   matchsUsers    Matchs[]
 }

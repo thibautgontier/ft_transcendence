@@ -14,6 +14,7 @@ import { UserService } from './user.service';
 import { UserFilterDto } from './dto/user-filter.dto';
 import { Response } from 'express';
 import { UserUpdateDto } from './dto/user-update.dto';
+import { UserCreateDto } from './dto/user-create.dto';
 
 @Controller('users')
 export class UserController {
@@ -34,21 +35,12 @@ export class UserController {
     return await this.userService.findToken(token);
   }
 
-  // @Get('filter')
-  // async getByFilter(@Query() query?: UserFilterDto): Promise<User[]> {
-  //   return await this.userService.getByFilter(query.status, query.twoFA);
-  // }
-
   @Post('create')
   async createUser(
     @Res() res: Response,
-    @Body() postData: { token: string; refresh_token: string },
+    @Body() body: UserCreateDto,
   ): Promise<User | null> {
-    return await this.userService.createUser(
-      res,
-      postData.token,
-      postData.refresh_token,
-    );
+    return await this.userService.createUser(res, body);
   }
 
   @Delete('delete/:id')

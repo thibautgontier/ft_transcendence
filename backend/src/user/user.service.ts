@@ -4,19 +4,32 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Response } from 'express';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UserFilterDto } from './dto/user-filter.dto';
+import { UserCreateDto } from './dto/user-create.dto';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
+  toBool(str: string): boolean {
+    if (str === null || str === undefined) return undefined;
+    str = str.toLowerCase();
+    if (['true', '1', 'on', 'yes'].includes(str)) {
+      return true;
+    } else if (['false', '0', 'off', 'no'].includes(str)) {
+      return false;
+    }
+    return undefined;
+  }
+
   async getAll(query: UserFilterDto): Promise<User[]> {
+    const gameProfile: boolean = this.toBool(query.gameProfile);
     return this.prisma.user.findMany({
       where: {
         status: query.status,
-        twoFA: query.twoFA,
+        twoFA: this.toBool(query.twoFA),
       },
       include: {
-        gameProfileRef: query.gameProfile,
+        gameProfileRef: gameProfile === undefined ? false : gameProfile,
       },
     });
   }
@@ -29,22 +42,17 @@ export class UserService {
     return this.prisma.user.findUnique({ where: { token: token } });
   }
 
-  // async getByFilter(status: logStatus, twoFA: boolean): Promise<User[]> {
-  //   return this.prisma.user.findMany({
-  //     where: { status: status, twoFA: twoFA },
-  //   });
-  // }
-
-  async createUser(
-    res: Response,
-    token: string,
-    refreshToken: string,
-  ): Promise<User> {
+  async createUser(res: Response, body: UserCreateDto): Promise<User> {
     try {
       const user = await this.prisma.user.create({
         data: {
-          token: token,
-          refreshToken: refreshToken,
+          email: body.email,
+          nickname: body.nickname,
+          token: body.token,
+          refreshToken: body.refreshToken,
+          avatar: body.avatar,
+          status: body.status,
+          twoFA: body.twoFA,
           gameProfileRef: {
             create: {},
           },
@@ -63,7 +71,15 @@ export class UserService {
 
   async deleteUser(res: Response, id: number): Promise<User | null> {
     try {
-      const user = await this.prisma.user.delete({ where: { id: id } });
+      const user = await this.prisma.user.delete({
+        where: { id: id },
+        include: {
+          gameProfileRef: true,
+        },
+      });
+      await this.prisma.gameProfile.delete({
+        where: { id: user.gameProfile },
+      });
       res.status(HttpStatus.OK).send(user);
       return user;
     } catch (error) {
