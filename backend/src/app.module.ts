@@ -5,6 +5,7 @@ import { configValidationSchema } from './config.shema';
 import { PrismaService } from './prisma/prisma.service';
 import { UserModule } from './user/user.module';
 import { PrismaController } from './prisma/prisma.controller';
+import { ChannelModule } from './channel/channel.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { PrismaController } from './prisma/prisma.controller';
     }),
     AuthModule,
     UserModule,
+    ChannelModule,
   ],
   providers: [PrismaService],
   controllers: [PrismaController],
