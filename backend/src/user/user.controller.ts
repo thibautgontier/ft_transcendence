@@ -16,13 +16,13 @@ import { Response } from 'express';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UserCreateDto } from './dto/user-create.dto';
 
-@Controller('users')
+@Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
   async getAll(@Query() query?: UserFilterDto): Promise<User[]> {
-    return this.userService.getAll(query);
+    return await this.userService.getAll(query);
   }
 
   @Get('id/:id')
