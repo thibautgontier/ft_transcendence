@@ -1,5 +1,4 @@
 import { logStatus } from '@prisma/client';
-import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 export class UserFilterDto {
@@ -9,11 +8,13 @@ export class UserFilterDto {
 
   @IsOptional()
   @IsBoolean()
-  @Type(() => Boolean)
   twoFA;
 
   @IsOptional()
   @IsBoolean()
-  @Type(() => Boolean)
   gameProfile;
+
+  @IsOptional()
+  @IsBoolean()
+  social;
 }

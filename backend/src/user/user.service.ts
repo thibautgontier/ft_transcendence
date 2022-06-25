@@ -23,6 +23,7 @@ export class UserService {
 
   async getAll(query: UserFilterDto): Promise<User[]> {
     const gameProfile: boolean = this.toBool(query.gameProfile);
+    const social: boolean = this.toBool(query.social);
     return this.prisma.user.findMany({
       where: {
         status: query.status,
@@ -30,6 +31,7 @@ export class UserService {
       },
       include: {
         gameProfileRef: gameProfile === undefined ? false : gameProfile,
+        socialRef: social === undefined ? false : social,
       },
     });
   }
@@ -58,7 +60,7 @@ export class UserService {
           },
           socialRef: {
             create: {},
-          }
+          },
         },
       });
       res.status(HttpStatus.CREATED).send(user);
