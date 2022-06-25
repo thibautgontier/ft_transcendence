@@ -22,11 +22,12 @@ model User {
   avatar         String?
   status         logStatus    @default(offline)
   twoFA          Boolean      @default(false)
-  gameProfile    Int?         @unique
-  gameProfileRef GameProfile? @relation(fields: [gameProfile], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  gameProfile    Int          @unique
+  gameProfileRef GameProfile  @relation(fields: [gameProfile], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  social         Int          @unique
+  socialRef      Social       @relation(fields: [social], references: [id], onDelete: Cascade, onUpdate: Cascade)
   socialFriends  Social[]     @relation("friends")
   socialBlocked  Social[]     @relation("blocked")
-  socialUsers    Social[]     @relation("users")
   partyPO        Party?       @relation("playerOne")
   partyPT        Party?       @relation("playerTwo")
   partyWinner    Party?       @relation("winner")
@@ -49,8 +50,7 @@ model Social {
   blockedRef  User?    @relation(name: "blocked", fields: [blocked], references: [id])
   notifys     Int?
   notifysRef  Notify?  @relation(fields: [notifys], references: [id])
-  users       Int?
-  usersRef    User?    @relation(name: "users", fields: [users], references: [id])
+  userSocial  User?
 }
 
 model GameProfile {

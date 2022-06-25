@@ -56,6 +56,9 @@ export class UserService {
           gameProfileRef: {
             create: {},
           },
+          socialRef: {
+            create: {},
+          }
         },
       });
       res.status(HttpStatus.CREATED).send(user);
@@ -79,6 +82,9 @@ export class UserService {
       });
       await this.prisma.gameProfile.delete({
         where: { id: user.gameProfile },
+      });
+      await this.prisma.gameProfile.delete({
+        where: { id: user.social },
       });
       res.status(HttpStatus.OK).send(user);
       return user;
