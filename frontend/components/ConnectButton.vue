@@ -7,13 +7,13 @@
 		props: ["ButtonType"],
 		data () {
 			return {
-				text: this.ButtonType
+				text: this.buttonType
 			}
 		},
 		// Prototype pour comportement qui change en fonction du message du bouton
 		methods: {
 			log: function () {
-				if (this.ButtonType === "42 Connect")
+				if (this.buttonType === "42 Connect")
 					console.log("42 Connect");
 				else
 				{

@@ -3,8 +3,7 @@
 		<!-- Penser a changer la height pour avoir quelquechose de responsive -->
 		<v-toolbar flat app color="transparent" height="150">
 			Notifications
-				<PongLogo />
-				<SocialIcon />
+			<SocialIcon />
 		</v-toolbar>
 	</nav>
 </template>

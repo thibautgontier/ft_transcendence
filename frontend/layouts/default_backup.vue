@@ -10,8 +10,8 @@
 		<CanvasTest v-if="canvas" />
 		<v-btn v-bind:color="buttons === false ? 'accent' : 'success'" v-on:click="buttons = !buttons" class="d-flex justify-center">Buttons Test</v-btn>
 		<v-col v-if="buttons" class="d-flex justify-center">
-			<ConnectButton ButtonType="42 Connect" />
-			<ConnectButton ButtonType="Click me" />
+			<ConnectButton buttonType="42 Connect" />
+			<ConnectButton buttonType="Click me" />
 		</v-col>
 		<v-btn v-bind:color="friends === false ? 'accent' : 'success'" v-on:click="friends = !friends" class="d-flex justify-center">Friends Test</v-btn>
 		<SocialMenu v-if="friends" />
