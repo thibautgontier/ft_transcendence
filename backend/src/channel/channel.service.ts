@@ -9,4 +9,8 @@ export class ChannelService {
   async getAll(): Promise<Channel[]> {
     return this.prisma.channel.findMany();
   }
+
+  async findID(id: number): Promise<Channel | null> {
+	return this.prisma.channel.findUnique({ where : {id: id}});
+  }
 }
