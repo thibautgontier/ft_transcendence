@@ -6,6 +6,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { UserModule } from './user/user.module';
 import { PrismaController } from './prisma/prisma.controller';
 import { ChannelModule } from './channel/channel.module';
+import { SocialModule } from './social/social.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ChannelModule } from './channel/channel.module';
     AuthModule,
     UserModule,
     ChannelModule,
+    SocialModule,
   ],
   providers: [PrismaService],
   controllers: [PrismaController],

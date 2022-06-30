@@ -47,21 +47,6 @@ services:
       - "5432:5432"
     networks:
       - default
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    restart: on-failure
-    tty: true
-    stdin_open: true
-    env_file:
-      - ./docker/database/.env
-    # volumes:
-    #   - pgadmin:/var/lib/pgadmin
-    ports:
-      - "5050:80"
-    networks:
-      - default
   # volumes:
   #   database:
   #     name: transcendence_database

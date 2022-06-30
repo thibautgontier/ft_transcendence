@@ -23,15 +23,15 @@ export class UserService {
 
   async getAll(query: UserFilterDto): Promise<User[]> {
     const gameProfile: boolean = this.toBool(query.gameProfile);
-    const social: boolean = this.toBool(query.social);
+    const social: boolean = this.toBool(query.socialProfile);
     return this.prisma.user.findMany({
       where: {
-        status: query.status,
-        twoFA: this.toBool(query.twoFA),
+        Status: query.status,
+        TwoFA: this.toBool(query.twoFA),
       },
       include: {
-        gameProfileRef: gameProfile === undefined ? false : gameProfile,
-        socialRef: social === undefined ? false : social,
+        GameProfile: gameProfile === undefined ? false : gameProfile,
+        SocialProfile: social === undefined ? false : social,
       },
     });
   }
@@ -41,28 +41,31 @@ export class UserService {
   }
 
   async findToken(token: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { token: token } });
+    return this.prisma.user.findUnique({ where: { Token: token } });
   }
 
   async createUser(res: Response, body: UserCreateDto): Promise<User> {
     try {
       const user = await this.prisma.user.create({
         data: {
-          email: body.email,
-          nickname: body.nickname,
-          token: body.token,
-          refreshToken: body.refreshToken,
-          avatar: body.avatar,
-          status: body.status,
-          twoFA: body.twoFA,
-          gameProfileRef: {
+          Email: body.email,
+          Nickname: body.nickname,
+          Token: body.token,
+          RefreshToken: body.refreshToken,
+          Avatar: body.avatar,
+          Status: body.status,
+          TwoFA: body.twoFA,
+          GameProfile: {
             create: {},
           },
-          socialRef: {
+          SocialProfile: {
             create: {},
           },
         },
       });
+
+      //TODO: add code here to call 42 API to get user's data
+
       res.status(HttpStatus.CREATED).send(user);
       return user;
     } catch (error) {
@@ -79,14 +82,9 @@ export class UserService {
       const user = await this.prisma.user.delete({
         where: { id: id },
         include: {
-          gameProfileRef: true,
+          GameProfile: true,
+          SocialProfile: true,
         },
-      });
-      await this.prisma.gameProfile.delete({
-        where: { id: user.gameProfile },
-      });
-      await this.prisma.gameProfile.delete({
-        where: { id: user.social },
       });
       res.status(HttpStatus.OK).send(user);
       return user;
@@ -103,13 +101,13 @@ export class UserService {
     return await this.prisma.user.update({
       where: { id: id },
       data: {
-        email: body.email,
-        nickname: body.nickname,
-        token: body.token,
-        refreshToken: body.refreshToken,
-        avatar: body.avatar,
-        status: body.status,
-        twoFA: body.twoFA,
+        Email: body.email,
+        Nickname: body.nickname,
+        Token: body.token,
+        RefreshToken: body.refreshToken,
+        Avatar: body.avatar,
+        Status: body.status,
+        TwoFA: body.twoFA,
       },
     });
   }

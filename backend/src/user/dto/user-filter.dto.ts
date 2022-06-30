@@ -4,5 +4,5 @@ export class UserFilterDto {
   status?: logStatus;
   twoFA?: string;
   gameProfile?: string;
-  social?: string;
+  socialProfile?: string;
 }
