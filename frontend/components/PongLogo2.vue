@@ -9,7 +9,7 @@
 </script>
 
 <style>
-	.terminal, h1 {
+	.terminal {
 		color: #fff;
 		font-family: monospace;
 		font-size: 5rem;

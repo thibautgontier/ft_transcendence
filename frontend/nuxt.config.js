@@ -69,9 +69,9 @@ export default {
         //   success: colors.green.accent3,
         // },
 		dark: {
-      background: "#000000",
+			background: colors.shades.black,
 			primary: "#0A5EDC",
-			accent: "colors.grey.darken3",
+			accent: colors.grey.darken3,
 			secondary: "#DC880A",
 			socialbg: "#144C80",
 			socialbr: "#0D3457",
