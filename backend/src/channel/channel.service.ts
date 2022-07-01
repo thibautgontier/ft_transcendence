@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Channel } from '@prisma/client';
+import { Channel, channelType } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ChannelCreateDto } from './dto/channel-create.dto';
 
 @Injectable()
 export class ChannelService {
@@ -15,10 +16,31 @@ export class ChannelService {
   }
 
   async createChannel(body : ChannelCreateDto): Promise<Channel | null> {
-    const channel = await this.prisma.channel.create({
-      data: {
-        
-      }
-    })
+    try {
+      const channel = await this.prisma.channel.create({
+        data: {
+          Type: body.type,
+          Users: {
+            connect: {
+              id: body.owner,
+            },
+          },
+          Owner: {
+            connect: {
+              id: body.owner,
+            },
+          },
+          Admins: {
+            connect: {
+              id: body.owner,
+            },
+          },
+          Password: body.password,
+        },
+      });
+    } catch (error)
+    {
+      return null;
+    }
   }
 }

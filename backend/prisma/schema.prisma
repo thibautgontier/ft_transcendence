@@ -111,7 +111,7 @@ model Channel {
   Password        String?
   SocialChannelID Int?
   SocialChannel   SocialProfile? @relation(fields: [SocialChannelID], references: [id])
-  userId          Int
+  // userId          Int
   ChannelNotifyID Int?           @unique
   ChannelNotify   Notify?        @relation(fields: [ChannelNotifyID], references: [id])
 }
