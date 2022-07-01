@@ -77,3 +77,7 @@ https://vuetifyjs.com/en/components/dialogs/#nesting
 
 menu pour le statut (choisir son etat)
 https://vuetifyjs.com/en/components/menus/#usage
+
+liste expandable dans une sidebar
+https://vuetifyjs.com/en/components/lists/#slots
+https://vuetifyjs.com/en/components/navigation-drawers/#expand-on-hover
