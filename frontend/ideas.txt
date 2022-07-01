@@ -62,3 +62,18 @@ https://vuetifyjs.com/en/components/menus/
 
 snackbar
 https://www.youtube.com/watch?v=SGGW8qbsXTg
+
+chargement
+https://vuetifyjs.com/en/components/overlays/#loader
+
+music player
+https://vuetifyjs.com/en/components/bottom-sheets/#music-player
+
+statut (en ligne/absent etc)
+https://vuetifyjs.com/en/components/badges/
+
+menu complet nesté (check dialog 1)
+https://vuetifyjs.com/en/components/dialogs/#nesting
+
+menu pour le statut (choisir son etat)
+https://vuetifyjs.com/en/components/menus/#usage

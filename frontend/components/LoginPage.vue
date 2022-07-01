@@ -1,11 +1,12 @@
 <template>
-	<div>
-		<v-col class="d-flex justify-center" style="margin-top: 33%">
-			<PongLogo2 />
+	<v-container fill-height>
+		<v-col>
+			<v-row justify="center" align="center">
+				<PongLogo2 />
+			</v-row>
+			<v-row justify="center" align="center" style="margin-top: 10%">
+				<v-btn x-large color="black" @click.stop="this.authenticated = !this.authenticated">42 Connect</v-btn>
+			</v-row>
 		</v-col>
-		<v-col class="d-flex justify-center mt-16">
-			<v-btn x-large color="black" @click.stop="this.authenticated = !this.authenticated">42 Connect</v-btn>
-		</v-col>
-	</div>
+	</v-container>
 </template>
-

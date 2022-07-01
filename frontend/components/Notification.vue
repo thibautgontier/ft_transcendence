@@ -10,6 +10,7 @@
 			:timeout="timeout"
 			top right
 			absolute
+			max-height="1%"
 			transition="slide-x-reverse-transition"
 		>
 			<v-btn
