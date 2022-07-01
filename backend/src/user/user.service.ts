@@ -44,7 +44,7 @@ export class UserService {
     return this.prisma.user.findUnique({ where: { Token: token } });
   }
 
-  async createUser(res: Response, body: UserCreateDto): Promise<User> {
+  async createUser(res: Response, body: UserCreateDto): Promise<User | null> {
     try {
       const user = await this.prisma.user.create({
         data: {

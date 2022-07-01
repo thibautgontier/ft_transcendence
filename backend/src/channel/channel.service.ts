@@ -11,6 +11,14 @@ export class ChannelService {
   }
 
   async findID(id: number): Promise<Channel | null> {
-	return this.prisma.channel.findUnique({ where : {id: id}});
+  return this.prisma.channel.findUnique({ where : {id: id}});
+  }
+
+  async createChannel(body : ChannelCreateDto): Promise<Channel | null> {
+    const channel = await this.prisma.channel.create({
+      data: {
+        
+      }
+    })
   }
 }
