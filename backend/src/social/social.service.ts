@@ -43,4 +43,22 @@ export class SocialService {
       },
     });
   }
+
+  async removeFriend(id: number, friendID: number): Promise<SocialProfile> {
+    return await this.prisma.socialProfile.update({
+      where: {
+        UserId: id,
+      },
+      data: {
+        Friends: {
+          disconnect: {
+            id: friendID,
+          },
+        },
+      },
+      include: {
+        Friends: true,
+      },
+    });
+  }
 }

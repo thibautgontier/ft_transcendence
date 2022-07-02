@@ -7,7 +7,7 @@ import {
   Query,
   Res,
   Delete,
-  Put,
+  Patch,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserService } from './user.service';
@@ -15,7 +15,9 @@ import { UserFilterDto } from './dto/user-filter.dto';
 import { Response } from 'express';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UserCreateDto } from './dto/user-create.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
@@ -51,7 +53,7 @@ export class UserController {
     return await this.userService.deleteUser(res, Number(id));
   }
 
-  @Put('update/:id')
+  @Patch('update/:id')
   async updateUser(
     @Param('id') id: number,
     @Body() body: UserUpdateDto,
