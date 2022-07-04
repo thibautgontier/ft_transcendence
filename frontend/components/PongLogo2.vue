@@ -18,7 +18,7 @@
 		white-space: nowrap; /* Keeps the content on a single line */
 		letter-spacing: .15rem; /* Adjust as needed */
 		animation: 
-			typing 1s steps(7, end),
+			typing 0.5s steps(7, end),
 			blink-caret 0.5s step-end infinite;
 	}
 

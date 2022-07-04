@@ -1,6 +1,3 @@
-ToDo:
-- trouver comment rendre le background aussi sombre que les boutons
-- modifier la taille de l'avatar pour le menu social
 
 raccourcis claviers pour acceder aux differents menus via des event modifiers
 (v-on:keyup.<meta>.<touche>="fonction a executer")
@@ -81,3 +78,12 @@ https://vuetifyjs.com/en/components/menus/#usage
 liste expandable dans une sidebar
 https://vuetifyjs.com/en/components/lists/#slots
 https://vuetifyjs.com/en/components/navigation-drawers/#expand-on-hover
+
+asyncData hook (used before vue instance is created)
+https://nuxtjs.org/docs/features/data-fetching/#async-data
+
+fetch hook (used after vue instance is created and during SSR)
+https://nuxtjs.org/docs/features/data-fetching/
+
+Nuxt.js small guide
+https://www.codemag.com/Article/2105101/Nuxt.js-for-Busy-Developers
