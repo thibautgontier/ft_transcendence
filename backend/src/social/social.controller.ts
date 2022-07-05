@@ -1,6 +1,7 @@
-import { Controller, Get, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Param, Patch, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SocialProfile, User } from '@prisma/client';
+import { Response } from 'express';
 import { SocialService } from './social.service';
 
 @ApiTags('social')
@@ -9,28 +10,44 @@ export class SocialController {
   constructor(private socialService: SocialService) {}
 
   @Get(':id')
-  async getSocial(@Param('id') id: number): Promise<SocialProfile> {
-    return await this.socialService.getSocialProfile(Number(id));
+  async getSocial(
+    @Res() res: Response,
+    @Param('id') id: number,
+  ): Promise<SocialProfile> {
+    return await this.socialService.getSocialProfile(res, Number(id));
   }
 
-  @Get(':id/friends')
-  async getFriends(@Param('id') id: number): Promise<User[]> {
-    return await this.socialService.getFriends(Number(id));
+  @Get(':id/friend')
+  async getFriends(
+    @Res() res: Response,
+    @Param('id') id: number,
+  ): Promise<User[]> {
+    return await this.socialService.getFriends(res, Number(id));
   }
 
-  @Patch(':id/friends/add/:friendId')
+  @Patch(':id/friend/add/:friendId')
   async addFriend(
+    @Res() res: Response,
     @Param('id') id: number,
     @Param('friendId') friendId: number,
-  ): Promise<SocialProfile> {
-    return await this.socialService.addFriend(Number(id), Number(friendId));
+  ): Promise<SocialProfile | null> {
+    return await this.socialService.addFriend(
+      res,
+      Number(id),
+      Number(friendId),
+    );
   }
 
-  @Patch(':id/friends/remove/:friendId')
+  @Patch(':id/friend/remove/:friendId')
   async removeFriend(
+    @Res() res: Response,
     @Param('id') id: number,
     @Param('friendId') friendId: number,
-  ): Promise<SocialProfile> {
-    return await this.socialService.removeFriend(Number(id), Number(friendId));
+  ): Promise<SocialProfile | null> {
+    return await this.socialService.removeFriend(
+      res,
+      Number(id),
+      Number(friendId),
+    );
   }
 }

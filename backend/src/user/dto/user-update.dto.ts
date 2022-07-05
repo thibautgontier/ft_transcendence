@@ -2,24 +2,38 @@ import { ApiProperty } from '@nestjs/swagger';
 import { logStatus } from '@prisma/client';
 
 export class UserUpdateDto {
-  @ApiProperty()
+  @ApiProperty({
+    required: false,
+  })
   email?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false,
+  })
   nickname?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false,
+  })
   token?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false,
+  })
   refreshToken?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false,
+  })
   avatar?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false,
+  })
   status?: logStatus;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false,
+  })
   twoFA?: boolean;
 }

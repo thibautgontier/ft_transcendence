@@ -12,40 +12,39 @@ datasource db {
 }
 
 model User {
-  id             Int            @id @default(autoincrement())
-  Email          String?        @unique
-  Nickname       String?        @unique
-  CreatedAt      DateTime       @default(now())
-  UpdatedAt      DateTime       @updatedAt
-  Token          String         @unique
-  RefreshToken   String         @unique
+  id             Int             @id @default(autoincrement())
+  Email          String?         @unique
+  Nickname       String?         @unique
+  CreatedAt      DateTime        @default(now())
+  UpdatedAt      DateTime        @updatedAt
+  Token          String          @unique
+  RefreshToken   String          @unique
   Avatar         String?
-  Status         logStatus      @default(offline)
-  TwoFA          Boolean        @default(false)
+  Status         logStatus       @default(offline)
+  TwoFA          Boolean         @default(false)
   GameProfile    GameProfile?
   SocialProfile  SocialProfile?
-  FriendID       Int?
-  Friend         SocialProfile? @relation(name: "friends", fields: [FriendID], references: [id])
+  Friend         SocialProfile[] @relation("friends")
   BlockedID      Int?
-  Blocked        SocialProfile? @relation(name: "blocked", fields: [BlockedID], references: [id])
-  PlayerOneID    Int?           @unique
-  PlayerOne      Party?         @relation(name: "playerOne", fields: [PlayerOneID], references: [id])
-  PlayerTwoID    Int?           @unique
-  PlayerTwo      Party?         @relation(name: "playerTwo", fields: [PlayerTwoID], references: [id])
-  WinnerID       Int?           @unique
-  Winner         Party?         @relation(name: "winner", fields: [WinnerID], references: [id])
-  ChannelUserID  Int?           @unique
-  ChannelUser    Channel?       @relation(name: "chanUsers", fields: [ChannelUserID], references: [id])
-  ChannelOwnerID Int?           @unique
-  ChannelOwner   Channel?       @relation(name: "owner", fields: [ChannelOwnerID], references: [id])
-  ChannelAdminID Int?           @unique
-  ChannelAdmin   Channel?       @relation(name: "admin", fields: [ChannelAdminID], references: [id])
-  MutedUserID    Int?           @unique
-  MutedUser      Channel?       @relation(name: "mutedUser", fields: [MutedUserID], references: [id])
-  UserNotifyID   Int?           @unique
-  UserNotify     Notify?        @relation(fields: [UserNotifyID], references: [id])
-  UserMessageID  Int?           @unique
-  UserMessage    Message?       @relation(fields: [UserMessageID], references: [id])
+  Blocked        SocialProfile?  @relation(name: "blocked", fields: [BlockedID], references: [id])
+  PlayerOneID    Int?            @unique
+  PlayerOne      Party?          @relation(name: "playerOne", fields: [PlayerOneID], references: [id])
+  PlayerTwoID    Int?            @unique
+  PlayerTwo      Party?          @relation(name: "playerTwo", fields: [PlayerTwoID], references: [id])
+  WinnerID       Int?            @unique
+  Winner         Party?          @relation(name: "winner", fields: [WinnerID], references: [id])
+  ChannelUserID  Int?            @unique
+  ChannelUser    Channel?        @relation(name: "chanUsers", fields: [ChannelUserID], references: [id])
+  ChannelOwnerID Int?            @unique
+  ChannelOwner   Channel?        @relation(name: "owner", fields: [ChannelOwnerID], references: [id])
+  ChannelAdminID Int?            @unique
+  ChannelAdmin   Channel?        @relation(name: "admin", fields: [ChannelAdminID], references: [id])
+  MutedUserID    Int?            @unique
+  MutedUser      Channel?        @relation(name: "mutedUser", fields: [MutedUserID], references: [id])
+  UserNotifyID   Int?            @unique
+  UserNotify     Notify?         @relation(fields: [UserNotifyID], references: [id])
+  UserMessageID  Int?            @unique
+  UserMessage    Message?        @relation(fields: [UserMessageID], references: [id])
 }
 
 model GameProfile {

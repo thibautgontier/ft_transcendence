@@ -9,13 +9,13 @@ import {
   Delete,
   Patch,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { logStatus, User } from '@prisma/client';
 import { UserService } from './user.service';
 import { UserFilterDto } from './dto/user-filter.dto';
 import { Response } from 'express';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UserCreateDto } from './dto/user-create.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('user')
 @Controller('user')
@@ -23,18 +23,14 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
+  @ApiQuery({ name: 'id', type: Number, required: false })
+  @ApiQuery({ name: 'token', type: Number, required: false })
+  @ApiQuery({ name: 'status', enum: logStatus, required: false })
+  @ApiQuery({ name: 'twoFA', type: Boolean, required: false })
+  @ApiQuery({ name: 'gameProfile', type: Boolean, required: false })
+  @ApiQuery({ name: 'socialProfile', type: Boolean, required: false })
   async getAll(@Query() query?: UserFilterDto): Promise<User[]> {
     return await this.userService.getAll(query);
-  }
-
-  @Get('id/:id')
-  async findID(@Param('id') id: number): Promise<User | null> {
-    return await this.userService.findID(Number(id));
-  }
-
-  @Get('token/:token')
-  async findToken(@Param('token') token: string): Promise<User | null> {
-    return await this.userService.findToken(token);
   }
 
   @Post('create')
