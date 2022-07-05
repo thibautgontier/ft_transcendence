@@ -17,14 +17,14 @@ export class ChannelController {
 
   @Get('id/:id')
   async findID(@Param('id') id: number): Promise<Channel | null> {
-	return await this.channelService.findID(Number(id));
+    return await this.channelService.findID(Number(id));
   }
 
   @Post('create')
   async createChannel(
     @Res() res: Response,
-    @Body() body : ChannelCreateDto):
-    Promise<Channel | null> {
+    @Body() body: ChannelCreateDto,
+  ): Promise<Channel | null> {
     return await this.channelService.createChannel(res, body);
   }
 }

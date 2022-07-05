@@ -1,4 +1,4 @@
-import { channelType, } from "@prisma/client";
+import { channelType } from '@prisma/client';
 
 export class ChannelCreateDto {
   type: channelType;

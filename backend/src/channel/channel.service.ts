@@ -13,40 +13,30 @@ export class ChannelService {
   }
 
   async findID(id: number): Promise<Channel | null> {
-  return this.prisma.channel.findUnique({ where : {id: id}});
+    return this.prisma.channel.findUnique({ where: { id: id } });
   }
 
-  async createChannel(res: Response, body : ChannelCreateDto): Promise<Channel | null> {
+  async createChannel(
+    res: Response,
+    body: ChannelCreateDto,
+  ): Promise<Channel | null> {
     try {
       const channel = await this.prisma.channel.create({
         data: {
           Type: body.type,
-          Users: {
-            connect: {
-              id: body.owner,
-            },
-          },
-          Owner: {
-            connect: {
-              id: body.owner,
-            },
-          },
-          Admins: {
-            connect: {
-              id: body.owner,
-            },
-          },
+          Users: { connect: { id: Number(body.owner) } },
+          Owner: { connect: { id: Number(body.owner) } },
+          Admins: { connect: { id: Number(body.owner) } },
           Password: body.password,
         },
       });
-	  res.status(HttpStatus.CREATED).send(channel);
-	  return channel;
-    } catch (error)
-    {
-		res.status(HttpStatus.NOT_ACCEPTABLE).send({
-			statusCode: HttpStatus.NOT_ACCEPTABLE,
-			message: "Can't create channel",
-		  });
+      res.status(HttpStatus.CREATED).send(channel);
+      return channel;
+    } catch (error) {
+      res.status(HttpStatus.NOT_ACCEPTABLE).send({
+        statusCode: HttpStatus.NOT_ACCEPTABLE,
+        message: "Can't create channel",
+      });
       return null;
     }
   }
