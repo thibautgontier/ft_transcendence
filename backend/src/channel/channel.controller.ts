@@ -1,8 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Channel } from '@prisma/client';
+import { Response } from 'express';
 import { ChannelService } from './channel.service';
 import { ChannelCreateDto } from './dto/channel-create.dto';
 
+@ApiTags('channel')
 @Controller('channel')
 export class ChannelController {
   constructor(private channelService: ChannelService) {}
@@ -19,7 +22,9 @@ export class ChannelController {
 
   @Post('create')
   async createChannel(
-    @Body() body : ChannelCreateDto): Promise<Channel | null> {
-    return await this.channelService.createChannel(body);
+    @Res() res: Response,
+    @Body() body : ChannelCreateDto):
+    Promise<Channel | null> {
+    return await this.channelService.createChannel(res, body);
   }
 }
