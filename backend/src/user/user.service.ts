@@ -26,6 +26,8 @@ export class UserService {
     const social: boolean = this.toBool(query.socialProfile);
     return this.prisma.user.findMany({
       where: {
+        id: Number(query.id),
+        Token: query.token,
         Status: query.status,
         TwoFA: this.toBool(query.twoFA),
       },
@@ -34,14 +36,6 @@ export class UserService {
         SocialProfile: social === undefined ? false : social,
       },
     });
-  }
-
-  async findID(id: number): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { id: id } });
-  }
-
-  async findToken(token: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { Token: token } });
   }
 
   async createUser(res: Response, body: UserCreateDto): Promise<User> {
@@ -55,16 +49,12 @@ export class UserService {
           Avatar: body.avatar,
           Status: body.status,
           TwoFA: body.twoFA,
-          GameProfile: {
-            create: {},
-          },
-          SocialProfile: {
-            create: {},
-          },
+          GameProfile: { create: {} },
+          SocialProfile: { create: {} },
         },
       });
 
-      //TODO: add code here to call 42 API to get user's data
+      //TODO: here, add code to call 42 API for get user's data
 
       res.status(HttpStatus.CREATED).send(user);
       return user;
