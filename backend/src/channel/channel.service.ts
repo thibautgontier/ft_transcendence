@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { Channel } from '@prisma/client';
 import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ChannelAddUserDto } from './dto/channel-addUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
 import { ChannelUpdateDto } from './dto/channel-update.dto';
 
@@ -24,8 +25,8 @@ export class ChannelService {
     try {
       const channel = await this.prisma.channel.create({
         data: {
-          Users: { connect: { id: Number(body.owner) } },
           Owner: { connect: { id: Number(body.owner) } },
+          Users: { connect: { id: Number(body.owner) } },
           Admins: { connect: { id: Number(body.owner) } },
         },
       });
@@ -40,14 +41,39 @@ export class ChannelService {
     }
   }
 
-  async updateChannel(id: number, body : ChannelUpdateDto
-    ):  Promise<Channel | null> {
-      return await this.prisma.channel.update({
-		where: { id: id },
-		data: {
-			Name : body.name,
-			Description : body.Description
-		}
-	  })
-	}
+  async updateChannel(
+    id: number,
+    body: ChannelUpdateDto,
+  ): Promise<Channel | null> {
+    return await this.prisma.channel.update({
+      where: { id: id },
+      data: {
+        Name: body.name,
+        Description: body.Description,
+      },
+    });
+  }
+
+  async addUser(
+    id: number,
+    res: Response,
+    body: ChannelAddUserDto,
+  ): Promise<Channel | null> {
+    try {
+      const channel = await this.prisma.channel.update({
+        where: { id: id },
+        data: {
+          Users: { connect: { id: Number(body.users_id) } },
+        },
+      });
+      res.status(HttpStatus.OK).send(channel);
+      return channel;
+    } catch (error) {
+      res.status(HttpStatus.NOT_ACCEPTABLE).send({
+        statusCode: HttpStatus.NOT_ACCEPTABLE,
+        message: "Can't add user to channel",
+      });
+      return null;
+    }
+  }
 }

@@ -33,14 +33,10 @@ model User {
   PlayerTwo      Party?          @relation(name: "playerTwo", fields: [PlayerTwoID], references: [id])
   WinnerID       Int?            @unique
   Winner         Party?          @relation(name: "winner", fields: [WinnerID], references: [id])
-  ChannelUserID  Int?            @unique
-  ChannelUser    Channel?        @relation(name: "chanUsers", fields: [ChannelUserID], references: [id])
-  ChannelOwnerID Int?            @unique
-  ChannelOwner   Channel?        @relation(name: "owner", fields: [ChannelOwnerID], references: [id])
-  ChannelAdminID Int?            @unique
-  ChannelAdmin   Channel?        @relation(name: "admin", fields: [ChannelAdminID], references: [id])
-  MutedUserID    Int?            @unique
-  MutedUser      Channel?        @relation(name: "mutedUser", fields: [MutedUserID], references: [id])
+  ChannelOwner   Channel[]
+  ChannelUser    Channel[]       @relation(name: "chanUsers")
+  ChannelAdmin   Channel[]       @relation(name: "admin")
+  MutedUser      Channel[]       @relation(name: "mutedUser")
   UserNotifyID   Int?            @unique
   UserNotify     Notify?         @relation(fields: [UserNotifyID], references: [id])
   UserMessageID  Int?            @unique
@@ -102,7 +98,8 @@ model Channel {
   Type            channelType    @default(private)
   Name            String?        @unique
   Description     String?
-  Owner           User?          @relation("owner")
+  OwnerID         Int
+  Owner           User           @relation(fields: [OwnerID], references: [id])
   Users           User[]         @relation("chanUsers")
   Admins          User[]         @relation("admin")
   MutedUsers      User[]         @relation("mutedUser")

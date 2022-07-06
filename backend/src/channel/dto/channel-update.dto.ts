@@ -1,14 +1,13 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { logStatus } from "@prisma/client";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ChannelUpdateDto {
   @ApiProperty({
-	required: false,
+    required: false,
   })
   name?: string;
 
   @ApiProperty({
-	required: false,
+    required: false,
   })
   Description?: string;
 }
