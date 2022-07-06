@@ -87,3 +87,6 @@ https://nuxtjs.org/docs/features/data-fetching/
 
 Nuxt.js small guide
 https://www.codemag.com/Article/2105101/Nuxt.js-for-Busy-Developers
+
+Vuex in Nuxt
+https://www.youtube.com/watch?v=53tRnb2d6r0
