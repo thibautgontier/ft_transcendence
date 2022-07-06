@@ -3,6 +3,7 @@ import { Channel } from '@prisma/client';
 import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChannelCreateDto } from './dto/channel-create.dto';
+import { ChannelUpdateDto } from './dto/channel-update.dto';
 
 @Injectable()
 export class ChannelService {
@@ -23,11 +24,9 @@ export class ChannelService {
     try {
       const channel = await this.prisma.channel.create({
         data: {
-          Type: body.type,
           Users: { connect: { id: Number(body.owner) } },
           Owner: { connect: { id: Number(body.owner) } },
           Admins: { connect: { id: Number(body.owner) } },
-          Password: body.password,
         },
       });
       res.status(HttpStatus.CREATED).send(channel);
@@ -40,4 +39,15 @@ export class ChannelService {
       return null;
     }
   }
+
+  async updateChannel(id: number, body : ChannelUpdateDto
+    ):  Promise<Channel | null> {
+      return await this.prisma.channel.update({
+		where: { id: id },
+		data: {
+			Name : body.name,
+			Description : body.Description
+		}
+	  })
+	}
 }
