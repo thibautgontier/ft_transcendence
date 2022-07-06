@@ -25,8 +25,7 @@ model User {
   GameProfile    GameProfile?
   SocialProfile  SocialProfile?
   Friend         SocialProfile[] @relation("friends")
-  BlockedID      Int?
-  Blocked        SocialProfile?  @relation(name: "blocked", fields: [BlockedID], references: [id])
+  Blocked        SocialProfile[] @relation("blocked")
   PlayerOneID    Int?            @unique
   PlayerOne      Party?          @relation(name: "playerOne", fields: [PlayerOneID], references: [id])
   PlayerTwoID    Int?            @unique
@@ -74,7 +73,7 @@ model Party {
 
 model SocialProfile {
   id       Int       @id @default(autoincrement())
-  Channels Channel[]
+  Channels Channel[] @relation("channels")
   Friends  User[]    @relation("friends")
   Blocked  User[]    @relation("blocked")
   Notifys  Notify[]
@@ -96,22 +95,21 @@ model Notify {
 }
 
 model Channel {
-  id              Int            @id @default(autoincrement())
-  CreatedAt       DateTime       @default(now())
-  UpdatedAt       DateTime       @updatedAt
-  Type            channelType    @default(private)
-  Name            String?        @unique
+  id              Int             @id @default(autoincrement())
+  CreatedAt       DateTime        @default(now())
+  UpdatedAt       DateTime        @updatedAt
+  Type            channelType     @default(private)
+  Name            String?         @unique
   Description     String?
-  Owner           User?          @relation("owner")
-  Users           User[]         @relation("chanUsers")
-  Admins          User[]         @relation("admin")
-  MutedUsers      User[]         @relation("mutedUser")
+  Owner           User?           @relation("owner")
+  Users           User[]          @relation("chanUsers")
+  Admins          User[]          @relation("admin")
+  MutedUsers      User[]          @relation("mutedUser")
   Messages        Message[]
   Password        String?
-  SocialChannelID Int?
-  SocialChannel   SocialProfile? @relation(fields: [SocialChannelID], references: [id])
-  ChannelNotifyID Int?           @unique
-  ChannelNotify   Notify?        @relation(fields: [ChannelNotifyID], references: [id])
+  SocialChannel   SocialProfile[] @relation("channels")
+  ChannelNotifyID Int?            @unique
+  ChannelNotify   Notify?         @relation(fields: [ChannelNotifyID], references: [id])
 }
 
 model Message {
