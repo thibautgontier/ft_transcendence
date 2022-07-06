@@ -6,7 +6,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { UserModule } from './user/user.module';
 import { PrismaController } from './prisma/prisma.controller';
 import { ChannelModule } from './channel/channel.module';
-import { SocialModule } from './social/social.module';
+import { SocialModule } from './socialProfile/social.module';
 
 @Module({
   imports: [

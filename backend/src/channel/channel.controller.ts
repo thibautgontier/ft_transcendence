@@ -33,7 +33,7 @@ export class ChannelController {
   @Patch('update/:id')
   async updateChannel(
     @Param('id') id: number,
-	@Body() body: ChannelUpdateDto,
+    @Body() body: ChannelUpdateDto,
   ): Promise<Channel | null> {
     return await this.channelService.updateChannel(Number(id), body);
   }

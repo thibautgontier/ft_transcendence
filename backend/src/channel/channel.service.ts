@@ -63,7 +63,7 @@ export class ChannelService {
       const channel = await this.prisma.channel.update({
         where: { id: id },
         data: { Users: { connect: { id: Number(body.users_id) } } },
-		include: { Users: true },
+        include: { Users: true },
       });
       res.status(HttpStatus.OK).send(channel);
       return channel;
