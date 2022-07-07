@@ -10,3 +10,11 @@
 		</v-col>
 	</v-container>
 </template>
+
+<script>
+	export default {
+		head: {
+			titleTemplate: '%s - Login',
+		}
+	}
+</script>

@@ -12,6 +12,9 @@
 
 <script>
 	export default {
+		head: {
+			titleTemplate: '%s - Main',
+		},
 		data () {
 			return {
 				

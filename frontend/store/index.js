@@ -4,7 +4,7 @@ import axios from 'axios'
 // state
 export const state = () => ({
 	friends: [],
-	activeComponent: 'LoginPage',
+	activeComponent: 'Login',
 	// activeComponent: 'MainMenu'
 })
 
