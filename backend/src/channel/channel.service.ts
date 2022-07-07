@@ -4,6 +4,7 @@ import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
+import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
 import { ChannelUpdateDto } from './dto/channel-update.dto';
 
 @Injectable()
@@ -41,6 +42,34 @@ export class ChannelService {
     }
   }
 
+  async createPrivChannel(
+    res: Response,
+    body: ChannelCreatePrivDto,
+  ): Promise<Channel | null> {
+    try {
+      const channel = await this.prisma.channel.create({
+        data: {
+          Owner: { connect: { id: Number(body.user_1) } },
+          Users: {
+            connect: [{ id: Number(body.user_1) }, { id: Number(body.user_2) }],
+          },
+          Admins: {
+            connect: [{ id: Number(body.user_1) }, { id: Number(body.user_2) }],
+          },
+		  Type : "private"
+        },
+      });
+      res.status(HttpStatus.CREATED).send(channel);
+      return channel;
+    } catch (error) {
+      res.status(HttpStatus.NOT_ACCEPTABLE).send({
+        statusCode: HttpStatus.NOT_ACCEPTABLE,
+        message: "Can't create channel",
+      });
+      return null;
+    }
+  }
+
   async updateChannel(
     id: number,
     body: ChannelUpdateDto,
@@ -63,7 +92,7 @@ export class ChannelService {
       const channel = await this.prisma.channel.update({
         where: { id: id },
         data: { Users: { connect: { id: Number(body.users_id) } } },
-		include: { Users: true },
+        include: { Users: true },
       });
       res.status(HttpStatus.OK).send(channel);
       return channel;
@@ -71,6 +100,28 @@ export class ChannelService {
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
         message: "Can't add user to channel",
+      });
+      return null;
+    }
+  }
+
+  async removeUser(
+    idChan: number,
+    idRemove: number,
+    res: Response,
+  ): Promise<Channel | null> {
+    try {
+      const channel = await this.prisma.channel.update({
+        where: { id: idChan },
+        data: { Users: { disconnect: { id: idRemove } } },
+        include: { Users: true },
+      });
+      res.status(HttpStatus.OK).send(channel);
+      return channel;
+    } catch (error) {
+      res.status(HttpStatus.NOT_ACCEPTABLE).send({
+        statusCode: HttpStatus.NOT_ACCEPTABLE,
+        message: "Can't remove user of this channel",
       });
       return null;
     }
