@@ -94,7 +94,7 @@ model Channel {
   id              Int             @id @default(autoincrement())
   CreatedAt       DateTime        @default(now())
   UpdatedAt       DateTime        @updatedAt
-  Type            channelType     @default(private)
+  Type            channelType     @default(public)
   Name            String?         @unique
   Description     String?
   OwnerID         Int
