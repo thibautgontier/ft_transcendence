@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { PrismaController } from './prisma/prisma.controller';
 import { ChannelModule } from './channel/channel.module';
 import { SocialModule } from './socialProfile/social.module';
+import { GameModule } from './gameProfile/game.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { SocialModule } from './socialProfile/social.module';
     UserModule,
     ChannelModule,
     SocialModule,
+    GameModule,
   ],
   providers: [PrismaService],
   controllers: [PrismaController],
