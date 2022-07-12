@@ -59,10 +59,7 @@ export class UserService {
       res.status(HttpStatus.CREATED).send(user);
       return user;
     } catch (error) {
-      res.status(HttpStatus.NOT_ACCEPTABLE).send({
-        statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: "Can't create user",
-      });
+      res.status(HttpStatus.NOT_ACCEPTABLE).send({ error });
       return null;
     }
   }
