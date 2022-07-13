@@ -12,34 +12,34 @@ datasource db {
 }
 
 model User {
-  id             Int             @id @default(autoincrement())
-  Email          String?         @unique
-  Nickname       String?         @unique
-  CreatedAt      DateTime        @default(now())
-  UpdatedAt      DateTime        @updatedAt
-  Token          String          @unique
-  RefreshToken   String          @unique
-  Avatar         String?
-  Status         logStatus       @default(offline)
-  TwoFA          Boolean         @default(false)
-  GameProfile    GameProfile?
-  SocialProfile  SocialProfile?
-  Friend         SocialProfile[] @relation("friends")
-  Blocked        SocialProfile[] @relation("blocked")
-  PlayerOneID    Int?            @unique
-  PlayerOne      Party?          @relation(name: "playerOne", fields: [PlayerOneID], references: [id])
-  PlayerTwoID    Int?            @unique
-  PlayerTwo      Party?          @relation(name: "playerTwo", fields: [PlayerTwoID], references: [id])
-  WinnerID       Int?            @unique
-  Winner         Party?          @relation(name: "winner", fields: [WinnerID], references: [id])
-  ChannelOwner   Channel[]
-  ChannelUser    Channel[]       @relation(name: "chanUsers")
-  ChannelAdmin   Channel[]       @relation(name: "admin")
-  MutedUser      Channel[]       @relation(name: "mutedUser")
-  UserNotifyID   Int?            @unique
-  UserNotify     Notify?         @relation(fields: [UserNotifyID], references: [id])
-  UserMessageID  Int?            @unique
-  UserMessage    Message?        @relation(fields: [UserMessageID], references: [id])
+  id            Int             @id @default(autoincrement())
+  Email         String?         @unique
+  Nickname      String?         @unique
+  CreatedAt     DateTime        @default(now())
+  UpdatedAt     DateTime        @updatedAt
+  Token         String          @unique
+  RefreshToken  String          @unique
+  Avatar        String?
+  Status        logStatus       @default(offline)
+  TwoFA         Boolean         @default(false)
+  GameProfile   GameProfile?
+  SocialProfile SocialProfile?
+  Friend        SocialProfile[] @relation("friends")
+  Blocked       SocialProfile[] @relation("blocked")
+  PlayerOneID   Int?            @unique
+  PlayerOne     Party?          @relation(name: "playerOne", fields: [PlayerOneID], references: [id])
+  PlayerTwoID   Int?            @unique
+  PlayerTwo     Party?          @relation(name: "playerTwo", fields: [PlayerTwoID], references: [id])
+  WinnerID      Int?            @unique
+  Winner        Party?          @relation(name: "winner", fields: [WinnerID], references: [id])
+  ChannelOwner  Channel[]
+  ChannelUser   Channel[]       @relation(name: "chanUsers")
+  ChannelAdmin  Channel[]       @relation(name: "admin")
+  MutedUser     Channel[]       @relation(name: "mutedUser")
+  UserNotifyID  Int?            @unique
+  UserNotify    Notify?         @relation(fields: [UserNotifyID], references: [id])
+  UserMessageID Int?            @unique
+  UserMessage   Message?        @relation(fields: [UserMessageID], references: [id])
 }
 
 model GameProfile {
@@ -49,8 +49,8 @@ model GameProfile {
   NbParty Int     @default(0)
   NbWin   Int     @default(0)
   History Party[]
-  UserId  Int?    @unique
-  User    User?   @relation(fields: [UserId], references: [id], onDelete: Cascade)
+  UserID  Int?    @unique
+  User    User?   @relation(fields: [UserID], references: [id], onDelete: Cascade)
 }
 
 model Party {
@@ -73,8 +73,8 @@ model SocialProfile {
   Friends  User[]    @relation("friends")
   Blocked  User[]    @relation("blocked")
   Notifys  Notify[]
-  UserId   Int?      @unique
-  User     User?     @relation(fields: [UserId], references: [id], onDelete: Cascade)
+  UserID   Int?      @unique
+  User     User?     @relation(fields: [UserID], references: [id], onDelete: Cascade)
 }
 
 model Notify {
@@ -98,10 +98,10 @@ model Channel {
   Name            String?         @unique
   Description     String?
   OwnerID         Int
-  Owner           User           @relation(fields: [OwnerID], references: [id])
-  Users           User[]         @relation("chanUsers")
-  Admins          User[]         @relation("admin")
-  MutedUsers      User[]         @relation("mutedUser")
+  Owner           User            @relation(fields: [OwnerID], references: [id])
+  Users           User[]          @relation("chanUsers")
+  Admins          User[]          @relation("admin")
+  MutedUsers      User[]          @relation("mutedUser")
   Messages        Message[]
   Password        String?
   SocialChannel   SocialProfile[] @relation("channels")
@@ -115,8 +115,8 @@ model Message {
   UpdatedAt DateTime @updatedAt
   Content   String
   User      User?
-  ChannelId Int      @unique
-  Channel   Channel  @relation(fields: [ChannelId], references: [id])
+  ChannelID Int      @unique
+  Channel   Channel  @relation(fields: [ChannelID], references: [id])
 }
 
 enum logStatus {

@@ -64,10 +64,10 @@ export class UserService {
     }
   }
 
-  async deleteUser(res: Response, id: number): Promise<User | null> {
+  async deleteUser(res: Response, userID: number): Promise<User | null> {
     try {
       const user = await this.prisma.user.delete({
-        where: { id: id },
+        where: { id: userID },
         include: {
           GameProfile: true,
           SocialProfile: true,
@@ -84,9 +84,9 @@ export class UserService {
     }
   }
 
-  async updateUser(id: number, body: UserUpdateDto): Promise<User | null> {
+  async updateUser(userID: number, body: UserUpdateDto): Promise<User | null> {
     return await this.prisma.user.update({
-      where: { id: id },
+      where: { id: userID },
       data: {
         Email: body.email,
         Nickname: body.nickname,

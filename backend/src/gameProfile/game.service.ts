@@ -18,10 +18,13 @@ export class GameService {
     return undefined;
   }
 
-  async getGameProfile(res: Response, id: number): Promise<GameProfile | null> {
+  async getGameProfile(
+    res: Response,
+    userID: number,
+  ): Promise<GameProfile | null> {
     try {
       const profile = await this.prisma.gameProfile.findUnique({
-        where: { UserId: id },
+        where: { UserID: userID },
       });
       res.status(HttpStatus.OK).send(profile);
       return profile;
@@ -31,10 +34,10 @@ export class GameService {
     }
   }
 
-  async getLevel(id: number, res?: Response): Promise<string | null> {
+  async getLevel(userID: number, res?: Response): Promise<string | null> {
     try {
       const profile = await this.prisma.gameProfile.findUniqueOrThrow({
-        where: { UserId: id },
+        where: { UserID: userID },
       });
       res.status(HttpStatus.OK).send(profile.Level.toString());
       return profile.Level.toString();
@@ -45,13 +48,13 @@ export class GameService {
   }
 
   async setLevel(
-    id: number,
+    userID: number,
     level: number,
     res?: Response,
   ): Promise<number | undefined> {
     try {
       await this.prisma.gameProfile.update({
-        where: { UserId: id },
+        where: { UserID: userID },
         data: { Level: level },
       });
       if (res !== undefined) {
@@ -67,13 +70,13 @@ export class GameService {
   }
 
   async addLevel(
-    id: number,
+    userID: number,
     value: number,
     res?: Response,
   ): Promise<number | undefined> {
     try {
       const profile = await this.prisma.gameProfile.update({
-        where: { UserId: id },
+        where: { UserID: userID },
         data: { Level: { increment: value } },
       });
       if (res !== undefined) {
@@ -89,13 +92,13 @@ export class GameService {
   }
 
   async removeLevel(
-    id: number,
+    userID: number,
     value: number,
     res?: Response,
   ): Promise<number | undefined> {
     try {
       const profile = await this.prisma.gameProfile.update({
-        where: { UserId: id },
+        where: { UserID: userID },
         data: { Level: { decrement: value } },
       });
       if (res !== undefined) {
@@ -110,10 +113,10 @@ export class GameService {
     }
   }
 
-  async getXp(res: Response, id: number): Promise<string | null> {
+  async getXp(res: Response, userID: number): Promise<string | null> {
     try {
       const profile = await this.prisma.gameProfile.findUniqueOrThrow({
-        where: { UserId: id },
+        where: { UserID: userID },
       });
       res.status(HttpStatus.OK).send(profile.Xp.toString());
       return profile.Xp.toString();
@@ -124,13 +127,13 @@ export class GameService {
   }
 
   async setXp(
-    id: number,
+    userID: number,
     xp: number,
     res?: Response,
   ): Promise<number | undefined> {
     try {
       await this.prisma.gameProfile.update({
-        where: { UserId: id },
+        where: { UserID: userID },
         data: { Xp: xp },
       });
       if (res !== undefined) {
@@ -146,13 +149,13 @@ export class GameService {
   }
 
   async addXp(
-    id: number,
+    userID: number,
     value: number,
     res?: Response,
   ): Promise<number | undefined> {
     try {
       const profile = await this.prisma.gameProfile.update({
-        where: { UserId: id },
+        where: { UserID: userID },
         data: { Xp: { increment: value } },
       });
       if (res !== undefined) {
@@ -168,13 +171,13 @@ export class GameService {
   }
 
   async removeXp(
-    id: number,
+    userID: number,
     value: number,
     res?: Response,
   ): Promise<number | undefined> {
     try {
       const profile = await this.prisma.gameProfile.update({
-        where: { UserId: id },
+        where: { UserID: userID },
         data: { Xp: { decrement: value } },
       });
       if (res !== undefined) {
@@ -189,10 +192,10 @@ export class GameService {
     }
   }
 
-  async getNbParty(res: Response, id: number): Promise<string | null> {
+  async getNbParty(res: Response, userID: number): Promise<string | null> {
     try {
       const profile = await this.prisma.gameProfile.findUniqueOrThrow({
-        where: { UserId: id },
+        where: { UserID: userID },
       });
       res.status(HttpStatus.OK).send(profile.NbParty.toString());
       return profile.NbParty.toString();
@@ -203,14 +206,14 @@ export class GameService {
   }
 
   async setNbParty(
-    id: number,
+    userID: number,
     nbParty: number,
     win: string,
     res?: Response,
   ): Promise<number | undefined> {
     try {
       await this.prisma.gameProfile.update({
-        where: { UserId: id },
+        where: { UserID: userID },
         data: {
           NbParty: nbParty,
           NbWin: this.toBool(win) === true ? nbParty : undefined,
@@ -229,14 +232,14 @@ export class GameService {
   }
 
   async addNbParty(
-    id: number,
+    userID: number,
     value: number,
     win: string,
     res?: Response,
   ): Promise<number | undefined> {
     try {
       const profile = await this.prisma.gameProfile.update({
-        where: { UserId: id },
+        where: { UserID: userID },
         data: {
           NbParty: { increment: value },
           NbWin: this.toBool(win) === true ? value : 0,
@@ -255,14 +258,14 @@ export class GameService {
   }
 
   async removeNbParty(
-    id: number,
+    userID: number,
     value: number,
     win: string,
     res?: Response,
   ): Promise<number | undefined> {
     try {
       const profile = await this.prisma.gameProfile.update({
-        where: { UserId: id },
+        where: { UserID: userID },
         data: {
           NbParty: { decrement: value },
           NbWin: { decrement: this.toBool(win) === true ? value : 0 },
@@ -280,10 +283,10 @@ export class GameService {
     }
   }
 
-  async getNbWin(res: Response, id: number): Promise<string | null> {
+  async getNbWin(res: Response, userID: number): Promise<string | null> {
     try {
       const profile = await this.prisma.gameProfile.findUniqueOrThrow({
-        where: { UserId: id },
+        where: { UserID: userID },
       });
       res.status(HttpStatus.OK).send(profile.NbWin.toString());
       return profile.NbWin.toString();
@@ -293,10 +296,10 @@ export class GameService {
     }
   }
 
-  async getNbLose(res: Response, id: number): Promise<string | null> {
+  async getNbLose(res: Response, userID: number): Promise<string | null> {
     try {
       const profile = await this.prisma.gameProfile.findUniqueOrThrow({
-        where: { UserId: id },
+        where: { UserID: userID },
       });
       res
         .status(HttpStatus.OK)
@@ -308,10 +311,10 @@ export class GameService {
     }
   }
 
-  async getHistory(id: number, res?: Response): Promise<Party[] | null> {
+  async getHistory(userID: number, res?: Response): Promise<Party[] | null> {
     try {
       const profile = await this.prisma.gameProfile.findUniqueOrThrow({
-        where: { UserId: id },
+        where: { UserID: userID },
         include: { History: true },
       });
       res.status(HttpStatus.OK).send(profile.History);
@@ -324,11 +327,11 @@ export class GameService {
 
   async getHistoryParty(
     res: Response,
-    id: number,
+    userID: number,
     idParty,
   ): Promise<Party | null> {
     try {
-      const history = await this.getHistory(id);
+      const history = await this.getHistory(userID);
       const party = history.find((p) => p.id === idParty);
       if (party === undefined) {
         res.status(HttpStatus.NOT_FOUND).send('Party not found');
@@ -343,13 +346,13 @@ export class GameService {
   }
 
   async addToHistory(
-    id: number,
+    userID: number,
     idParty: number,
     res?: Response,
   ): Promise<Party[] | null> {
     try {
       const profile = await this.prisma.gameProfile.update({
-        where: { UserId: id },
+        where: { UserID: userID },
         data: { History: { connect: { id: idParty } } },
         include: { History: true },
       });
@@ -366,13 +369,13 @@ export class GameService {
   }
 
   async removeFromHistory(
-    id: number,
+    userID: number,
     idParty: number,
     res?: Response,
   ): Promise<Party[] | null> {
     try {
       const profile = await this.prisma.gameProfile.update({
-        where: { UserId: id },
+        where: { UserID: userID },
         data: { History: { disconnect: { id: idParty } } },
         include: { History: true },
       });
