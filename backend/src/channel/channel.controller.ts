@@ -56,15 +56,30 @@ export class ChannelController {
     return await this.channelService.addUser(Number(id_chan), res, body);
   }
 
-  @Patch(':Channelid/removeUser/:id')
+  @Patch(':channelid/removeUser/:id')
   async removeUser(
-    @Param('Channelid') idChan: number,
+    @Param('channelid') idChan: number,
     @Param('id') idRemove: number,
     @Res() res: Response,
   ): Promise<Channel | null> {
     return await this.channelService.removeUser(
       Number(idChan),
       Number(idRemove),
+      res,
+    );
+  }
+
+  @Patch(':channelid/kick/:idKicker/:idToKick')
+  async kickUser(
+    @Param('channelid') idChan: number,
+    @Param('idKicker') idKicker: number,
+    @Param('idToKick') idToKick: number,
+    @Res() res: Response,
+  ): Promise<Channel | null> {
+    return await this.channelService.kickUser(
+      Number(idChan),
+      Number(idKicker),
+      Number(idToKick),
       res,
     );
   }

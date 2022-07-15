@@ -4,5 +4,5 @@ export class ChannelAddUserDto {
 	@ApiProperty({
 		required: true,
 	})
-	users_id: number;
+	user_id: number;
 }

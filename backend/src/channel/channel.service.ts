@@ -36,7 +36,7 @@ export class ChannelService {
     } catch (error) {
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: "Can't create channel",
+        message: 'Cannot create channel',
       });
       return null;
     }
@@ -56,7 +56,7 @@ export class ChannelService {
           Admins: {
             connect: [{ id: Number(body.user_1) }, { id: Number(body.user_2) }],
           },
-		  Type : "private"
+          Type: 'private',
         },
       });
       res.status(HttpStatus.CREATED).send(channel);
@@ -64,7 +64,7 @@ export class ChannelService {
     } catch (error) {
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: "Can't create channel",
+        message: 'Cannot create channel',
       });
       return null;
     }
@@ -91,7 +91,7 @@ export class ChannelService {
     try {
       const channel = await this.prisma.channel.update({
         where: { id: id },
-        data: { Users: { connect: { id: Number(body.users_id) } } },
+        data: { Users: { connect: { id: Number(body.user_id) } } },
         include: { Users: true },
       });
       res.status(HttpStatus.OK).send(channel);
@@ -99,7 +99,7 @@ export class ChannelService {
     } catch (error) {
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: "Can't add user to channel",
+        message: 'Cannot add user to channel',
       });
       return null;
     }
@@ -121,7 +121,34 @@ export class ChannelService {
     } catch (error) {
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: "Can't remove user of this channel",
+        message: 'Cannot remove user of this channel',
+      });
+      return null;
+    }
+  }
+
+  async kickUser(
+    idChan: number,
+    idKicker: number,
+    idToKick: number,
+    res: Response,
+  ): Promise<Channel | null> {
+    try {
+      let channel = await this.prisma.channel.findFirst({
+        where: { id: idChan },
+      });
+      if (channel.OwnerID !== idKicker || channel.OwnerID === idToKick)
+        throw Error;
+      channel = await this.prisma.channel.update({
+        where: { id: idChan },
+        data: { Users: { disconnect: { id: idToKick } } },
+      });
+      res.status(HttpStatus.OK).send(channel);
+      return channel;
+    } catch (error) {
+      res.status(HttpStatus.NOT_ACCEPTABLE).send({
+        statusCode: HttpStatus.NOT_ACCEPTABLE,
+        message: 'Cannot kick user of this channel',
       });
       return null;
     }
