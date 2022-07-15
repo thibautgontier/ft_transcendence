@@ -6,6 +6,7 @@ import { ChannelService } from './channel.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
 import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
+import { ChannelSwitchToPrivate } from './dto/channel-swicthToPrivate.dto';
 import { ChannelUpdateDto } from './dto/channel-update.dto';
 
 @ApiTags('channel')
@@ -39,12 +40,19 @@ export class ChannelController {
     return await this.channelService.createPrivChannel(res, body);
   }
 
-  @Patch('update/:id')
+  @Patch('update/:idChannel/:idAdmin')
   async updateChannel(
-    @Param('id') id: number,
+    @Param('idChannel') idChan: number,
+    @Param('idAdmin') idAdmin: number,
     @Body() body: ChannelUpdateDto,
+	@Res() res: Response
   ): Promise<Channel | null> {
-    return await this.channelService.updateChannel(Number(id), body);
+    return await this.channelService.updateChannel(
+      Number(idChan),
+      Number(idAdmin),
+      body,
+	  res
+    );
   }
 
   @Patch('addUser/:id')
@@ -69,7 +77,33 @@ export class ChannelController {
     );
   }
 
-  @Patch(':channelid/kick/:idKicker/:idToKick')
+  @Patch(':channelid/addAdmin/:id') //a tester
+  async addAdmin(
+    @Param('channelid') idChan: number,
+    @Param('id') idToAdd: number,
+    @Res() res: Response,
+  ): Promise<Channel | null> {
+    return await this.channelService.addAdmin(
+      Number(idChan),
+      Number(idToAdd),
+      res,
+    );
+  }
+
+  @Patch(':channelid/removeAdmin/:id') // a tester
+  async removeAdmin(
+    @Param('channelid') idChan: number,
+    @Param('id') idRemove: number,
+    @Res() res: Response,
+  ): Promise<Channel | null> {
+    return await this.channelService.removeAdmin(
+      Number(idChan),
+      Number(idRemove),
+      res,
+    );
+  }
+
+  @Patch(':channelid/kick/:idKicker/:idToKick') //tester avec d'autre Admin que le Owner
   async kickUser(
     @Param('channelid') idChan: number,
     @Param('idKicker') idKicker: number,
@@ -80,6 +114,21 @@ export class ChannelController {
       Number(idChan),
       Number(idKicker),
       Number(idToKick),
+      res,
+    );
+  }
+
+  @Patch(':channelid/switchToPrivate/:idAdmin')
+  async switchToPrivate(
+    @Param('channelid') idChan: number,
+    @Param('idAdmin') idAdmin: number,
+    @Body() body: ChannelSwitchToPrivate,
+    @Res() res: Response,
+  ): Promise<Channel | null> {
+    return await this.channelService.switchToPrivate(
+      Number(idChan),
+      Number(idAdmin),
+      body,
       res,
     );
   }
