@@ -45,13 +45,13 @@ export class ChannelController {
     @Param('idChannel') idChan: number,
     @Param('idAdmin') idAdmin: number,
     @Body() body: ChannelUpdateDto,
-	@Res() res: Response
+    @Res() res: Response,
   ): Promise<Channel | null> {
     return await this.channelService.updateChannel(
       Number(idChan),
       Number(idAdmin),
       body,
-	  res
+      res,
     );
   }
 
@@ -77,33 +77,37 @@ export class ChannelController {
     );
   }
 
-  @Patch(':channelid/addAdmin/:id') //a tester
+  @Patch(':channelid/addAdmin/:idToAdd/:idAdmin')
   async addAdmin(
     @Param('channelid') idChan: number,
-    @Param('id') idToAdd: number,
+    @Param('idToAdd') idToAdd: number,
+    @Param('idAdmin') idAdmin: number,
     @Res() res: Response,
   ): Promise<Channel | null> {
     return await this.channelService.addAdmin(
       Number(idChan),
       Number(idToAdd),
+      Number(idAdmin),
       res,
     );
   }
 
-  @Patch(':channelid/removeAdmin/:id') // a tester
+  @Patch(':channelid/removeAdmin/:idRemove/:idAdmin')
   async removeAdmin(
     @Param('channelid') idChan: number,
-    @Param('id') idRemove: number,
+    @Param('idRemove') idRemove: number,
+    @Param('idAdmin') idAdmin: number,
     @Res() res: Response,
   ): Promise<Channel | null> {
     return await this.channelService.removeAdmin(
       Number(idChan),
       Number(idRemove),
+      Number(idAdmin),
       res,
     );
   }
 
-  @Patch(':channelid/kick/:idKicker/:idToKick') //tester avec d'autre Admin que le Owner
+  @Patch(':channelid/kick/:idKicker/:idToKick')
   async kickUser(
     @Param('channelid') idChan: number,
     @Param('idKicker') idKicker: number,

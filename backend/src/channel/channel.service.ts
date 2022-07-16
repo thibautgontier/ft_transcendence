@@ -139,6 +139,14 @@ export class ChannelService {
     }
   }
 
+  async getOwner(idChan: number): Promise<number> {
+    const channel = await this.prisma.channel.findUnique({
+      where: { id: idChan },
+      select: { Owner: true },
+    });
+    return channel.Owner.id;
+  }
+
   async getAdminChan(idChan: number, idUser: number): Promise<User> {
     const channel = await this.prisma.channel.findUnique({
       where: { id: idChan },
@@ -158,11 +166,13 @@ export class ChannelService {
   async addAdmin(
     idChan: number,
     idToAdd: number,
+    idAdmin: number,
     res: Response,
   ): Promise<Channel | null> {
     try {
       if (
         (await this.getUser(idChan, idToAdd)) === undefined ||
+        (await this.getAdminChan(idChan, idAdmin)) !== undefined ||
         (await this.getAdminChan(idChan, idToAdd)) !== undefined
       )
         throw Error;
@@ -184,10 +194,13 @@ export class ChannelService {
   async removeAdmin(
     idChan: number,
     idRemove: number,
+    idAdmin: number,
     res: Response,
   ): Promise<Channel | null> {
     try {
       if (
+        (await this.getOwner(idChan)) === idRemove ||
+        (await this.getAdminChan(idChan, idAdmin)) !== undefined ||
         (await this.getUser(idChan, idRemove)) === undefined ||
         (await this.getAdminChan(idChan, idRemove)) === undefined
       )
