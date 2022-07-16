@@ -8,12 +8,13 @@ export class GameService {
   constructor(private prisma: PrismaService) {}
 
   toBool(str: string): boolean {
-    if (str === null || str === undefined) return undefined;
-    str = str.toLowerCase();
-    if (['true', '1', 'on', 'yes'].includes(str)) {
-      return true;
-    } else if (['false', '0', 'off', 'no'].includes(str)) {
-      return false;
+    if (str) {
+      str = str.toLowerCase();
+      if (['true', '1', 'on', 'yes'].includes(str)) {
+        return true;
+      } else if (['false', '0', 'off', 'no'].includes(str)) {
+        return false;
+      }
     }
     return undefined;
   }

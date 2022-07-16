@@ -18,7 +18,7 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile);
       return profile;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send('User not found');
+      res.status(HttpStatus.NOT_FOUND).send(error);
       return null;
     }
   }
@@ -32,7 +32,7 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile.Friends);
       return profile.Friends;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send('User not found');
+      res.status(HttpStatus.NOT_FOUND).send(error);
       return null;
     }
   }
@@ -42,19 +42,20 @@ export class SocialService {
     userID: number,
     friendID: number,
   ): Promise<SocialProfile | null> {
-    if (userID === friendID) {
-      res
-        .status(HttpStatus.BAD_REQUEST)
-        .send('You cannot add yourself as a friend');
+    try {
+      if (userID === friendID)
+        throw new Error('You cannot add yourself as a friend');
+      const profile = await this.prisma.socialProfile.update({
+        where: { UserID: userID },
+        data: { Friends: { connect: { id: friendID } } },
+        include: { Friends: true },
+      });
+      res.status(HttpStatus.OK).send(profile);
+      return profile;
+    } catch (error) {
+      res.status(HttpStatus.NOT_FOUND).send(error);
       return null;
     }
-    const profile = await this.prisma.socialProfile.update({
-      where: { UserID: userID },
-      data: { Friends: { connect: { id: friendID } } },
-      include: { Friends: true },
-    });
-    res.status(HttpStatus.OK).send(profile);
-    return profile;
   }
 
   async removeFriend(
@@ -62,19 +63,20 @@ export class SocialService {
     userID: number,
     friendID: number,
   ): Promise<SocialProfile | null> {
-    if (userID === friendID) {
-      res
-        .status(HttpStatus.BAD_REQUEST)
-        .send('You cannot remove yourself as a friend');
+    try {
+      if (userID === friendID)
+        throw new Error('You cannot remove yourself as a friend');
+      const profile = await this.prisma.socialProfile.update({
+        where: { UserID: userID },
+        data: { Friends: { disconnect: { id: friendID } } },
+        include: { Friends: true },
+      });
+      res.status(HttpStatus.OK).send(profile);
+      return profile;
+    } catch (error) {
+      res.status(HttpStatus.NOT_FOUND).send(error);
       return null;
     }
-    const profile = await this.prisma.socialProfile.update({
-      where: { UserID: userID },
-      data: { Friends: { disconnect: { id: friendID } } },
-      include: { Friends: true },
-    });
-    res.status(HttpStatus.OK).send(profile);
-    return profile;
   }
 
   async getChannels(res: Response, userID: number): Promise<Channel[]> {
@@ -86,7 +88,7 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile.Channels);
       return profile.Channels;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send('User not found');
+      res.status(HttpStatus.NOT_FOUND).send(error);
       return null;
     }
   }
@@ -105,7 +107,7 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile);
       return profile;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send('User not found');
+      res.status(HttpStatus.NOT_FOUND).send(error);
       return null;
     }
   }
@@ -124,7 +126,7 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile);
       return profile;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send('User not found');
+      res.status(HttpStatus.NOT_FOUND).send(error);
       return null;
     }
   }
@@ -138,7 +140,7 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile.Blocked);
       return profile.Blocked;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send('User not found');
+      res.status(HttpStatus.NOT_FOUND).send(error);
       return null;
     }
   }
@@ -148,19 +150,20 @@ export class SocialService {
     userID: number,
     blockedID: number,
   ): Promise<SocialProfile | null> {
-    if (userID === blockedID) {
-      res
-        .status(HttpStatus.BAD_REQUEST)
-        .send('You cannot add yourself as blocked');
+    try {
+      if (userID === blockedID)
+        throw new Error('You cannot add yourself as blocked');
+      const profile = await this.prisma.socialProfile.update({
+        where: { UserID: userID },
+        data: { Blocked: { connect: { id: blockedID } } },
+        include: { Blocked: true },
+      });
+      res.status(HttpStatus.OK).send(profile);
+      return profile;
+    } catch (error) {
+      res.status(HttpStatus.NOT_FOUND).send(error);
       return null;
     }
-    const profile = await this.prisma.socialProfile.update({
-      where: { UserID: userID },
-      data: { Blocked: { connect: { id: blockedID } } },
-      include: { Blocked: true },
-    });
-    res.status(HttpStatus.OK).send(profile);
-    return profile;
   }
 
   async removeBlocked(
@@ -168,18 +171,19 @@ export class SocialService {
     userID: number,
     blockedID: number,
   ): Promise<SocialProfile | null> {
-    if (userID === blockedID) {
-      res
-        .status(HttpStatus.BAD_REQUEST)
-        .send('You cannot remove yourself as blocked');
+    try {
+      if (userID === blockedID)
+        throw new Error('You cannot remove yourself as blocked');
+      const profile = await this.prisma.socialProfile.update({
+        where: { UserID: userID },
+        data: { Blocked: { disconnect: { id: blockedID } } },
+        include: { Blocked: true },
+      });
+      res.status(HttpStatus.OK).send(profile);
+      return profile;
+    } catch (error) {
+      res.status(HttpStatus.NOT_FOUND).send(error);
       return null;
     }
-    const profile = await this.prisma.socialProfile.update({
-      where: { UserID: userID },
-      data: { Blocked: { disconnect: { id: blockedID } } },
-      include: { Blocked: true },
-    });
-    res.status(HttpStatus.OK).send(profile);
-    return profile;
   }
 }

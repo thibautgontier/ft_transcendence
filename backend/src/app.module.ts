@@ -8,6 +8,7 @@ import { PrismaController } from './prisma/prisma.controller';
 import { ChannelModule } from './channel/channel.module';
 import { SocialModule } from './socialProfile/social.module';
 import { GameModule } from './gameProfile/game.module';
+import { PartyModule } from './party/party.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { GameModule } from './gameProfile/game.module';
     ChannelModule,
     SocialModule,
     GameModule,
+    PartyModule,
   ],
   providers: [PrismaService],
   controllers: [PrismaController],
