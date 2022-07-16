@@ -41,19 +41,19 @@ export class UserController {
     return await this.userService.createUser(res, body);
   }
 
-  @Delete('delete/:id')
+  @Delete('delete/:userID')
   async deleteUser(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
   ): Promise<User | null> {
-    return await this.userService.deleteUser(res, Number(id));
+    return await this.userService.deleteUser(res, Number(userID));
   }
 
-  @Patch('update/:id')
+  @Patch('update/:userID')
   async updateUser(
-    @Param('id') id: number,
+    @Param('userID') userID: number,
     @Body() body: UserUpdateDto,
   ): Promise<User | null> {
-    return await this.userService.updateUser(Number(id), body);
+    return await this.userService.updateUser(Number(userID), body);
   }
 }

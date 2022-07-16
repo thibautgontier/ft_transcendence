@@ -9,113 +9,113 @@ import { SocialService } from './social.service';
 export class SocialController {
   constructor(private socialService: SocialService) {}
 
-  @Get(':id')
+  @Get(':userID')
   async getSocial(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
   ): Promise<SocialProfile> {
-    return await this.socialService.getSocialProfile(res, Number(id));
+    return await this.socialService.getSocialProfile(res, Number(userID));
   }
 
-  @Get(':id/friend')
+  @Get(':userID/friend')
   async getFriends(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
   ): Promise<User[]> {
-    return await this.socialService.getFriends(res, Number(id));
+    return await this.socialService.getFriends(res, Number(userID));
   }
 
-  @Patch(':id/friend/add/:friendId')
+  @Patch(':userID/friend/add/:friendID')
   async addFriend(
     @Res() res: Response,
-    @Param('id') id: number,
-    @Param('friendId') friendId: number,
+    @Param('userID') userID: number,
+    @Param('friendID') friendID: number,
   ): Promise<SocialProfile | null> {
     return await this.socialService.addFriend(
       res,
-      Number(id),
-      Number(friendId),
+      Number(userID),
+      Number(friendID),
     );
   }
 
-  @Patch(':id/friend/remove/:friendId')
+  @Patch(':userID/friend/remove/:friendID')
   async removeFriend(
     @Res() res: Response,
-    @Param('id') id: number,
-    @Param('friendId') friendId: number,
+    @Param('userID') userID: number,
+    @Param('friendID') friendID: number,
   ): Promise<SocialProfile | null> {
     return await this.socialService.removeFriend(
       res,
-      Number(id),
-      Number(friendId),
+      Number(userID),
+      Number(friendID),
     );
   }
 
-  @Get(':id/channel')
+  @Get(':userID/channel')
   async getChannels(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
   ): Promise<Channel[]> {
-    return await this.socialService.getChannels(res, Number(id));
+    return await this.socialService.getChannels(res, Number(userID));
   }
 
-  @Patch(':id/channel/add/:channelId')
+  @Patch(':userID/channel/add/:channelID')
   async addChannel(
     @Res() res: Response,
-    @Param('id') id: number,
-    @Param('channelId') channelId: number,
+    @Param('userID') userID: number,
+    @Param('channelID') channelID: number,
   ): Promise<SocialProfile | null> {
     return await this.socialService.addChannel(
       res,
-      Number(id),
-      Number(channelId),
+      Number(userID),
+      Number(channelID),
     );
   }
 
-  @Patch(':id/channel/remove/:channelId')
+  @Patch(':userID/channel/remove/:channelID')
   async removeChannel(
     @Res() res: Response,
-    @Param('id') id: number,
-    @Param('channelId') channelId: number,
+    @Param('userID') userID: number,
+    @Param('channelID') channelID: number,
   ): Promise<SocialProfile | null> {
     return await this.socialService.removeChannel(
       res,
-      Number(id),
-      Number(channelId),
+      Number(userID),
+      Number(channelID),
     );
   }
 
-  @Get(':id/blocked')
+  @Get(':userID/blocked')
   async getBlockeds(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
   ): Promise<User[]> {
-    return await this.socialService.getBlocked(res, Number(id));
+    return await this.socialService.getBlocked(res, Number(userID));
   }
 
-  @Patch(':id/blocked/add/:blockedId')
+  @Patch(':userID/blocked/add/:blockedID')
   async addBlocked(
     @Res() res: Response,
-    @Param('id') id: number,
-    @Param('blockedId') blockedId: number,
+    @Param('userID') userID: number,
+    @Param('blockedID') blockedID: number,
   ): Promise<SocialProfile | null> {
     return await this.socialService.addBlocked(
       res,
-      Number(id),
-      Number(blockedId),
+      Number(userID),
+      Number(blockedID),
     );
   }
 
-  @Patch(':id/blocked/remove/:blockedId')
+  @Patch(':userID/blocked/remove/:blockedID')
   async removeBlocked(
     @Res() res: Response,
-    @Param('id') id: number,
-    @Param('blockedId') blockedId: number,
+    @Param('userID') userID: number,
+    @Param('blockedID') blockedID: number,
   ): Promise<SocialProfile | null> {
     return await this.socialService.removeBlocked(
       res,
-      Number(id),
-      Number(blockedId),
+      Number(userID),
+      Number(blockedID),
     );
   }
 }

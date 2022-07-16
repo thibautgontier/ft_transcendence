@@ -9,196 +9,200 @@ import { GameProfile, Party } from '@prisma/client';
 export class GameController {
   constructor(private gameService: GameService) {}
 
-  @Get(':id')
+  @Get(':userID')
   async getGameProfile(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
   ): Promise<GameProfile> {
-    return await this.gameService.getGameProfile(res, Number(id));
+    return await this.gameService.getGameProfile(res, Number(userID));
   }
 
-  @Get(':id/level')
+  @Get(':userID/level')
   async getLevel(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
   ): Promise<string | null> {
-    return await this.gameService.getLevel(Number(id), res);
+    return await this.gameService.getLevel(Number(userID), res);
   }
 
-  @Patch(':id/level/set/:level')
+  @Patch(':userID/level/set/:level')
   async setLevel(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
     @Param('level') level: number,
   ): Promise<number | undefined> {
-    return await this.gameService.setLevel(Number(id), Number(level), res);
+    return await this.gameService.setLevel(Number(userID), Number(level), res);
   }
 
-  @Patch(':id/level/add/:value')
+  @Patch(':userID/level/add/:value')
   async addLevel(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
     @Param('value') value: number,
   ): Promise<number | undefined> {
-    return await this.gameService.addLevel(Number(id), Number(value), res);
+    return await this.gameService.addLevel(Number(userID), Number(value), res);
   }
 
-  @Patch(':id/level/remove/:value')
+  @Patch(':userID/level/remove/:value')
   async removeLevel(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
     @Param('value') value: number,
   ): Promise<number | undefined> {
-    return await this.gameService.removeLevel(Number(id), Number(value), res);
+    return await this.gameService.removeLevel(
+      Number(userID),
+      Number(value),
+      res,
+    );
   }
 
-  @Get(':id/xp')
+  @Get(':userID/xp')
   async getXp(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
   ): Promise<string | null> {
-    return await this.gameService.getXp(res, Number(id));
+    return await this.gameService.getXp(res, Number(userID));
   }
 
-  @Patch(':id/xp/set/:xp')
+  @Patch(':userID/xp/set/:xp')
   async setXp(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
     @Param('xp') xp: number,
   ): Promise<number | undefined> {
-    return await this.gameService.setXp(Number(id), Number(xp), res);
+    return await this.gameService.setXp(Number(userID), Number(xp), res);
   }
 
-  @Patch(':id/xp/add/:value')
+  @Patch(':userID/xp/add/:value')
   async addXp(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
     @Param('value') value: number,
   ): Promise<number | undefined> {
-    return await this.gameService.addXp(Number(id), Number(value), res);
+    return await this.gameService.addXp(Number(userID), Number(value), res);
   }
 
-  @Patch(':id/xp/remove/:value')
+  @Patch(':userID/xp/remove/:value')
   async removeXp(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
     @Param('value') value: number,
   ): Promise<number | undefined> {
-    return await this.gameService.removeXp(Number(id), Number(value), res);
+    return await this.gameService.removeXp(Number(userID), Number(value), res);
   }
 
-  @Get(':id/nbParty')
+  @Get(':userID/nbParty')
   async getNbParty(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
   ): Promise<string | null> {
-    return await this.gameService.getNbParty(res, Number(id));
+    return await this.gameService.getNbParty(res, Number(userID));
   }
 
-  @Patch(':id/nbParty/set/:nbParty')
+  @Patch(':userID/nbParty/set/:nbParty')
   async setNbParty(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
     @Param('nbParty') nbParty: number,
     @Query('win') win: string,
   ): Promise<number | undefined> {
     return await this.gameService.setNbParty(
-      Number(id),
+      Number(userID),
       Number(nbParty),
       win,
       res,
     );
   }
 
-  @Patch(':id/nbParty/add/:value')
+  @Patch(':userID/nbParty/add/:value')
   async addNbParty(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
     @Param('value') value: number,
     @Query('win') win: string,
   ): Promise<number | undefined> {
     return await this.gameService.addNbParty(
-      Number(id),
+      Number(userID),
       Number(value),
       win,
       res,
     );
   }
 
-  @Patch(':id/nbParty/remove/:value')
+  @Patch(':userID/nbParty/remove/:value')
   async removeNbParty(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
     @Param('value') value: number,
     @Query('win') win: string,
   ): Promise<number | undefined> {
     return await this.gameService.removeNbParty(
-      Number(id),
+      Number(userID),
       Number(value),
       win,
       res,
     );
   }
 
-  @Get(':id/nbWin')
+  @Get(':userID/nbWin')
   async getNbWin(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
   ): Promise<string | null> {
-    return await this.gameService.getNbWin(res, Number(id));
+    return await this.gameService.getNbWin(res, Number(userID));
   }
 
-  @Get(':id/nbLose')
+  @Get(':userID/nbLose')
   async getNbLose(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
   ): Promise<string | null> {
-    return await this.gameService.getNbLose(res, Number(id));
+    return await this.gameService.getNbLose(res, Number(userID));
   }
 
-  @Get(':id/history')
+  @Get(':userID/history')
   async getHistory(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('userID') userID: number,
   ): Promise<Party[] | null> {
-    return await this.gameService.getHistory(Number(id), res);
+    return await this.gameService.getHistory(Number(userID), res);
   }
 
-  @Get(':id/history/:partyId')
+  @Get(':userID/history/:partyID')
   async getHistoryParty(
     @Res() res: Response,
-    @Param('id') id: number,
-    @Param('partyId') partyId: number,
+    @Param('userID') userID: number,
+    @Param('partyID') partyID: number,
   ): Promise<Party | null> {
     return await this.gameService.getHistoryParty(
       res,
-      Number(id),
-      Number(partyId),
+      Number(userID),
+      Number(partyID),
     );
   }
 
-  @Patch(':id/history/add/:partyId')
+  @Patch(':userID/history/add/:partyID')
   async addToHistory(
     @Res() res: Response,
-    @Param('id') id: number,
-    @Param('partyId') partyId: number,
+    @Param('userID') userID: number,
+    @Param('partyID') partyID: number,
   ): Promise<Party[] | null> {
     return await this.gameService.addToHistory(
-      Number(id),
-      Number(partyId),
+      Number(userID),
+      Number(partyID),
       res,
     );
   }
 
-  @Patch(':id/history/remove/:partyId')
+  @Patch(':userID/history/remove/:partyID')
   async removeFromHistory(
     @Res() res: Response,
-    @Param('id') id: number,
-    @Param('partyId') partyId: number,
+    @Param('userID') userID: number,
+    @Param('partyID') partyID: number,
   ): Promise<Party[] | null> {
     return await this.gameService.removeFromHistory(
-      Number(id),
-      Number(partyId),
+      Number(userID),
+      Number(partyID),
       res,
     );
   }

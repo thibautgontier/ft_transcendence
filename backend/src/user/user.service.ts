@@ -11,12 +11,13 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   toBool(str: string): boolean {
-    if (str === null || str === undefined) return undefined;
-    str = str.toLowerCase();
-    if (['true', '1', 'on', 'yes'].includes(str)) {
-      return true;
-    } else if (['false', '0', 'off', 'no'].includes(str)) {
-      return false;
+    if (str) {
+      str = str.toLowerCase();
+      if (['true', '1', 'on', 'yes'].includes(str)) {
+        return true;
+      } else if (['false', '0', 'off', 'no'].includes(str)) {
+        return false;
+      }
     }
     return undefined;
   }
@@ -64,10 +65,10 @@ export class UserService {
     }
   }
 
-  async deleteUser(res: Response, id: number): Promise<User | null> {
+  async deleteUser(res: Response, userID: number): Promise<User | null> {
     try {
       const user = await this.prisma.user.delete({
-        where: { id: id },
+        where: { id: userID },
         include: {
           GameProfile: true,
           SocialProfile: true,
@@ -84,9 +85,9 @@ export class UserService {
     }
   }
 
-  async updateUser(id: number, body: UserUpdateDto): Promise<User | null> {
+  async updateUser(userID: number, body: UserUpdateDto): Promise<User | null> {
     return await this.prisma.user.update({
-      where: { id: id },
+      where: { id: userID },
       data: {
         Email: body.email,
         Nickname: body.nickname,
