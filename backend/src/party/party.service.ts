@@ -10,7 +10,7 @@ export class PartyService {
 
   async getParty(id: number): Promise<Party[]> {
     return this.prisma.party.findMany({
-      where: { id: Number.isNaN(id) ? undefined : id },
+      where: { id: id },
       include: {
         PlayerOne: { select: { id: true, Nickname: true } },
         PlayerTwo: { select: { id: true, Nickname: true } },
@@ -63,9 +63,9 @@ export class PartyService {
       const party = await this.prisma.party.delete({
         where: { id: id },
         include: {
-          PlayerOne: true,
-          PlayerTwo: true,
-          Winner: true,
+          PlayerOne: { select: { id: true, Nickname: true } },
+          PlayerTwo: { select: { id: true, Nickname: true } },
+          Winner: { select: { id: true, Nickname: true } },
         },
       });
       res.status(HttpStatus.OK).send(party);

@@ -45,26 +45,25 @@ model GameProfile {
   Xp      Float   @default(0)
   NbParty Int     @default(0)
   NbWin   Int     @default(0)
-  History Party[]
+  History Party[] @relation("history")
   UserID  Int?    @unique
   User    User?   @relation(fields: [UserID], references: [id], onDelete: Cascade)
 }
 
 model Party {
-  id            Int          @id @default(autoincrement())
-  CreatedAt     DateTime     @default(now())
-  UpdatedAt     DateTime     @updatedAt
+  id            Int           @id @default(autoincrement())
+  CreatedAt     DateTime      @default(now())
+  UpdatedAt     DateTime      @updatedAt
   PlayerOneID   Int?
-  PlayerOne     User?        @relation(name: "playerOne", fields: [PlayerOneID], references: [id])
+  PlayerOne     User?         @relation(name: "playerOne", fields: [PlayerOneID], references: [id])
   PlayerTwoID   Int?
-  PlayerTwo     User?        @relation(name: "playerTwo", fields: [PlayerTwoID], references: [id])
+  PlayerTwo     User?         @relation(name: "playerTwo", fields: [PlayerTwoID], references: [id])
   WinnerID      Int?
-  Winner        User?        @relation(name: "winner", fields: [WinnerID], references: [id])
-  Status        partyStatus  @default(starting)
-  GameHistoryID Int?
-  GameHistory   GameProfile? @relation(fields: [GameHistoryID], references: [id])
-  PartyNotifyID Int?         @unique
-  PartyNotify   Notify?      @relation(fields: [PartyNotifyID], references: [id])
+  Winner        User?         @relation(name: "winner", fields: [WinnerID], references: [id])
+  Status        partyStatus   @default(starting)
+  GameHistory   GameProfile[] @relation("history")
+  PartyNotifyID Int?          @unique
+  PartyNotify   Notify?       @relation(fields: [PartyNotifyID], references: [id])
 }
 
 model SocialProfile {

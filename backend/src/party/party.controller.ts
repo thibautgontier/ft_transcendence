@@ -22,7 +22,10 @@ export class PartyController {
 
   @Get()
   async getParty(@Query('id') id?: number): Promise<Party[]> {
-    return await this.partyService.getParty(Number(id));
+    const partyID = Number(id);
+    return await this.partyService.getParty(
+      Number.isNaN(partyID) ? undefined : partyID,
+    );
   }
 
   @Post('create')

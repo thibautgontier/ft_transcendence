@@ -164,20 +164,13 @@ export class GameController {
   async getHistory(
     @Res() res: Response,
     @Param('userID') userID: number,
+    @Query('party') partyID?: number,
   ): Promise<Party[] | null> {
-    return await this.gameService.getHistory(Number(userID), res);
-  }
-
-  @Get(':userID/history/:partyID')
-  async getHistoryParty(
-    @Res() res: Response,
-    @Param('userID') userID: number,
-    @Param('partyID') partyID: number,
-  ): Promise<Party | null> {
-    return await this.gameService.getHistoryParty(
-      res,
+    const id = Number(partyID);
+    return await this.gameService.getHistory(
       Number(userID),
-      Number(partyID),
+      Number.isNaN(id) ? undefined : id,
+      res,
     );
   }
 
