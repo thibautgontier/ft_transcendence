@@ -115,8 +115,8 @@ model Message {
   UpdatedAt DateTime @updatedAt
   Content   String
   User      User?
-  ChannelID Int      @unique
-  Channel   Channel  @relation(fields: [ChannelID], references: [id])
+  ChannelID Int
+  Channel   Channel  @relation(fields: [ChannelID], references: [id], onDelete: Cascade)
 }
 
 enum logStatus {

@@ -1,12 +1,22 @@
-import { Body, Controller, Get, Param, Patch, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Channel } from '@prisma/client';
+import { Channel, Message } from '@prisma/client';
 import { Response } from 'express';
 import { ChannelService } from './channel.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
 import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
-import { ChannelSwitchToPrivate } from './dto/channel-swicthToPrivate.dto';
+import { ChannelSendMsgDto } from './dto/channel-sendMessage.dto';
+import { ChannelSwitchToPrivateDto } from './dto/channel-swicthToPrivate.dto';
 import { ChannelUpdateDto } from './dto/channel-update.dto';
 
 @ApiTags('channel')
@@ -30,6 +40,19 @@ export class ChannelController {
     @Body() body: ChannelCreateDto,
   ): Promise<Channel | null> {
     return await this.channelService.createChannel(res, body);
+  }
+
+  @Delete(':channelid/delete/:idAdmin')
+  async deleteChannel(
+    @Param('channelid') idChan: number,
+    @Param('idAdmin') idAdmin: number,
+    @Res() res: Response,
+  ): Promise<Channel | null> {
+    return await this.channelService.deleteChannel(
+      Number(idChan),
+      Number(idAdmin),
+      res,
+    );
   }
 
   @Post('createPriv')
@@ -126,13 +149,84 @@ export class ChannelController {
   async switchToPrivate(
     @Param('channelid') idChan: number,
     @Param('idAdmin') idAdmin: number,
-    @Body() body: ChannelSwitchToPrivate,
+    @Body() body: ChannelSwitchToPrivateDto,
     @Res() res: Response,
   ): Promise<Channel | null> {
     return await this.channelService.switchToPrivate(
       Number(idChan),
       Number(idAdmin),
       body,
+      res,
+    );
+  }
+
+  @Patch(':channelid/switchToPublic/:idAdmin')
+  async switchToPublic(
+    @Param('channelid') idChan: number,
+    @Param('idAdmin') idAdmin: number,
+    @Res() res: Response,
+  ): Promise<Channel | null> {
+    return await this.channelService.switchToPublic(
+      Number(idChan),
+      Number(idAdmin),
+      res,
+    );
+  }
+
+  @Post(':channelid/sendMessage/:idUser')
+  async sendMessage(
+    @Param('channelid') idChan: number,
+    @Param('idUser') idUser: number,
+    @Res() res: Response,
+    @Body() body: ChannelSendMsgDto,
+  ): Promise<Message | null> {
+    return await this.channelService.sendMessage(
+      Number(idChan),
+      Number(idUser),
+      res,
+      body,
+    );
+  }
+
+  /**
+   * ne pas oublier la verif pour qui peut supprimer le msg
+   * @param idChan 
+   * @param idMessage 
+   * @param res 
+   * @returns 
+   */
+  @Delete(':channelid/removeMessage/:idMessage')
+  async removeMessage(
+    @Param('channelid') idChan: number,
+    @Param('idMessage') idMessage: number,
+    @Res() res: Response,
+  ): Promise<Message | null> {
+    return await this.channelService.removeMessage(
+      Number(idChan),
+      Number(idMessage),
+      res,
+    );
+  }
+
+  /**
+   * ne pas oublier la verif pour qui peut editer le msg
+   * @param idChan 
+   * @param idMessage 
+   * @param body 
+   * @param res 
+   * @returns 
+   */
+  @Patch(':channelid/editMessage/:idMessage')
+  async editMessage(
+    @Param('channelid') idChan: number,
+    @Param('idMessage') idMessage: number,
+	@Body() body: ChannelSendMsgDto, 
+    @Res() res: Response,
+  ): Promise<Message | null> {
+    return await this.channelService.editMessage(
+      Number(idChan),
+      Number(idMessage),
+	  body,
       res,
     );
   }
