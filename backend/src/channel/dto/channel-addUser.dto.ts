@@ -1,8 +1,8 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ChannelAddUserDto {
-	@ApiProperty({
-		required: true,
-	})
-	user_id: number;
+  @ApiProperty({
+    required: true,
+  })
+  user_id: number;
 }

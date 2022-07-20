@@ -190,10 +190,10 @@ export class ChannelController {
 
   /**
    * ne pas oublier la verif pour qui peut supprimer le msg
-   * @param idChan 
-   * @param idMessage 
-   * @param res 
-   * @returns 
+   * @param idChan
+   * @param idMessage
+   * @param res
+   * @returns
    */
   @Delete(':channelid/removeMessage/:idMessage')
   async removeMessage(
@@ -210,23 +210,23 @@ export class ChannelController {
 
   /**
    * ne pas oublier la verif pour qui peut editer le msg
-   * @param idChan 
-   * @param idMessage 
-   * @param body 
-   * @param res 
-   * @returns 
+   * @param idChan
+   * @param idMessage
+   * @param body
+   * @param res
+   * @returns
    */
   @Patch(':channelid/editMessage/:idMessage')
   async editMessage(
     @Param('channelid') idChan: number,
     @Param('idMessage') idMessage: number,
-	@Body() body: ChannelSendMsgDto, 
+    @Body() body: ChannelSendMsgDto,
     @Res() res: Response,
   ): Promise<Message | null> {
     return await this.channelService.editMessage(
       Number(idChan),
       Number(idMessage),
-	  body,
+      body,
       res,
     );
   }
