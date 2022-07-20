@@ -21,7 +21,7 @@ export class SocialController {
   async getFriends(
     @Res() res: Response,
     @Param('userID') userID: number,
-  ): Promise<User[]> {
+  ): Promise<any> {
     return await this.socialService.getFriends(res, Number(userID));
   }
 
