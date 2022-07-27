@@ -335,6 +335,7 @@ export class ChannelService {
     try {
       if (
         (await this.getUser(idChan, idUser)) === undefined ||
+        (await this.getMutedUsers(idChan, idUser)) !== undefined ||
         body.Content === undefined
       )
         throw Error;
@@ -393,6 +394,8 @@ export class ChannelService {
     try {
       if (
         (await this.getMessage(idChan, idMessage)) === undefined ||
+        (await this.getBanUsers(idChan, idUser)) !== undefined ||
+        (await this.getMutedUsers(idChan, idUser)) !== undefined ||
         ((await this.getAdminChan(idChan, idUser)) === undefined &&
           (await this.getSender(idMessage, idUser)) !== idUser)
       )
@@ -481,7 +484,7 @@ export class ChannelService {
     try {
       if (
         (await this.getOwner(idChan)) === idUser ||
-		(await this.getAdminChan(idChan, idUser)) !== undefined ||
+        (await this.getAdminChan(idChan, idUser)) !== undefined ||
         (await this.getAdminChan(idChan, idAdmin)) === undefined ||
         (await this.getUser(idChan, idUser)) === undefined ||
         (await this.getBanUsers(idChan, idUser)) !== undefined
@@ -513,8 +516,8 @@ export class ChannelService {
   ): Promise<Channel | null> {
     try {
       if (
-          (await this.getAdminChan(idChan, idAdmin)) === undefined ||
-          (await this.getBanUsers(idChan, idUser)) === undefined
+        (await this.getAdminChan(idChan, idAdmin)) === undefined ||
+        (await this.getBanUsers(idChan, idUser)) === undefined
       )
         throw Error;
       const channel = await this.prisma.channel.update({
