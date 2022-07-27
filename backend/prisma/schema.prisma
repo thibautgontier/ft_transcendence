@@ -33,10 +33,10 @@ model User {
   ChannelUser   Channel[]       @relation(name: "chanUsers")
   ChannelAdmin  Channel[]       @relation(name: "admin")
   MutedUser     Channel[]       @relation(name: "mutedUser")
+  BanUser    	Channel[]       @relation(name: "banUser")
   UserNotifyID  Int?            @unique
   UserNotify    Notify?         @relation(fields: [UserNotifyID], references: [id])
-  UserMessageID Int?            @unique
-  UserMessage   Message?        @relation(fields: [UserMessageID], references: [id])
+  UserMessage	Message[]
 }
 
 model GameProfile {
@@ -101,6 +101,7 @@ model Channel {
   Users           User[]          @relation("chanUsers")
   Admins          User[]          @relation("admin")
   MutedUsers      User[]          @relation("mutedUser")
+  BanUsers        User[]          @relation("banUser")
   Messages        Message[]
   Password        String?
   SocialChannel   SocialProfile[] @relation("channels")
@@ -113,7 +114,8 @@ model Message {
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @updatedAt
   Content   String
-  User      User?
+  UserID	Int
+  User      User	@relation(fields: [UserID], references: [id])
   ChannelID Int
   Channel   Channel  @relation(fields: [ChannelID], references: [id], onDelete: Cascade)
 }

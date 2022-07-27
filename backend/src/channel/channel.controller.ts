@@ -130,21 +130,6 @@ export class ChannelController {
     );
   }
 
-  @Patch(':channelid/kick/:idKicker/:idToKick')
-  async kickUser(
-    @Param('channelid') idChan: number,
-    @Param('idKicker') idKicker: number,
-    @Param('idToKick') idToKick: number,
-    @Res() res: Response,
-  ): Promise<Channel | null> {
-    return await this.channelService.kickUser(
-      Number(idChan),
-      Number(idKicker),
-      Number(idToKick),
-      res,
-    );
-  }
-
   @Patch(':channelid/switchToPrivate/:idAdmin')
   async switchToPrivate(
     @Param('channelid') idChan: number,
@@ -188,45 +173,94 @@ export class ChannelController {
     );
   }
 
-  /**
-   * ne pas oublier la verif pour qui peut supprimer le msg
-   * @param idChan
-   * @param idMessage
-   * @param res
-   * @returns
-   */
-  @Delete(':channelid/removeMessage/:idMessage')
+  @Delete(':channelid/removeMessage/:idMessage/:idUser')
   async removeMessage(
     @Param('channelid') idChan: number,
     @Param('idMessage') idMessage: number,
+    @Param('idUser') idUser: number,
     @Res() res: Response,
   ): Promise<Message | null> {
     return await this.channelService.removeMessage(
       Number(idChan),
       Number(idMessage),
+      Number(idUser),
       res,
     );
   }
 
-  /**
-   * ne pas oublier la verif pour qui peut editer le msg
-   * @param idChan
-   * @param idMessage
-   * @param body
-   * @param res
-   * @returns
-   */
-  @Patch(':channelid/editMessage/:idMessage')
+  @Patch(':channelid/editMessage/:idMessage/:idUser')
   async editMessage(
     @Param('channelid') idChan: number,
     @Param('idMessage') idMessage: number,
+    @Param('idUser') idUser: number,
     @Body() body: ChannelSendMsgDto,
     @Res() res: Response,
   ): Promise<Message | null> {
     return await this.channelService.editMessage(
       Number(idChan),
       Number(idMessage),
+      Number(idUser),
       body,
+      res,
+    );
+  }
+
+  @Patch(':channelid/muteUser/:idAdmin/:idUser')
+  async muteUser(
+    @Param('channelid') idChan: number,
+    @Param('idAdmin') idAdmin: number,
+    @Param('idUser') idUser: number,
+    @Res() res: Response,
+  ): Promise<Channel | null> {
+    return await this.channelService.muteUser(
+      Number(idChan),
+      Number(idAdmin),
+      Number(idUser),
+      res,
+    );
+  }
+
+  @Patch(':channelid/unmuteUser/:idAdmin/:idUser')
+  async unmuteUser(
+    @Param('channelid') idChan: number,
+    @Param('idAdmin') idAdmin: number,
+    @Param('idUser') idUser: number,
+    @Res() res: Response,
+  ): Promise<Channel | null> {
+    return await this.channelService.unmuteUser(
+      Number(idChan),
+      Number(idAdmin),
+      Number(idUser),
+      res,
+    );
+  }
+
+  @Patch(':channelid/banUser/:idAdmin/:idUser')
+  async banUser(
+    @Param('channelid') idChan: number,
+    @Param('idAdmin') idAdmin: number,
+    @Param('idUser') idUser: number,
+    @Res() res: Response,
+  ): Promise<Channel | null> {
+    return await this.channelService.banUser(
+      Number(idChan),
+      Number(idAdmin),
+      Number(idUser),
+      res,
+    );
+  }
+
+  @Patch(':channelid/banUser/:idAdmin/:idUser')
+  async unbanUser(
+    @Param('channelid') idChan: number,
+    @Param('idAdmin') idAdmin: number,
+    @Param('idUser') idUser: number,
+    @Res() res: Response,
+  ): Promise<Channel | null> {
+    return await this.channelService.unbanUser(
+      Number(idChan),
+      Number(idAdmin),
+      Number(idUser),
       res,
     );
   }
