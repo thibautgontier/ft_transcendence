@@ -2,10 +2,10 @@ import { Controller, Get, Param, Patch, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Channel, SocialProfile, User } from '@prisma/client';
 import { Response } from 'express';
-import { SocialService } from './social.service';
+import { SocialService } from './socialProfile.service';
 
-@ApiTags('social')
-@Controller('social')
+@ApiTags('socialProfile')
+@Controller('socialProfile')
 export class SocialController {
   constructor(private socialService: SocialService) {}
 

@@ -22,12 +22,12 @@ export class UserService {
     return undefined;
   }
 
-  async getAll(query: UserFilterDto): Promise<User[]> {
+  async getUser(query: UserFilterDto): Promise<User[]> {
     const gameProfile: boolean = this.toBool(query.gameProfile);
     const social: boolean = this.toBool(query.socialProfile);
     return this.prisma.user.findMany({
       where: {
-        id: Number(query.id),
+        id: Number.isNaN(query.id) ? undefined : query.id,
         Token: query.token,
         Status: query.status,
         TwoFA: this.toBool(query.twoFA),
