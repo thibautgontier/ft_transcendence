@@ -6,9 +6,10 @@ import { PrismaService } from './prisma/prisma.service';
 import { UserModule } from './user/user.module';
 import { PrismaController } from './prisma/prisma.controller';
 import { ChannelModule } from './channel/channel.module';
-import { SocialModule } from './socialProfile/social.module';
-import { GameModule } from './gameProfile/game.module';
+import { SocialModule } from './socialProfile/socialProfile.module';
+import { GameModule } from './gameProfile/gameProfile.module';
 import { PartyModule } from './party/party.module';
+import { GameService } from './game.service';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { PartyModule } from './party/party.module';
     GameModule,
     PartyModule,
   ],
-  providers: [PrismaService],
+  providers: [PrismaService, GameService],
   controllers: [PrismaController],
 })
 export class AppModule {}
