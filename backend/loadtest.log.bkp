@@ -1,0 +1,12 @@
+[8/2/2022, 3:42:09 PM] @colyseus/loadtest
+endpoint: ws://localhost:2567
+roomName: MainRoom
+numClients: 1
+scriptFile: /home/lucocozz/42Projects/ft_transcendence/backend/test/bot.ts
+logLevel: all
+output: /home/lucocozz/42Projects/ft_transcendence/backend/loadtest.log
+[8/2/2022, 3:42:11 PM] Error: connect ECONNREFUSED 127.0.0.1:2567
+[8/2/2022, 3:42:39 PM] Finished. Summary:
+Successful connections: 0
+Failed connections: 1
+Total errors: 1

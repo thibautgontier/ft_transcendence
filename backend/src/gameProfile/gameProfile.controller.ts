@@ -1,11 +1,11 @@
 import { Controller, Get, Param, Patch, Query, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { GameService } from './game.service';
+import { GameService } from './gameProfile.service';
 import { Response } from 'express';
 import { GameProfile, Party } from '@prisma/client';
 
-@ApiTags('game')
-@Controller('game')
+@ApiTags('gameProfile')
+@Controller('gameProfile')
 export class GameController {
   constructor(private gameService: GameService) {}
 

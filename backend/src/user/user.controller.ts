@@ -29,8 +29,8 @@ export class UserController {
   @ApiQuery({ name: 'twoFA', type: Boolean, required: false })
   @ApiQuery({ name: 'gameProfile', type: Boolean, required: false })
   @ApiQuery({ name: 'socialProfile', type: Boolean, required: false })
-  async getAll(@Query() query?: UserFilterDto): Promise<User[]> {
-    return await this.userService.getAll(query);
+  async getUser(@Query() query?: UserFilterDto): Promise<User[]> {
+    return await this.userService.getUser(query);
   }
 
   @Post('create')
