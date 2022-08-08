@@ -1,7 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Channel, Message, User } from '@prisma/client';
 import { Response } from 'express';
-import { connect } from 'http2';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
