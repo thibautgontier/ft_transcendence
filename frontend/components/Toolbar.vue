@@ -9,6 +9,6 @@
 			<v-spacer></v-spacer>
 		<v-toolbar-title>
 			</v-toolbar-title>
-		</v-app-bar>
+		</v-toolbar>
 	</nav>
 </template>
