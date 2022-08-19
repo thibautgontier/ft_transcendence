@@ -1,34 +1,12 @@
-<template>
-	<v-app dark>
-		<PongBall v-if="!inGame" />
-		<v-main>
-			<div class="testbuttons">
-				<v-btn @click.stop="activeComponent='LoginPage'">Login Page</v-btn>
-				<v-btn @click.stop="activeComponent='MainMenu'">Main Menu</v-btn>
-				<v-btn @click.stop="activeComponent='ChatMenu'">Chat Menu</v-btn>
-			</div>	
-			<!-- <v-btn @click.stop="changeActiveComponent('LoginPage')">Login Page</v-btn> -->
-			<!-- <v-btn @click.stop="changeActiveComponent('MainMenu')">Main Menu</v-btn> -->
-			<Transition name="fade" mode="out-in">
-				<component :is="activeComponent"></component>
-			</Transition>
-			<!-- <v-btn @click.stop="getFriends()">Get Friends</v-btn> -->
-		<!-- <ul v-for="friend in friends" :key="friend.id"> -->
-			<!-- <li>{{ friend }}</li> -->
-		<!-- </ul> -->
-		</v-main>
-	</v-app>
-</template>
-
 <script lang="ts">
 import Vue from 'vue'
-import LoginPage from '../components/LoginPage.vue'
-import MainMenu from '../components/MainMenu.vue'
+import Login from '../components/Login.vue'
+import Main from '../components/Main.vue'
 import ChatMenu from '../components/ChatMenu.vue'
 export default Vue.extend({
 		components: {
-			LoginPage,
-			MainMenu,
+			Login,
+			Main,
 			ChatMenu
 		},
 		data () {
@@ -51,6 +29,28 @@ export default Vue.extend({
 		// 	})
 })
 </script>
+
+<template>
+	<v-app dark>
+		<PongBall v-if="!inGame" />
+		<v-main>
+			<div class="testbuttons">
+				<v-btn @click.stop="activeComponent='Login'">Login Page</v-btn>
+				<v-btn @click.stop="activeComponent='Main'">Main Menu</v-btn>
+				<v-btn @click.stop="activeComponent='ChatMenu'">Chat Menu</v-btn>
+			</div>	
+			<!-- <v-btn @click.stop="changeActiveComponent('LoginPage')">Login Page</v-btn> -->
+			<!-- <v-btn @click.stop="changeActiveComponent('MainMenu')">Main Menu</v-btn> -->
+			<Transition name="fade" mode="out-in">
+				<component :is="activeComponent"></component>
+			</Transition>
+			<!-- <v-btn @click.stop="getFriends()">Get Friends</v-btn> -->
+		<!-- <ul v-for="friend in friends" :key="friend.id"> -->
+			<!-- <li>{{ friend }}</li> -->
+		<!-- </ul> -->
+		</v-main>
+	</v-app>
+</template>
 
 <style>
 	body {

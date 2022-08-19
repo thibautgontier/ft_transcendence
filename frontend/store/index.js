@@ -3,13 +3,8 @@ import axios from 'axios'
 
 // state
 export const state = () => ({
-<<<<<<< HEAD
-	// friends: [],
-	activeComponent: 'LoginPage',
-=======
 	friends: [],
 	activeComponent: 'Login',
->>>>>>> refs/remotes/origin/ben
 	// activeComponent: 'MainMenu'
 })
 
