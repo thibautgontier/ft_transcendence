@@ -34,7 +34,6 @@ export default Vue.extend({
 <template>
 	<v-app dark>
 		<PongBall v-if="!inGame" />
-		<v-main>
 			<div class="testbuttons">
 				<v-row justify="center">
 					<v-btn @click.stop="activeComponent='Login'">Login Page</v-btn>
@@ -51,7 +50,6 @@ export default Vue.extend({
 		<!-- <ul v-for="friend in friends" :key="friend.id"> -->
 			<!-- <li>{{ friend }}</li> -->
 		<!-- </ul> -->
-		</v-main>
 	</v-app>
 </template>
 

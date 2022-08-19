@@ -30,7 +30,7 @@ export default Vue.extend({
 </script>
 
 <template>
-	<v-app>
+	<div>
 		<!-- EXIT ARROW -->
 		<!-- FRIENDS AND GROUP CHATS -->
 		<v-navigation-drawer
@@ -59,16 +59,6 @@ export default Vue.extend({
 			</v-list-item>
 		</v-list>
 		</v-navigation-drawer>
-		<!-- TOOLBAR -->
-		<!-- CHANNEL -->
-		<v-main>
-			<v-list-item two-line>
-				<v-list-item-content>
-					<v-list-item-title>Sender</v-list-item-title>
-					<v-list-item-subtitle>Message</v-list-item-subtitle>
-				</v-list-item-content>
-			</v-list-item>
-		</v-main>
 		<!-- MEMBERS -->
 		<v-navigation-drawer
 		clipped
@@ -98,6 +88,20 @@ export default Vue.extend({
 			</v-list-item>
 		</v-list>
 		</v-navigation-drawer>
+		<!-- TOOLBAR -->
+		<!-- CHANNEL -->
+		<v-main>
+			<v-container>
+				<v-row>
+					<v-list-item two-line app>
+						<v-list-item-content>
+							<v-list-item-title>Sender</v-list-item-title>
+							<v-list-item-subtitle>Hello</v-list-item-subtitle>
+						</v-list-item-content>
+					</v-list-item>
+				</v-row>
+			</v-container>
+		</v-main>
 		<!-- INPUT ZONE -->
 		<v-footer
 		app
@@ -107,13 +111,18 @@ export default Vue.extend({
 			dense
 			hide-details
 			solo
+			type="text"
 			placeholder="Type here"
+			clearable
+			clear-icon="mdi-close-circle"
+			append-outer-icon="mdi-send"
 			></v-text-field>
-			<v-btn> <v-icon>mdi-chevron-right</v-icon></v-btn>
 		</v-footer>
-	</v-app>
+	</div>
 </template>
 
 <style>
-
+	.messages {
+		width: 100%;
+	}
 </style>
