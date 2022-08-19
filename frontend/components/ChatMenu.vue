@@ -10,7 +10,7 @@ export default Vue.extend({
 			],
 			channels: [
 				{ name: 'Toto', icon: 'mdi-account', id: 1 },
-				{ name: 'Transcendence-Team', icon: 'mdi-account-group', id: 2 },
+				{ name: 'Transcendence Team', icon: 'mdi-account-group', id: 2 },
 				{ name: 'Les Potos', icon: 'mdi-account-group', id: 3 },
 			],
 			activeChannel: "Channel"
@@ -99,13 +99,13 @@ export default Vue.extend({
 							<v-list-item-subtitle>Hello</v-list-item-subtitle>
 						</v-list-item-content>
 					</v-list-item>
+					
 				</v-row>
 			</v-container>
 		</v-main>
 		<!-- INPUT ZONE -->
 		<v-footer
 		app
-		color="transparent"
 		inset>
 			<v-text-field
 			dense
