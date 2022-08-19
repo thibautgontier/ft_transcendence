@@ -13,7 +13,7 @@ export default Vue.extend({
 			return {
 				inGame: false,
 				authenticated: false,
-				activeComponent: "LoginPage"
+				activeComponent: "Login"
 			}
 		},
 		// computed: 
