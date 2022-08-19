@@ -30,13 +30,13 @@ export default Vue.extend({
 </script>
 
 <template>
-	<div>
+	<v-app>
 		<!-- EXIT ARROW -->
 		<!-- FRIENDS AND GROUP CHATS -->
 		<v-navigation-drawer
 		permanent
-		left
-		absolute
+		clipped
+		app
 		>
 		<template v-slot:prepend>
 			<v-list-item-content>
@@ -61,12 +61,20 @@ export default Vue.extend({
 		</v-navigation-drawer>
 		<!-- TOOLBAR -->
 		<!-- CHANNEL -->
-		
+		<v-main>
+			<v-list-item two-line>
+				<v-list-item-content>
+					<v-list-item-title>Sender</v-list-item-title>
+					<v-list-item-subtitle>Message</v-list-item-subtitle>
+				</v-list-item-content>
+			</v-list-item>
+		</v-main>
 		<!-- MEMBERS -->
 		<v-navigation-drawer
+		clipped
 		permanent
 		right
-		absolute
+		app
 		>
 		<template v-slot:prepend>
 			<v-list-item-content>
@@ -90,8 +98,22 @@ export default Vue.extend({
 			</v-list-item>
 		</v-list>
 		</v-navigation-drawer>
-	</div>
+		<!-- INPUT ZONE -->
+		<v-footer
+		app
+		color="transparent"
+		inset>
+			<v-text-field
+			dense
+			hide-details
+			solo
+			placeholder="Type here"
+			></v-text-field>
+			<v-btn> <v-icon>mdi-chevron-right</v-icon></v-btn>
+		</v-footer>
+	</v-app>
 </template>
 
 <style>
+
 </style>

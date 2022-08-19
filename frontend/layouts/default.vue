@@ -3,11 +3,12 @@ import Vue from 'vue'
 import Login from '../components/Login.vue'
 import Main from '../components/Main.vue'
 import ChatMenu from '../components/ChatMenu.vue'
+
 export default Vue.extend({
 		components: {
 			Login,
 			Main,
-			ChatMenu
+			ChatMenu,
 		},
 		data () {
 			return {
@@ -35,10 +36,12 @@ export default Vue.extend({
 		<PongBall v-if="!inGame" />
 		<v-main>
 			<div class="testbuttons">
-				<v-btn @click.stop="activeComponent='Login'">Login Page</v-btn>
-				<v-btn @click.stop="activeComponent='Main'">Main Menu</v-btn>
-				<v-btn @click.stop="activeComponent='ChatMenu'">Chat Menu</v-btn>
-			</div>	
+				<v-row justify="center">
+					<v-btn @click.stop="activeComponent='Login'">Login Page</v-btn>
+					<v-btn @click.stop="activeComponent='Main'">Main Menu</v-btn>
+					<v-btn @click.stop="activeComponent='ChatMenu'">Chat Menu</v-btn>
+				</v-row>
+			</div>
 			<!-- <v-btn @click.stop="changeActiveComponent('LoginPage')">Login Page</v-btn> -->
 			<!-- <v-btn @click.stop="changeActiveComponent('MainMenu')">Main Menu</v-btn> -->
 			<Transition name="fade" mode="out-in">
@@ -64,7 +67,7 @@ export default Vue.extend({
 		opacity: 0;
 	}
 	.testbuttons {
-		margin-left: 40%;
+		margin-top: 1%;
+		margin-bottom: 2%;
 	}
-
 </style>
