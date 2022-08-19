@@ -12,11 +12,21 @@ export default Vue.extend({
 		},
 		data () {
 			return {
-				inGame: false,
+				// inGame: false,
 				authenticated: false,
 				activeComponent: "Login"
 			}
 		},
+		mounted() {
+
+		},
+		computed: {
+			inGame: function () {
+				if (this.activeComponent !== 'ChatMenu')
+					return (false);
+				return (true);
+			}
+		}
 		// computed: 
 		// 	mapState(['friends']),
 		// 	activeComponent() {
