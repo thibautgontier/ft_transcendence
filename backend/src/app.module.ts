@@ -9,7 +9,6 @@ import { ChannelModule } from './channel/channel.module';
 import { SocialModule } from './socialProfile/socialProfile.module';
 import { GameModule } from './gameProfile/gameProfile.module';
 import { PartyModule } from './party/party.module';
-import { GameService } from './game.service';
 
 @Module({
   imports: [
@@ -23,7 +22,7 @@ import { GameService } from './game.service';
     GameModule,
     PartyModule,
   ],
-  providers: [PrismaService, GameService],
+  providers: [PrismaService],
   controllers: [PrismaController],
 })
 export class AppModule {}
