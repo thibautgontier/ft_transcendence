@@ -17,16 +17,16 @@ export default Vue.extend({
 				activeComponent: "Login"
 			}
 		},
-		mounted() {
+			computed: {
+				inGame: function () {
+					if (this.activeComponent !== 'ChatMenu')
+						return (false)
+					return (true)
+				}
+			},
+		methods : {
 
 		},
-		computed: {
-			inGame: function () {
-				if (this.activeComponent !== 'ChatMenu')
-					return (false);
-				return (true);
-			}
-		}
 		// computed: 
 		// 	mapState(['friends']),
 		// 	activeComponent() {

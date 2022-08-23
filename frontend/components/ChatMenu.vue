@@ -17,12 +17,12 @@ export default Vue.extend({
 		};
 	},
 	methods: {
-		status: function (online:boolean) {
+		status (online:boolean) {
 			if (online === true)
 				return "🟢";
 			return "🔴";
 		},
-		getChannel: function (id:number) {
+		getChannel (id:number) {
 			this.activeChannel = ""
 		}
 	},
@@ -38,7 +38,7 @@ export default Vue.extend({
 		clipped
 		app
 		>
-		<template v-slot:prepend>
+		<template #prepend>
 			<v-list-item-content>
 				<v-list-item-title>Conversations</v-list-item-title>
 			</v-list-item-content>
@@ -66,7 +66,7 @@ export default Vue.extend({
 		right
 		app
 		>
-		<template v-slot:prepend>
+		<template #prepend>
 			<v-list-item-content>
 				<v-list-item-title>Members</v-list-item-title>
 			</v-list-item-content>
@@ -96,10 +96,21 @@ export default Vue.extend({
 					<v-list-item two-line app>
 						<v-list-item-content>
 							<v-list-item-title>Sender</v-list-item-title>
-							<v-list-item-subtitle>Hello</v-list-item-subtitle>
+							<v-list-item-subtitle>> Hello</v-list-item-subtitle>
 						</v-list-item-content>
 					</v-list-item>
-					
+					<v-list-item two-line app>
+						<v-list-item-content>
+							<v-list-item-title>Ben</v-list-item-title>
+							<v-list-item-subtitle>> Stylé non ?</v-list-item-subtitle>
+						</v-list-item-content>
+					</v-list-item>
+					<v-list-item two-line app>
+						<v-list-item-content>
+							<v-list-item-title>Toto</v-list-item-title>
+							<v-list-item-subtitle>> À mort gros !</v-list-item-subtitle>
+						</v-list-item-content>
+					</v-list-item>
 				</v-row>
 			</v-container>
 		</v-main>
