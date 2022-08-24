@@ -1,0 +1,25 @@
+ToDo:
+
+Components:
+- Main menu :
+	- Acces vers :
+		- Matchmaking
+		- Chat
+		- Spectate Menu
+		- Settings
+		- Leaderboard
+- Social menu
+- Chat
+- FriendList
+- Matchmaking
+- Game Page
+- Spectate Menu
+- User Settings
+- Leaderboard
+
+
+- trouver comment rendre le background aussi sombre que les boutons
+- modifier la taille de l'avatar pour le menu social
+
+- Fetch hooks hooks dans les components et pages
+- AsyncData hooks seulement dans les pages

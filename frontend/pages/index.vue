@@ -1,28 +1,57 @@
+<script>
+	import {mapActions, mapState, mapGetters, mapMutations} from 'vuex'
+	export default {
+		components: true,
+		layout: 'default',
+		data () {
+			return {
+				inGame: false,
+				authenticated: false,
+			}
+		},
+		computed:
+			mapState(['friends']),
+			activeComponent() {
+				return this.$store.state.activeComponent
+			},
+		methods: {
+			...mapActions(['getFriends']),
+			...mapMutations({
+				changeActiveComponent: 'changeActiveComponent'
+			}),
+			DoNothing() {
+			}
+		}
+	}
+</script>
+
 <template>
-  <v-app dark>
-    <v-container>
-      <PrimaryButton message="42 Connect" @click.native="connect" />
-    </v-container>
-  </v-app>
+	<v-app dark>
+		<PongBall v-if="!inGame" />
+		<v-main>
+			<v-btn @click.stop="changeActiveComponent('Login')">Login Page</v-btn>
+			<v-btn @click.stop="changeActiveComponent('MainMenu')">Main Menu</v-btn>
+			<v-btn @click.stop="DoNothing()">Get Friends</v-btn>
+			<Transition name="fade" mode="out-in">
+				<component :is="this.$store.state.activeComponent"></component>
+			</Transition>
+		<ul v-for="friend in friends" :key="friend.id">
+			<li>{{ friend }}</li>
+		</ul>
+		</v-main>
+	</v-app>
 </template>
 
-<script>
-  export default {
-    methods: {
-      connect() {
-        this.$axios.$get("auth/42/login");
-      }
-    }
-  }
-</script>your_very_long_client_i
+<style>
+	body {
+		overflow: hidden;
+	}
 
-<style scoped>
-.v-application {
-  background: linear-gradient(
-    180deg,
-    #050e13 0%,
-    #113143 41.15%,
-    #1c5474 81.77%
-  );
-}
+	.fade-enter-active, .fade-leave-active {
+		transition: opacity 0.2s;
+	}
+	.fade-enter, .fade-leave-to {
+		opacity: 0;
+	}
+
 </style>
