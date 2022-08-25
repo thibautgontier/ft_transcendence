@@ -1,11 +1,34 @@
-<!-- <template>
-	<div>
-		<h1> Friends list</h1>
-		<ul>
-			<li v-for="friend in friends" :key="friend">{{ friend.name }} {{ online(friend.online) }}</li>
-		</ul>
-	</div>
-</template> -->
+<script lang="ts">
+import Vue from 'vue'
+export default Vue.extend({
+	data () {
+		return {
+			friends: [
+				{name: 'Thomas', online: true},
+				{name: 'Luigi', online: true},
+				{name: 'Thibaut', online: false},
+			],
+			user: 'Jacquet Benjamin',
+			drawer: null,
+			items: [
+				{ title: 'Friends', submenu:null, link: '<FriendsMenu />', icon: 'mdi-account-multiple' },
+				{ title: 'Chats', submenu:null, link: '<ChatMenu />', icon: 'mdi-forum' },
+				{ title: 'Settings', submenu:null, link: '<SettingsMenu />', icon: 'mdi-cog' },
+			],
+			links: ['Home', 'Contacts', 'Settings'],
+		}
+	},
+	computed: {
+	},
+	methods: {
+		online (status: boolean) {
+			if (status === true)
+				return "🟢";
+			return "🔴";
+		}
+	}
+})
+</script>
 
 <template>
   <v-sheet
@@ -81,35 +104,3 @@
     </v-navigation-drawer>
   </v-sheet>
 </template>
-
-<script>
-	export default {
-		data () {
-			return {
-				friends: [
-					{name: 'Thomas', online: true},
-					{name: 'Luigi', online: true},
-					{name: 'Thibaut', online: false},
-				],
-				user: 'Jacquet Benjamin',
-				drawer: null,
-				items: [
-					{ title: 'Friends', submenu:null, link: '<FriendsMenu />', icon: 'mdi-account-multiple' },
-					{ title: 'Chats', submenu:null, link: '<ChatMenu />', icon: 'mdi-forum' },
-					{ title: 'Settings', submenu:null, link: '<SettingsMenu />', icon: 'mdi-cog' },
-				],
-				links: ['Home', 'Contacts', 'Settings'],
-			}
-		},
-		computed: {
-
-		},
-		methods: {
-			online (status) {
-				if (status === true)
-					return "🟢";
-				return "🔴";
-			}
-		}
-	}
-</script>

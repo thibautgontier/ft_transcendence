@@ -4,10 +4,6 @@
 	</div>
 </template>
 
-<script>
-
-</script>
-
 <style>
 	.terminal {
 		color: #fff;

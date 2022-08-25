@@ -1,18 +1,18 @@
-<script>
-	export default {
-    data() {
+<script lang="ts">
+import Vue from 'vue'
+export default Vue.extend({
+	data() {
         return {};
     },
-    head: {
-        titleTemplate: "%s - Main",
-    },
-    methods: {},
-}
+    methods: {
+		
+	},
+})
 </script>
 
 <template>
 	<div>
-		<Toolbar />
+		<ToolBar />
 		<TestZone />
 		<v-row justify="center" style="margin-top: 10%">
 			<v-btn>Leaderboard</v-btn>
