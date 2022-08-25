@@ -1,7 +1,19 @@
+<script>
+	export default {
+    data() {
+        return {};
+    },
+    head: {
+        titleTemplate: "%s - Main",
+    },
+    methods: {},
+}
+</script>
+
 <template>
 	<div>
 		<Toolbar />
-		<Notification />
+		<TestZone />
 		<v-row justify="center" style="margin-top: 10%">
 			<v-btn>Leaderboard</v-btn>
 			<v-btn>Play</v-btn>
@@ -9,16 +21,3 @@
 		</v-row>
 	</div>
 </template>
-
-<script>
-	export default {
-		head: {
-			titleTemplate: '%s - Main',
-		},
-		data () {
-			return {
-				
-			}
-		}
-	}
-</script>

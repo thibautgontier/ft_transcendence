@@ -1,5 +1,5 @@
 <template>
-	<v-btn v-on:click="log" class="button" color="secondary">{{ text }}</v-btn>
+	<v-btn @click="log" class="button" color="secondary">{{ text }}</v-btn>
 </template>
 
 <script>
@@ -12,7 +12,7 @@
 		},
 		// Prototype pour comportement qui change en fonction du message du bouton
 		methods: {
-			log: function () {
+			log () {
 				if (this.buttonType === "42 Connect")
 					console.log("42 Connect");
 				else

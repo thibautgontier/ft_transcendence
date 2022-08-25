@@ -12,7 +12,7 @@
 		},
 		// Prototype pour comportement qui change en fonction du message du bouton
 		methods: {
-			updateXY: function (event) {
+			updateXY (event) {
 				this.x = event.offsetX
 				this.y = event.offsetY
 			}

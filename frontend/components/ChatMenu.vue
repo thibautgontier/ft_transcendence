@@ -22,7 +22,7 @@ export default Vue.extend({
 				return "🟢";
 			return "🔴";
 		},
-		getChannel (id:number) {
+		getChannel () {
 			this.activeChannel = ""
 		}
 	},

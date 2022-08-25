@@ -1,24 +1,16 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script lang="ts">
 import Vue from 'vue'
-import Login from '../components/Login.vue'
-import Main from '../components/Main.vue'
-import ChatMenu from '../components/ChatMenu.vue'
-
 export default Vue.extend({
-		components: {
-			Login,
-			Main,
-			ChatMenu,
-		},
 		data () {
 			return {
 				// inGame: false,
 				authenticated: false,
-				activeComponent: "Login"
+				activeComponent: "LoginPage"
 			}
 		},
 			computed: {
-				inGame: function () {
+				inGame () {
 					if (this.activeComponent !== 'ChatMenu')
 						return (false)
 					return (true)
@@ -46,8 +38,8 @@ export default Vue.extend({
 		<PongBall v-if="!inGame" />
 			<div class="testbuttons">
 				<v-row justify="center">
-					<v-btn @click.stop="activeComponent='Login'">Login Page</v-btn>
-					<v-btn @click.stop="activeComponent='Main'">Main Menu</v-btn>
+					<v-btn @click.stop="activeComponent='LoginPage'">Login Page</v-btn>
+					<v-btn @click.stop="activeComponent='MainMenu'">Main Menu</v-btn>
 					<v-btn @click.stop="activeComponent='ChatMenu'">Chat Menu</v-btn>
 				</v-row>
 			</div>

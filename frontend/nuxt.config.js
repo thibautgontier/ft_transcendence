@@ -51,6 +51,10 @@ export default {
     '/api/': 'http://localhost:3000',
   },
 
+    router: {
+      prefetchLinks: false,
+    },
+
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
@@ -86,6 +90,6 @@ export default {
   build: {},
   server: {
     port: 8080,
-    host: '0.0.0.0',
+    host: 'localhost',
   }
 }

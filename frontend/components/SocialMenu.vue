@@ -101,15 +101,15 @@
 				links: ['Home', 'Contacts', 'Settings'],
 			}
 		},
+		computed: {
+
+		},
 		methods: {
-			online: function (status) {
+			online (status) {
 				if (status === true)
 					return "🟢";
 				return "🔴";
 			}
-		},
-		computed: {
-
 		}
 	}
 </script>
