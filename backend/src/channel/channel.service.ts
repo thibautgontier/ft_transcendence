@@ -1,13 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { Channel, Message, User } from '@prisma/client';
+import { Channel, User } from '@prisma/client';
 import { Response } from 'express';
-import { connect } from 'http2';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
 import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
-import { ChannelSendMsgDto } from './dto/channel-sendMessage.dto';
-import { ChannelSwitchToPrivateDto } from './dto/channel-swicthToPrivate.dto';
+import { ChannelSwitchToPrivate } from './dto/channel-swicthToPrivate.dto';
 import { ChannelUpdateDto } from './dto/channel-update.dto';
 
 @Injectable()
@@ -40,27 +38,6 @@ export class ChannelService {
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
         message: 'Cannot create channel',
-      });
-      return null;
-    }
-  }
-
-  async deleteChannel(
-    idChan: number,
-    idAdmin: number,
-    res: Response,
-  ): Promise<Channel | null> {
-    try {
-      if ((await this.getAdminChan(idChan, idAdmin)) === undefined) throw Error;
-      const channel = await this.prisma.channel.delete({
-        where: { id: idChan },
-      });
-      res.status(HttpStatus.OK).send(channel);
-      return channel;
-    } catch (error) {
-      res.status(HttpStatus.BAD_REQUEST).send({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Cannot delete channel',
       });
       return null;
     }
@@ -102,19 +79,17 @@ export class ChannelService {
   ): Promise<Channel | null> {
     try {
       if ((await this.getAdminChan(idChan, idAdmin)) === undefined) throw Error;
-      const channel = await this.prisma.channel.update({
+      return await this.prisma.channel.update({
         where: { id: idChan },
         data: {
           Name: body.name,
           Description: body.Description,
         },
       });
-      res.status(HttpStatus.OK).send(channel);
-      return channel;
     } catch (error) {
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot update Channel',
+        message: 'Cannot add user to channel',
       });
       return null;
     }
@@ -180,44 +155,12 @@ export class ChannelService {
     return channel.Admins.find((User) => User.id === idUser);
   }
 
-  async getMutedUsers(idChan: number, idUser: number): Promise<User> {
-    const channel = await this.prisma.channel.findUnique({
-      where: { id: idChan },
-      select: { MutedUsers: true },
-    });
-    return channel.MutedUsers.find((User) => User.id === idUser);
-  }
-
-  async getBanUsers(idChan: number, idUser: number): Promise<User> {
-    const channel = await this.prisma.channel.findUnique({
-      where: { id: idChan },
-      select: { BanUsers: true },
-    });
-    return channel.BanUsers.find((User) => User.id === idUser);
-  }
-
   async getUser(idChan: number, idUser: number): Promise<User> {
     const channel = await this.prisma.channel.findUnique({
       where: { id: idChan },
       select: { Users: true },
     });
     return channel.Users.find((User) => User.id === idUser);
-  }
-
-  async getMessage(idChan: number, idMessage: number): Promise<Message> {
-    const channel = await this.prisma.channel.findUnique({
-      where: { id: idChan },
-      select: { Messages: true },
-    });
-    return channel.Messages.find((Message) => Message.id === idMessage);
-  }
-
-  async getSender(idMessage: number, idUser: number): Promise<number> {
-    const msg = await this.prisma.message.findUnique({
-      where: { id: idMessage },
-      select: { User: true },
-    });
-    return msg.User.id;
   }
 
   async addAdmin(
@@ -229,7 +172,7 @@ export class ChannelService {
     try {
       if (
         (await this.getUser(idChan, idToAdd)) === undefined ||
-        (await this.getAdminChan(idChan, idAdmin)) === undefined ||
+        (await this.getAdminChan(idChan, idAdmin)) !== undefined ||
         (await this.getAdminChan(idChan, idToAdd)) !== undefined
       )
         throw Error;
@@ -277,18 +220,45 @@ export class ChannelService {
     }
   }
 
-  async switchToPrivate(
+  async kickUser(
     idChan: number,
-    idAdmin: number,
-    body: ChannelSwitchToPrivateDto,
+    idKicker: number,
+    idToKick: number,
     res: Response,
   ): Promise<Channel | null> {
     try {
+      let channel = await this.prisma.channel.findFirst({
+        where: { id: idChan },
+      });
       if (
-        (await this.getAdminChan(idChan, idAdmin)) === undefined ||
-        body.Password === undefined
+        channel.OwnerID === idToKick ||
+        (await this.getAdminChan(idChan, idKicker)) === undefined ||
+        (await this.getUser(idChan, idToKick)) === undefined
       )
         throw Error;
+      channel = await this.prisma.channel.update({
+        where: { id: idChan },
+        data: { Users: { disconnect: { id: idToKick } } },
+      });
+      res.status(HttpStatus.OK).send(channel);
+      return channel;
+    } catch (error) {
+      res.status(HttpStatus.NOT_ACCEPTABLE).send({
+        statusCode: HttpStatus.NOT_ACCEPTABLE,
+        message: 'Cannot kick user of this channel',
+      });
+      return null;
+    }
+  }
+
+  async switchToPrivate(
+    idChan: number,
+    idAdmin: number,
+    body: ChannelSwitchToPrivate,
+    res: Response,
+  ): Promise<Channel | null> {
+    try {
+      if ((await this.getAdminChan(idChan, idAdmin)) === undefined) throw Error;
       const channel = await this.prisma.channel.update({
         where: { id: idChan },
         data: { Password: body.Password, Type: 'protected' },
@@ -298,240 +268,7 @@ export class ChannelService {
     } catch (error) {
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot switch public to protected',
-      });
-      return null;
-    }
-  }
-
-  async switchToPublic(
-    idChan: number,
-    idAdmin: number,
-    res: Response,
-  ): Promise<Channel | null> {
-    try {
-      if ((await this.getAdminChan(idChan, idAdmin)) === undefined) throw Error;
-      const channel = await this.prisma.channel.update({
-        where: { id: idChan },
-        data: { Type: 'public', Password: null },
-      });
-      res.status(HttpStatus.OK).send(channel);
-      return channel;
-    } catch (error) {
-      res.status(HttpStatus.NOT_ACCEPTABLE).send({
-        statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot switch protected to public',
-      });
-      return null;
-    }
-  }
-
-  async sendMessage(
-    idChan: number,
-    idUser: number,
-    res: Response,
-    body: ChannelSendMsgDto,
-  ): Promise<Message | null> {
-    try {
-      if (
-        (await this.getUser(idChan, idUser)) === undefined ||
-        (await this.getMutedUsers(idChan, idUser)) !== undefined ||
-        body.Content === undefined
-      )
-        throw Error;
-      const msg = await this.prisma.message.create({
-        data: {
-          Content: body.Content,
-          User: { connect: { id: idUser } },
-          Channel: { connect: { id: idChan } },
-        },
-      });
-      res.status(HttpStatus.CREATED).send(msg);
-      return msg;
-    } catch (error) {
-      res.status(HttpStatus.NOT_ACCEPTABLE).send({
-        statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot send message to channel',
-      });
-      return null;
-    }
-  }
-
-  async removeMessage(
-    idChan: number,
-    idMessage: number,
-    idUser: number,
-    res: Response,
-  ): Promise<Message | null> {
-    try {
-      if (
-        (await this.getMessage(idChan, idMessage)) === undefined ||
-        ((await this.getAdminChan(idChan, idUser)) === undefined &&
-          (await this.getSender(idMessage, idUser)) !== idUser)
-      )
-        throw Error;
-      const msg = await this.prisma.message.delete({
-        where: { id: idMessage },
-      });
-      res.status(HttpStatus.OK).send(msg);
-      return msg;
-    } catch (error) {
-      res.status(HttpStatus.NOT_ACCEPTABLE).send({
-        statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot remove message from channel',
-      });
-      return null;
-    }
-  }
-
-  async editMessage(
-    idChan: number,
-    idMessage: number,
-    idUser: number,
-    body: ChannelSendMsgDto,
-    res: Response,
-  ): Promise<Message | null> {
-    try {
-      if (
-        (await this.getMessage(idChan, idMessage)) === undefined ||
-        (await this.getBanUsers(idChan, idUser)) !== undefined ||
-        (await this.getMutedUsers(idChan, idUser)) !== undefined ||
-        ((await this.getAdminChan(idChan, idUser)) === undefined &&
-          (await this.getSender(idMessage, idUser)) !== idUser)
-      )
-        throw Error;
-      const msg = await this.prisma.message.update({
-        where: { id: idMessage },
-        data: { Content: body.Content },
-      });
-      res.status(HttpStatus.OK).send(msg);
-      return msg;
-    } catch (error) {
-      res.status(HttpStatus.NOT_ACCEPTABLE).send({
-        statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot edit message from channel',
-      });
-      return null;
-    }
-  }
-
-  async muteUser(
-    idChan: number,
-    idAdmin: number,
-    idUser: number,
-    res: Response,
-  ): Promise<Channel | null> {
-    try {
-      if (
-        (await this.getAdminChan(idChan, idAdmin)) === undefined ||
-        (await this.getOwner(idChan)) === idUser ||
-        (await this.getAdminChan(idChan, idUser)) !== undefined ||
-        (await this.getMutedUsers(idChan, idUser)) !== undefined
-      )
-        throw Error;
-      const chan = await this.prisma.channel.update({
-        where: { id: idChan },
-        data: {
-          MutedUsers: { connect: { id: idUser } },
-        },
-      });
-      res.status(HttpStatus.OK).send(chan);
-      return chan;
-    } catch (error) {
-      res.status(HttpStatus.NOT_ACCEPTABLE).send({
-        statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot mute user',
-      });
-      return null;
-    }
-  }
-
-  async unmuteUser(
-    idChan: number,
-    idAdmin: number,
-    idUser: number,
-    res: Response,
-  ): Promise<Channel | null> {
-    try {
-      if (
-        (await this.getAdminChan(idChan, idAdmin)) === undefined ||
-        (await this.getMutedUsers(idChan, idUser)) === undefined
-      )
-        throw Error;
-      const chan = await this.prisma.channel.update({
-        where: { id: idChan },
-        data: {
-          MutedUsers: { disconnect: { id: idUser } },
-        },
-      });
-      res.status(HttpStatus.OK).send(chan);
-      return chan;
-    } catch (error) {
-      res.status(HttpStatus.NOT_ACCEPTABLE).send({
-        statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot unmute user',
-      });
-      return null;
-    }
-  }
-
-  async banUser(
-    idChan: number,
-    idAdmin: number,
-    idUser: number,
-    res: Response,
-  ): Promise<Channel | null> {
-    try {
-      if (
-        (await this.getOwner(idChan)) === idUser ||
-        (await this.getAdminChan(idChan, idUser)) !== undefined ||
-        (await this.getAdminChan(idChan, idAdmin)) === undefined ||
-        (await this.getUser(idChan, idUser)) === undefined ||
-        (await this.getBanUsers(idChan, idUser)) !== undefined
-      )
-        throw Error;
-      const channel = await this.prisma.channel.update({
-        where: { id: idChan },
-        data: {
-          Users: { disconnect: { id: idUser } },
-          BanUsers: { connect: { id: idUser } },
-        },
-      });
-      res.status(HttpStatus.OK).send(channel);
-      return channel;
-    } catch (error) {
-      res.status(HttpStatus.NOT_ACCEPTABLE).send({
-        statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot ban user of this channel',
-      });
-      return null;
-    }
-  }
-
-  async unbanUser(
-    idChan: number,
-    idAdmin: number,
-    idUser: number,
-    res: Response,
-  ): Promise<Channel | null> {
-    try {
-      if (
-        (await this.getAdminChan(idChan, idAdmin)) === undefined ||
-        (await this.getBanUsers(idChan, idUser)) === undefined
-      )
-        throw Error;
-      const channel = await this.prisma.channel.update({
-        where: { id: idChan },
-        data: {
-          BanUsers: { disconnect: { id: idUser } },
-        },
-      });
-      res.status(HttpStatus.OK).send(channel);
-      return channel;
-    } catch (error) {
-      res.status(HttpStatus.NOT_ACCEPTABLE).send({
-        statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot unban user of this channel',
+        message: 'Cannot kick user of this channel',
       });
       return null;
     }

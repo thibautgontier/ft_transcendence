@@ -1,11 +1,11 @@
 import { Controller, Get, Param, Patch, Query, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { GameService } from './gameProfile.service';
+import { GameService } from './game.service';
 import { Response } from 'express';
 import { GameProfile, Party } from '@prisma/client';
 
-@ApiTags('gameProfile')
-@Controller('gameProfile')
+@ApiTags('game')
+@Controller('game')
 export class GameController {
   constructor(private gameService: GameService) {}
 
@@ -164,13 +164,20 @@ export class GameController {
   async getHistory(
     @Res() res: Response,
     @Param('userID') userID: number,
-    @Query('party') partyID?: number,
   ): Promise<Party[] | null> {
-    const id = Number(partyID);
-    return await this.gameService.getHistory(
-      Number(userID),
-      Number.isNaN(id) ? undefined : id,
+    return await this.gameService.getHistory(Number(userID), res);
+  }
+
+  @Get(':userID/history/:partyID')
+  async getHistoryParty(
+    @Res() res: Response,
+    @Param('userID') userID: number,
+    @Param('partyID') partyID: number,
+  ): Promise<Party | null> {
+    return await this.gameService.getHistoryParty(
       res,
+      Number(userID),
+      Number(partyID),
     );
   }
 

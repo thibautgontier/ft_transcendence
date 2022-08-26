@@ -17,8 +17,6 @@ model User {
   Nickname      String?         @unique
   CreatedAt     DateTime        @default(now())
   UpdatedAt     DateTime        @updatedAt
-  Token         String          @unique
-  RefreshToken  String          @unique
   Avatar        String?
   Status        logStatus       @default(offline)
   TwoFA         Boolean         @default(false)
@@ -26,17 +24,20 @@ model User {
   SocialProfile SocialProfile?
   Friend        SocialProfile[] @relation("friends")
   Blocked       SocialProfile[] @relation("blocked")
-  PlayerOne     Party[]         @relation("playerOne")
-  PlayerTwo     Party[]         @relation("playerTwo")
-  Winner        Party[]         @relation("winner")
+  PlayerOneID   Int?            @unique
+  PlayerOne     Party?          @relation(name: "playerOne", fields: [PlayerOneID], references: [id])
+  PlayerTwoID   Int?            @unique
+  PlayerTwo     Party?          @relation(name: "playerTwo", fields: [PlayerTwoID], references: [id])
+  WinnerID      Int?            @unique
+  Winner        Party?          @relation(name: "winner", fields: [WinnerID], references: [id])
   ChannelOwner  Channel[]
   ChannelUser   Channel[]       @relation(name: "chanUsers")
   ChannelAdmin  Channel[]       @relation(name: "admin")
   MutedUser     Channel[]       @relation(name: "mutedUser")
-  BanUser    	Channel[]       @relation(name: "banUser")
   UserNotifyID  Int?            @unique
   UserNotify    Notify?         @relation(fields: [UserNotifyID], references: [id])
-  UserMessage	Message[]
+  UserMessageID Int?            @unique
+  UserMessage   Message?        @relation(fields: [UserMessageID], references: [id])
 }
 
 model GameProfile {
@@ -45,25 +46,23 @@ model GameProfile {
   Xp      Float   @default(0)
   NbParty Int     @default(0)
   NbWin   Int     @default(0)
-  History Party[] @relation("history")
+  History Party[]
   UserID  Int?    @unique
   User    User?   @relation(fields: [UserID], references: [id], onDelete: Cascade)
 }
 
 model Party {
-  id            Int           @id @default(autoincrement())
-  CreatedAt     DateTime      @default(now())
-  UpdatedAt     DateTime      @updatedAt
-  PlayerOneID   Int?
-  PlayerOne     User?         @relation(name: "playerOne", fields: [PlayerOneID], references: [id])
-  PlayerTwoID   Int?
-  PlayerTwo     User?         @relation(name: "playerTwo", fields: [PlayerTwoID], references: [id])
-  WinnerID      Int?
-  Winner        User?         @relation(name: "winner", fields: [WinnerID], references: [id])
-  Status        partyStatus   @default(starting)
-  GameHistory   GameProfile[] @relation("history")
-  PartyNotifyID Int?          @unique
-  PartyNotify   Notify?       @relation(fields: [PartyNotifyID], references: [id])
+  id            Int          @id @default(autoincrement())
+  CreatedAt     DateTime     @default(now())
+  UpdatedAt     DateTime     @updatedAt
+  PlayerOne     User?        @relation("playerOne")
+  PlayerTwo     User?        @relation("playerTwo")
+  Winner        User?        @relation("winner")
+  Status        partyStatus  @default(starting)
+  GameHistoryID Int?
+  GameHistory   GameProfile? @relation(fields: [GameHistoryID], references: [id])
+  PartyNotifyID Int?         @unique
+  PartyNotify   Notify?      @relation(fields: [PartyNotifyID], references: [id])
 }
 
 model SocialProfile {
@@ -101,7 +100,6 @@ model Channel {
   Users           User[]          @relation("chanUsers")
   Admins          User[]          @relation("admin")
   MutedUsers      User[]          @relation("mutedUser")
-  BanUsers        User[]          @relation("banUser")
   Messages        Message[]
   Password        String?
   SocialChannel   SocialProfile[] @relation("channels")
@@ -114,10 +112,9 @@ model Message {
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @updatedAt
   Content   String
-  UserID	Int
-  User      User	@relation(fields: [UserID], references: [id])
-  ChannelID Int
-  Channel   Channel  @relation(fields: [ChannelID], references: [id], onDelete: Cascade)
+  User      User?
+  ChannelID Int      @unique
+  Channel   Channel  @relation(fields: [ChannelID], references: [id])
 }
 
 enum logStatus {

@@ -6,8 +6,8 @@ import { PrismaService } from './prisma/prisma.service';
 import { UserModule } from './user/user.module';
 import { PrismaController } from './prisma/prisma.controller';
 import { ChannelModule } from './channel/channel.module';
-import { SocialModule } from './socialProfile/socialProfile.module';
-import { GameModule } from './gameProfile/gameProfile.module';
+import { SocialModule } from './socialProfile/social.module';
+import { GameModule } from './gameProfile/game.module';
 import { PartyModule } from './party/party.module';
 
 @Module({

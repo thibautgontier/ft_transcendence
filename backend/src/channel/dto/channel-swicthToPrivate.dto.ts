@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ChannelSwitchToPrivateDto {
+export class ChannelSwitchToPrivate {
   @ApiProperty({
     required: true,
   })

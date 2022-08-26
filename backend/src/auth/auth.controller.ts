@@ -1,18 +1,64 @@
-import { Controller, Get, Redirect, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Redirect,
+  Req,
+  UseGuards,
+  Session,
+} from '@nestjs/common';
+import { Request } from 'express';
+import { Profile } from 'passport';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { FtOauthGuard } from './guards/ft-oauth.guard';
+import { Student } from './user.decorator';
 
-@Controller('api/auth')
+@Controller('login')
 export class AuthController {
-  @Get('/42/login')
+  constructor(private prisma: PrismaService) {}
+
+  @Get()
+  async login(@Req() req: Request, @Session() session: Record<string, any>) {
+    console.log('session id: ', session.id);
+    const user = await this.prisma.user.findUnique({
+      where: {
+        Nickname: 'jabenjam',
+      },
+    });
+    if (!user) return;
+    const res = `Welcome, ${user.Nickname}`;
+    return { res };
+  }
+
+  @Get('42')
   @UseGuards(FtOauthGuard)
   ftAuth() {
     return;
   }
 
-  @Get('/42/return')
+  @Get('42/return')
   @UseGuards(FtOauthGuard)
-  @Redirect('/')
-  ftAuthCallback() {
+  @Redirect('http://localhost:8080')
+  async ftAuthCallback(@Student() user: Profile) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: {
+        Email: user.emails[0].value,
+      },
+    });
+    if (!existingUser) {
+      await this.prisma.user.create({
+        data: {
+          Email: user.emails[0].value,
+          Nickname: user.username,
+        },
+      });
+    }
     return;
+  }
+
+  @Get('logout')
+  @Redirect('/')
+  logOut(@Req() req: Request) {
+    console.log('logout');
+    req.logOut();
   }
 }

@@ -23,14 +23,14 @@ export class SocialService {
     }
   }
 
-  async getFriends(res: Response, userID: number): Promise<any> {
+  async getFriends(res: Response, userID: number): Promise<User[]> {
     try {
-      const friends = await this.prisma.socialProfile.findUnique({
+      const profile = await this.prisma.socialProfile.findUnique({
         where: { UserID: userID },
-        select: { Friends: { select: { id: true, Nickname: true } } },
+        select: { Friends: true },
       });
-      res.status(HttpStatus.OK).send(friends);
-      return friends;
+      res.status(HttpStatus.OK).send(profile.Friends);
+      return profile.Friends;
     } catch (error) {
       res.status(HttpStatus.NOT_FOUND).send(error);
       return null;
