@@ -13,7 +13,9 @@
 
 <template>
 	<div>
-		<Toolbar />
+		<h1 v-if="this.$store.state.isLogged">
+			<Toolbar />
+		</h1>
 		<Notification />
 		<v-row justify="center" style="margin-top: 10%">
 			<v-btn>Leaderboard</v-btn>

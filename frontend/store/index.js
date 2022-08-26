@@ -5,7 +5,8 @@ import axios from 'axios'
 export const state = () => ({
 	friends: [],
 	activeComponent: 'Login',
-	activeComponent: 'MainMenu'
+	activeComponent: 'MainMenu',
+	isLogged: 0
 })
 
 // getters
@@ -33,5 +34,8 @@ export const mutations = {
 	changeActiveComponent(state,component) {
 		state.activeComponent = component
 		console.log()
+	},
+	changeLogStatus(stat) {
+		state.isLogged = stat 
 	}
 }
