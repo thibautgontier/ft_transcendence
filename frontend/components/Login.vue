@@ -12,7 +12,10 @@
 		},
 		methods: {
 			redirectToLog() {
-				window.location.href = "http://localhost:3000/login/42"
+				const axios = require('axios');
+				axios.get('http://localhost:3000/login/42').then(resp => {
+					console.log(resp.data);
+				});
 			},
 			connectTest() {
 				this.$store.state.isLogged = 1
