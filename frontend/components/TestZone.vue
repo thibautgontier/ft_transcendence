@@ -9,6 +9,12 @@ export default Vue.extend({
 			timeout: 4000,
 		}
 	},
+	head(): {} {
+		const title = "Transcendence - Test Zone"
+		return {
+			title,
+		}
+	},
 	methods: {
 		createClient() {
 			const client = new Colyseus.Client('https://localhost:8080')

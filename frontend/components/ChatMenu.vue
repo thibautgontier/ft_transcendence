@@ -16,6 +16,12 @@ export default Vue.extend({
 			activeChannel: "Channel"
 		};
 	},
+	head(): {} {
+		const title = "Transcendence - Chat"
+		return {
+			title,
+		}
+	},
 	methods: {
 		status (online:boolean) {
 			if (online === true)
@@ -115,9 +121,7 @@ export default Vue.extend({
 			</v-container>
 		</v-main>
 		<!-- INPUT ZONE -->
-		<v-footer
-		app
-		inset>
+		<v-footer app inset>
 			<v-text-field
 			dense
 			hide-details
