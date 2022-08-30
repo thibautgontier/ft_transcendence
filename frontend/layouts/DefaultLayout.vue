@@ -27,6 +27,7 @@ export default Vue.extend({
 				<v-row justify="center">
 					<v-btn @click.stop="activeComponent='LoginPage'">Login Page</v-btn>
 					<v-btn @click.stop="activeComponent='MainMenu'">Main Menu</v-btn>
+					<v-btn @click.stop="activeComponent='GameMenu'">Game Menu</v-btn>
 					<v-btn @click.stop="activeComponent='ChatMenu'">Chat Menu</v-btn>
 					<v-btn @click.stop="activeComponent='TestZone'">Test Zone</v-btn>
 				</v-row>
@@ -39,7 +40,6 @@ export default Vue.extend({
 
 <style>
 	body {
-		overflow: hidden;
 	}
 	.fade-enter-active, .fade-leave-active {
 		transition: opacity 0.12s;

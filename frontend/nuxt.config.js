@@ -72,7 +72,7 @@ export default {
         // },
 		dark: {
 			background: colors.shades.black,
-			primary: "#0A5EDC",
+			primary: "#FFF",
 			accent: colors.grey.darken3,
 			secondary: "#DC880A",
 			socialbg: "#144C80",

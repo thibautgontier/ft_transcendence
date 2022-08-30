@@ -14,7 +14,8 @@ export default Vue.extend({
                 { name: "Les Potos", icon: "mdi-account-group", id: 3 },
             ],
             activeChannel: "Channel",
-			admin: true
+			admin: true,
+			leaveDialog: false
         };
     },
     head(): {} {
@@ -24,13 +25,19 @@ export default Vue.extend({
         };
     },
     methods: {
+		leaveChannelDialog() {
+			this.leaveDialog = !this.leaveDialog
+		},
+		leaveChannelConfirmed() {
+			this.leaveDialog = false
+		},
         OnlineStatus(online: boolean) {
             if (online === true)
                 return "🟢";
             return "🔴";
         },
         getChannel() {
-            this.activeChannel = "";
+
         },
 		openPrivateChat() {
 
@@ -41,7 +48,7 @@ export default Vue.extend({
 		sendFriendRequest() {
 
 		},
-		blockUser(t) {
+		blockUser() {
 
 		},
 		unblockUser() {
@@ -81,6 +88,7 @@ export default Vue.extend({
 				<v-list-item-content>
 					<v-list-item-title>{{ channel.name }}</v-list-item-title>
 				</v-list-item-content>
+				<v-btn text color="white" x-small @click.stop="leaveChannelDialog()">x</v-btn>
 			</v-list-item>
 		</v-list>
 		</v-navigation-drawer>
@@ -106,14 +114,13 @@ export default Vue.extend({
 			>
 				<v-menu
 				v-model="member.menu"
-				open-on-hover
 				:close-on-content-click="true"
 				left
 				offset-x
 				transition="slide-x-reverse-transition"
 				>
 				<template #activator="{ on, attrs }">
-					<v-btn color="black" v-bind="attrs" v-on="on">
+					<v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
 						<v-list-item-icon>
 							<v-icon>{{ member.icon }}</v-icon>
 							<v-list-item-title>{{ OnlineStatus(member.online) }}</v-list-item-title>
@@ -166,6 +173,35 @@ export default Vue.extend({
 		<!-- TOOLBAR -->
 		<!-- CHANNEL -->
 		<v-main>
+			<v-dialog
+				v-model="leaveDialog"
+				max-width="400px"
+				>
+				<v-card>
+					<v-card-text class="text-center">
+						<div class="white--text leaveTitle">Do you really want to leave this channel ?</div>
+					</v-card-text>
+
+					<v-card-actions>
+					<v-spacer></v-spacer>
+
+					<v-btn
+						text
+						color="grey"
+						@click="leaveDialog = false"
+					>
+						CANCEL
+					</v-btn>
+					<v-btn
+						text
+						color="red"
+						@click="leaveChannelConfirmed()"
+					>
+						LEAVE
+					</v-btn>
+					</v-card-actions>
+				</v-card>
+			</v-dialog>
 			<v-container>
 				<v-row>
 					<v-list-item two-line app>
@@ -199,14 +235,21 @@ export default Vue.extend({
 			placeholder="Type here"
 			clearable
 			clear-icon="mdi-close-circle"
-			append-outer-icon="mdi-send"
+			clear-icon-color="black"
 			></v-text-field>
+			<v-btn text>
+				<v-icon>mdi-send</v-icon>
+			</v-btn>
 		</v-footer>
 	</div>
 </template>
 
 <style>
-	.messages {
+	.wide {
 		width: 100%;
+	}
+	.leaveTitle {
+		padding-top: 10%;
+		font-size: 1rem;
 	}
 </style>
