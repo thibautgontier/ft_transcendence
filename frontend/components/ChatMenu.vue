@@ -1,37 +1,56 @@
 <script lang="ts">
 import Vue from 'vue'
 export default Vue.extend({
-	data() {
-		return {
-			members: [
-				{ name: 'Ben', online: true, icon: 'mdi-account' },
-				{ name: 'Toto', online: true, icon: 'mdi-account' },
-				{ name: 'Luigi', online: false, icon: 'mdi-account' },
-			],
-			channels: [
-				{ name: 'Toto', icon: 'mdi-account', id: 1 },
-				{ name: 'Transcendence Team', icon: 'mdi-account-group', id: 2 },
-				{ name: 'Les Potos', icon: 'mdi-account-group', id: 3 },
-			],
-			activeChannel: "Channel"
-		};
-	},
-	head(): {} {
-		const title = "Transcendence - Chat"
-		return {
-			title,
-		}
-	},
-	methods: {
-		status (online:boolean) {
-			if (online === true)
-				return "🟢";
-			return "🔴";
+    data() {
+        return {
+            members: [
+                { name: "Ben", online: true, icon: "mdi-account", status: "ajoute des menus", menu: false, blocked: false},
+                { name: "Toto", online: true, icon: "mdi-account", status: "ajoute Colyseus", menu: false, blocked: true },
+                { name: "Luigi", online: false, icon: "mdi-account", status: "travaille au foodtruck", menu: false, blocked: false },
+            ],
+            channels: [
+                { name: "Toto", icon: "mdi-account", id: 1 },
+                { name: "Transcendence Team", icon: "mdi-account-group", id: 2 },
+                { name: "Les Potos", icon: "mdi-account-group", id: 3 },
+            ],
+            activeChannel: "Channel",
+			admin: true
+        };
+    },
+    head(): {} {
+        const title = "Transcendence - Chat";
+        return {
+            title,
+        };
+    },
+    methods: {
+        OnlineStatus(online: boolean) {
+            if (online === true)
+                return "🟢";
+            return "🔴";
+        },
+        getChannel() {
+            this.activeChannel = "";
+        },
+		openPrivateChat() {
+
 		},
-		getChannel () {
-			this.activeChannel = ""
+		inviteToPlay() {
+
+		},
+		sendFriendRequest() {
+
+		},
+		blockUser(t) {
+
+		},
+		unblockUser() {
+
+		},
+		banFromChannel() {
+
 		}
-	},
+    },
 })
 </script>
 
@@ -77,20 +96,70 @@ export default Vue.extend({
 				<v-list-item-title>Members</v-list-item-title>
 			</v-list-item-content>
 		</template>
+
 		<v-divider></v-divider>
+
 		<v-list dense>
 			<v-list-item
 			v-for="member in members"
 			:key="member.name"
-			@click.stop="redirection_vers_conv_perso"
 			>
-				<v-list-item-icon>
-					<v-icon>{{ member.icon }}</v-icon>
-					<v-list-item-title>{{ status(member.online) }}</v-list-item-title>
-				</v-list-item-icon>
-				<v-list-item-content>
-					<v-list-item-title>{{ member.name }}</v-list-item-title>
-				</v-list-item-content>
+				<v-menu
+				v-model="member.menu"
+				open-on-hover
+				:close-on-content-click="true"
+				left
+				offset-x
+				transition="slide-x-reverse-transition"
+				>
+				<template #activator="{ on, attrs }">
+					<v-btn color="black" v-bind="attrs" v-on="on">
+						<v-list-item-icon>
+							<v-icon>{{ member.icon }}</v-icon>
+							<v-list-item-title>{{ OnlineStatus(member.online) }}</v-list-item-title>
+						</v-list-item-icon>
+						<v-list-item-content>
+							<v-list-item-title>{{ member.name }}</v-list-item-title>
+						</v-list-item-content>
+					</v-btn>
+				</template>
+
+					<v-card>
+						<v-list>
+							<v-list-item>
+								<v-list-item-icon>
+									<v-icon>{{ member.icon }}</v-icon>
+									<v-list-item-title>{{ OnlineStatus(member.online) }}</v-list-item-title>
+								</v-list-item-icon>
+								<v-list-item-content>
+									<v-list-item-title>{{ member.name }}</v-list-item-title>
+									<v-list-item-subtitle>{{member.status }}</v-list-item-subtitle>
+								</v-list-item-content>
+							</v-list-item>
+						</v-list>
+
+						<v-divider></v-divider>
+
+						<v-list>
+							<v-list-item>
+								<v-btn @click.stop="openPrivateChat(member)">Private chat</v-btn>
+							</v-list-item>
+							<v-list-item>
+								<v-btn @click.stop="inviteToPlay(member)">Invite to a match</v-btn>
+							</v-list-item>
+							<v-list-item>
+								<v-btn @click.stop="sendFriendRequest(member)">Send friend request</v-btn>
+							</v-list-item>
+							<v-list-item>
+								<v-btn v-if="!member.blocked" @click.stop="blockUser()">Block user</v-btn>								
+								<v-btn v-else @click.stop="unblockUser(member)">Unblock user</v-btn>
+							</v-list-item>
+							<v-list-item v-if="admin">
+								<v-btn @click.stop="openPrivateChat(member)">Ban from channel</v-btn>
+							</v-list-item>
+						</v-list>
+					</v-card>
+				</v-menu>
 			</v-list-item>
 		</v-list>
 		</v-navigation-drawer>

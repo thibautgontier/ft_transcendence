@@ -37,6 +37,7 @@ export default Vue.extend({
 		<v-row justify="center">
 			<v-btn @click.stop="snackbar = true">Send Notification</v-btn>
 			<v-btn @click.stop="createClient()">Create Client</v-btn>
+			<PopOver />
 		</v-row>
 		<v-snackbar
 			v-model="snackbar"
