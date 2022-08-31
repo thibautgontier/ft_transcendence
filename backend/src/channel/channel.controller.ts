@@ -18,18 +18,19 @@ import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
 import { ChannelSendMsgDto } from './dto/channel-sendMessage.dto';
 import { ChannelSwitchToPrivateDto } from './dto/channel-swicthToPrivate.dto';
 import { ChannelUpdateDto } from './dto/channel-update.dto';
+import { ChatRoom } from './chatroom'; 
 
 @ApiTags('channel')
 @Controller('channel')
 export class ChannelController {
-  constructor(private channelService: ChannelService) {}
+  constructor(private chatRoom: ChatRoom, private channelService: ChannelService) {}
 
   @Get()
   async getAll() {
     return this.channelService.getAll();
   }
 
-  @Get('id/:id')
+  @Get(':id')
   async findID(@Param('id') id: number): Promise<Channel | null> {
     return await this.channelService.findID(Number(id));
   }
@@ -39,6 +40,7 @@ export class ChannelController {
     @Res() res: Response,
     @Body() body: ChannelCreateDto,
   ): Promise<Channel | null> {
+    this.chatRoom.onCreate(body)
     return await this.channelService.createChannel(res, body);
   }
 
