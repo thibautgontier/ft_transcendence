@@ -15,14 +15,15 @@
 				this.x = event.offsetX
 				this.y = event.offsetY
 			}
-			}
+		}
 	}
 </script>
 
 <style>
 	.canvas {
 		border: solid 1px;
-		height: 30%;
-		width: 30%;
+		margin-top: 10%;
+		height: 80%;
+		width: 80%;
 	}
 </style>

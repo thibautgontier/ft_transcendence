@@ -1,7 +1,12 @@
 <script lang="ts">
 import Vue from 'vue'
 export default Vue.extend({
-	props: ["buttonType"],
+	props: {
+		buttonType: {
+			default: "Button",
+			type: String,
+		}
+	},
 	data () {
 		return {
 			text: this.buttonType

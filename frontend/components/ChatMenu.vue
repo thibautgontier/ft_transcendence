@@ -1,63 +1,63 @@
 <script lang="ts">
 import Vue from 'vue'
 export default Vue.extend({
-    data() {
-        return {
-            members: [
-                { name: "Ben", online: true, icon: "mdi-account", status: "ajoute des menus", menu: false, blocked: false},
-                { name: "Toto", online: true, icon: "mdi-account", status: "ajoute Colyseus", menu: false, blocked: true },
-                { name: "Luigi", online: false, icon: "mdi-account", status: "travaille au foodtruck", menu: false, blocked: false },
-            ],
-            channels: [
-                { name: "Toto", icon: "mdi-account", id: 1 },
-                { name: "Transcendence Team", icon: "mdi-account-group", id: 2 },
-                { name: "Les Potos", icon: "mdi-account-group", id: 3 },
-            ],
-            activeChannel: "Channel",
-			admin: true,
-			leaveDialog: false
-        };
-    },
-    head(): {} {
-        const title = "Transcendence - Chat";
-        return {
-            title,
-        };
-    },
-    methods: {
+	data() {
+		return {
+			members: [
+				{ name: "Ben", online: true, icon: "mdi-account", status: "ajoute des menus", menu: false, blocked: false},
+				{ name: "Toto", online: true, icon: "mdi-account", status: "ajoute Colyseus", menu: false, blocked: true },
+				{ name: "Luigi", online: false, icon: "mdi-account", status: "travaille au foodtruck", menu: false, blocked: false },
+			],
+			channels: [
+				{ name: "Toto", icon: "mdi-account", id: 1 },
+				{ name: "Transcendence Team", icon: "mdi-account-group", id: 2 },
+				{ name: "Les Potos", icon: "mdi-account-group", id: 3 },
+			],
+			activeChannel: "Channel",
+		admin: true,
+		leaveDialog: false
+		};
+	},
+	head(): {} {
+		const title = "Transcendence - Chat";
+		return {
+			title,
+		};
+	},
+	methods: {
 		leaveChannelDialog() {
 			this.leaveDialog = !this.leaveDialog
 		},
 		leaveChannelConfirmed() {
 			this.leaveDialog = false
 		},
-        OnlineStatus(online: boolean) {
-            if (online === true)
-                return "🟢";
-            return "🔴";
-        },
-        getChannel() {
+	OnlineStatus(online: boolean) {
+		if (online === true)
+			return "🟢";
+		return "🔴";
+	},
+	getChannel() {
 
-        },
-		openPrivateChat() {
+	},
+	openPrivateChat() {
 
-		},
-		inviteToPlay() {
+	},
+	inviteToPlay() {
 
-		},
-		sendFriendRequest() {
+	},
+	sendFriendRequest() {
 
-		},
-		blockUser() {
+	},
+	blockUser() {
 
-		},
-		unblockUser() {
+	},
+	unblockUser() {
 
-		},
-		banFromChannel() {
+	},
+	banFromChannel() {
 
-		}
-    },
+	}
+	},
 })
 </script>
 

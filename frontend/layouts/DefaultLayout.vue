@@ -9,7 +9,7 @@ export default Vue.extend({
 		},
 		computed: {
 			inGame () {
-				if (this.activeComponent !== 'ChatMenu')
+				if (this.activeComponent !== 'ChatMenu' && this.activeComponent !== 'GameMenu')
 					return (false)
 				return (true)
 			}
@@ -39,8 +39,6 @@ export default Vue.extend({
 </template>
 
 <style>
-	body {
-	}
 	.fade-enter-active, .fade-leave-active {
 		transition: opacity 0.12s;
 	}
