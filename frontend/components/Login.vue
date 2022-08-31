@@ -1,20 +1,24 @@
 <script>
-	import {mapActions, mapState, mapGetters, mapMutations} from 'vuex'
+	import {mapActions, mapState, mapGetters, mapMutations} from 'vuex';
+	import axios from "axios";
+
 	export default {
 		data() {
 			return {
 				loginSuccess: 0,
-				loginFailed: 0
+				loginFailed: 0,
+				test: 'init'
 			}
 		},
 		head: {
 			titleTemplate: '%s - Login',
 		},
 		methods: {
-			redirectToLog() {
-				const axios = require('axios');
-				axios.get('http://localhost:3000/login/42').then(resp => {
-					console.log(resp.data);
+			async redirectToLog() {
+				await axios.get('/login/42')
+				.then(response => {
+					this.test = response.body;
+					console.log(response);
 				});
 			},
 			connectTest() {
