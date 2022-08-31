@@ -6,8 +6,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - frontend',
-    title: 'frontend',
+    title: 'Transcendence',
     htmlAttrs: {
       lang: 'en',
     },
@@ -46,12 +45,15 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: 'http://localhost:3000/api',
     proxy: true,
   },
   proxy: {
     '/api/': 'http://localhost:3000',
   },
+
+    router: {
+      prefetchLinks: false,
+    },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
@@ -59,15 +61,27 @@ export default {
     theme: {
       dark: true,
       themes: {
-        dark: {
-          primary: colors.blue.darken2,
-          accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3,
-        },
+        // dark: {
+        //   primary: colors.blue.darken2,
+        //   accent: colors.grey.darken3,
+        //   secondary: colors.amber.darken3,
+        //   info: colors.teal.lighten1,
+        //   warning: colors.amber.base,
+        //   error: colors.deepOrange.accent4,
+        //   success: colors.green.accent3,
+        // },
+		dark: {
+			background: colors.shades.black,
+			primary: "#0A5EDC",
+			accent: colors.grey.darken3,
+			secondary: "#DC880A",
+			socialbg: "#144C80",
+			socialbr: "#0D3457",
+			info: colors.teal.lighten1,
+			warning: colors.amber.base,
+			error: colors.deepOrange.accent4,
+			success: colors.green.accent3,
+		  },
       },
     },
   },
@@ -76,6 +90,6 @@ export default {
   build: {},
   server: {
     port: 8080,
-    // host: '0.0.0.0',
+    host: 'localhost',
   }
 }

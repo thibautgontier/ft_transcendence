@@ -1,7 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Channel, Message, User } from '@prisma/client';
 import { Response } from 'express';
-import { connect } from 'http2';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
@@ -19,7 +18,10 @@ export class ChannelService {
   }
 
   async findID(id: number): Promise<Channel | null> {
-    return this.prisma.channel.findUnique({ where: { id: id } });
+    return this.prisma.channel.findUnique({
+      where: { id: id },
+      include: { Messages: true },
+    });
   }
 
   async createChannel(
@@ -333,12 +335,19 @@ export class ChannelService {
     body: ChannelSendMsgDto,
   ): Promise<Message | null> {
     try {
-      if (
-        (await this.getUser(idChan, idUser)) === undefined ||
-        (await this.getMutedUsers(idChan, idUser)) !== undefined ||
-        body.Content === undefined
-      )
+      if ((await this.getUser(idChan, idUser)) === undefined) {
+        console.log('1\n');
         throw Error;
+      }
+      if ((await this.getMutedUsers(idChan, idUser)) !== undefined) {
+        console.log('2\n');
+        throw Error;
+      }
+      if (body.Content.length == undefined) {
+        console.log('CONTENT.LENGTH == UNDEFINED™2@@\n');
+        throw Error;
+      }
+      console.log(body.Content)
       const msg = await this.prisma.message.create({
         data: {
           Content: body.Content,
