@@ -11,6 +11,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { Channel, Message } from '@prisma/client';
 import { Response } from 'express';
+import { MainRoom } from 'src/rooms/main.rooms';
 import { ChannelService } from './channel.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
@@ -18,12 +19,11 @@ import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
 import { ChannelSendMsgDto } from './dto/channel-sendMessage.dto';
 import { ChannelSwitchToPrivateDto } from './dto/channel-swicthToPrivate.dto';
 import { ChannelUpdateDto } from './dto/channel-update.dto';
-import { ChatRoom } from './chatroom'; 
 
 @ApiTags('channel')
 @Controller('channel')
 export class ChannelController {
-  constructor(private chatRoom: ChatRoom, private channelService: ChannelService) {}
+  constructor(private mainroom: MainRoom, private channelService: ChannelService) {}
 
   @Get()
   async getAll() {
@@ -40,7 +40,7 @@ export class ChannelController {
     @Res() res: Response,
     @Body() body: ChannelCreateDto,
   ): Promise<Channel | null> {
-    this.chatRoom.onCreate(body)
+    this.mainroom.onCreate(body)
     return await this.channelService.createChannel(res, body);
   }
 
