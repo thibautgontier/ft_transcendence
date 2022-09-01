@@ -5,6 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { MainRoom } from './rooms/main.rooms';
 import { monitor } from '@colyseus/monitor';
 import { Server } from 'colyseus';
+import { ChatRoom } from './channel/chat.rooms';
 
 async function bootstrap() {
   const nestApp = await NestFactory.create(AppModule);
@@ -44,6 +45,7 @@ async function bootstrap() {
 
   const gameServer = new Server();
   gameServer.define(MainRoom.name, MainRoom);
+  gameServer.define(ChatRoom.name, ChatRoom);
 
   gameServer.attach({ server: nestApp.getHttpServer() });
   await nestApp.listen(3000);
