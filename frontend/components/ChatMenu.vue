@@ -134,15 +134,7 @@ export default Vue.extend({
 			<v-list-item
 			v-for="member in members"
 			:key="member.name"
-			@click.stop="redirection_vers_conv_perso"
 			>
-				<v-list-item-icon>
-					<v-icon>{{ member.icon }}</v-icon>
-					<v-list-item-title>{{ OnlineStatus(member.online) }}</v-list-item-title>
-				</v-list-item-icon>
-				<v-list-item-content>
-					<v-list-item-title>{{ member.name }}</v-list-item-title>
-				</v-list-item-content>
 				<v-menu
 				v-model="member.menu"
 				:close-on-content-click="true"
