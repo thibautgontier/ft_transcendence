@@ -18,7 +18,7 @@ export default Vue.extend({
 			admin: true,
 			leaveDialog: false,
 			client: Colyseus.Client as any,
-            room: Colyseus.Room as any,
+			room: Colyseus.Room as any,
 			myMessage: ''
 		};
 	},
@@ -29,7 +29,6 @@ export default Vue.extend({
 		};
 	},
 	computed: {
-
 	},
 	methods: {
 		leaveChannelDialog() : void{
@@ -56,9 +55,11 @@ export default Vue.extend({
         sendMessage() : void {
 			if (this.myMessage === '')
 				return
-			console.log(this.myMessage)
+			this.room.send("Message" , this.myMessage)
 			this.myMessage=''
-			// room.send(this.myMessage)
+			this.room.onMessage("Message", (message : any) => {
+				console.log(this.client.id, "received on", this.room.name, message)
+			})
 		},
 		getChannel() {
 
@@ -249,7 +250,6 @@ export default Vue.extend({
 			placeholder="Type here"
 			clearable
 			clear-icon="mdi-close-circle"
-			append-outer-icon="mdi-send"
 			clear-icon-color="black"
 			@keydown.enter.prevent="sendMessage()"
 			></v-text-field>

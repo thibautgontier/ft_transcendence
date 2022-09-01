@@ -7,11 +7,13 @@ export class ChatRoom extends Room {
 
   async onCreate(options : any) {
     console.info('Chat room created: ', options);
-	this.onMessage("action", (client, message) => {
+
+	this.onMessage("Message", (client, message) => {
         //
         // Triggers when 'action' message is sent.
         //
-		console.log("action")
+		this.broadcast("Message", message)
+		console.log("Message", message)
     });
 
     this.onMessage("*", (client, type, message) => {
@@ -25,7 +27,6 @@ export class ChatRoom extends Room {
 
   async onJoin(client: Client, options: any) {
     console.info(`Client sessionId: ${client.sessionId} roomId: ${this.roomId} joined the chat`);
-	client.send("Message de bienvenue", "Welcome to our ChatRoom")
   }
 
   async onLeave(client: Client, options: any) {
