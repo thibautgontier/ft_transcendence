@@ -4,6 +4,12 @@ export default Vue.extend({
 	data() {
         return {};
     },
+	head(): {} {
+		const title = "Transcendence - Main Menu"
+		return {
+			title,
+		}
+	},
     methods: {
 		
 	},

@@ -21,6 +21,12 @@ export default Vue.extend({
 			}).catch(e => {
 				console.log("JOIN ERROR", e)
 			})
+		},
+		head(): {} {
+			const title = "Transcendence - Test Zone"
+			return {
+				title,
+			}
 		}
 	}
 })

@@ -1,13 +1,19 @@
 <script lang="ts">
 import Vue from 'vue'
 export default Vue.extend({
-	data () {
+	data() {
 		return {
 			authenticated: false
 		}
 	},
+	head(): {} {
+		const title = "Transcendence - Chat"
+		return {
+			title,
+		}
+	},
 	methods: {
-		authenticate () {
+		authenticate () : void {
 			this.authenticated = !this.authenticated
 		}
 	}
