@@ -81,7 +81,7 @@ export default Vue.extend({
 		banFromChannel() {
 
 		}
-	}
+	},
 })
 </script>
 
@@ -97,6 +97,7 @@ export default Vue.extend({
 		<template #prepend>
 			<v-list-item-content>
 				<v-list-item-title>Conversations</v-list-item-title>
+				<v-btn @click.stop="createClient()">Create Client</v-btn>
 			</v-list-item-content>
 		</template>
 		<v-divider></v-divider>
