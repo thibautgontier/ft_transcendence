@@ -19,7 +19,7 @@ export default Vue.extend({
 			leaveDialog: false,
 			client: Colyseus.Client as any,
             room: Colyseus.Room as any,
-			myMessage: ""
+			myMessage: ''
 		};
 	},
 	head(): {} {
@@ -43,16 +43,12 @@ export default Vue.extend({
 				return "🟢";
 			return "🔴";
 		},
-		getChannel () {
-			this.activeChannel = ""
-		}
-	},
 		async createClient() {
             try {
-            this.client = new Colyseus.Client('ws://localhost:3000')
-            console.log(this.client)
-            this.room = await this.client.joinOrCreate("ChatRoom");
-            console.log(this.room.sessionId, "joined", this.room.name);
+           		this.client = new Colyseus.Client('ws://localhost:3000')
+           		console.log(this.client)
+           		this.room = await this.client.joinOrCreate("ChatRoom");
+           		console.log(this.room.sessionId, "joined", this.room.name);
             }
             catch(e){
                 console.log("JOIN ERROR", e); }
@@ -63,7 +59,7 @@ export default Vue.extend({
 			console.log(this.myMessage)
 			this.myMessage=''
 			// room.send(this.myMessage)
-        },
+		},
 		getChannel() {
 
 		},
@@ -85,6 +81,7 @@ export default Vue.extend({
 		banFromChannel() {
 
 		}
+	}
 })
 </script>
 
@@ -140,7 +137,7 @@ export default Vue.extend({
 			>
 				<v-list-item-icon>
 					<v-icon>{{ member.icon }}</v-icon>
-					<v-list-item-title>{{ status(member.online) }}</v-list-item-title>
+					<v-list-item-title>{{ OnlineStatus(member.online) }}</v-list-item-title>
 				</v-list-item-icon>
 				<v-list-item-content>
 					<v-list-item-title>{{ member.name }}</v-list-item-title>

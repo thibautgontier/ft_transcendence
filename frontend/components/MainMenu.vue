@@ -18,8 +18,6 @@ export default Vue.extend({
 
 <template>
 	<div>
-		<ToolBar />
-		<TestZone />
 		<v-row justify="center" style="margin-top: 10%">
 			<v-btn>Leaderboard</v-btn>
 			<v-btn>Play</v-btn>

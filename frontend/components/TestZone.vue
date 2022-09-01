@@ -11,7 +11,7 @@ export default Vue.extend({
 	},
 	methods: {
 		createClient() {
-			const client = new Colyseus.Client('https://localhost:8080')
+			const client = new Colyseus.Client('ws://localhost:8080')
 			console.log(client)
 			this.clientJoinRoom(client)
 		},
