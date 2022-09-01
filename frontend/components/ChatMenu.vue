@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
+import * as Colyseus from "colyseus.js";
 export default Vue.extend({
 	data() {
 		return {
@@ -14,8 +15,11 @@ export default Vue.extend({
 				{ name: "Les Potos", icon: "mdi-account-group", id: 3 },
 			],
 			activeChannel: "Channel",
-		admin: true,
-		leaveDialog: false
+			admin: true,
+			leaveDialog: false,
+			client: Colyseus.Client as any,
+            room: Colyseus.Room as any,
+			myMessage: ""
 		};
 	},
 	head(): {} {
@@ -31,32 +35,47 @@ export default Vue.extend({
 		leaveChannelConfirmed() {
 			this.leaveDialog = false
 		},
-	OnlineStatus(online: boolean) {
-		if (online === true)
-			return "🟢";
-		return "🔴";
-	},
-	getChannel() {
+		OnlineStatus(online: boolean) {
+			if (online === true)
+				return "🟢";
+			return "🔴";
+		},
+		async createClient() {
+            try {
+            this.client = new Colyseus.Client('ws://localhost:3000')
+            console.log(this.client)
+            this.room = await this.client.joinOrCreate("ChatRoom");
+            console.log(this.room.sessionId, "joined", this.room.name);
+            }
+            catch(e){
+                console.log("JOIN ERROR", e); }
+        },
+        sendMessage() {
+            console.log(this.myMessage)
+			this.myMessage=''
+			// room.send(this.myMessage)
+        },
+		getChannel() {
 
-	},
-	openPrivateChat() {
+		},
+		openPrivateChat() {
 
-	},
-	inviteToPlay() {
+		},
+		inviteToPlay() {
 
-	},
-	sendFriendRequest() {
+		},
+		sendFriendRequest() {
 
-	},
-	blockUser() {
+		},
+		blockUser() {
 
-	},
-	unblockUser() {
+		},
+		unblockUser() {
 
-	},
-	banFromChannel() {
+		},
+		banFromChannel() {
 
-	}
+		}
 	},
 })
 </script>
@@ -75,6 +94,7 @@ export default Vue.extend({
 				<v-list-item-title>Conversations</v-list-item-title>
 			</v-list-item-content>
 		</template>
+		<v-btn @click.stop="createClient()">Create Client</v-btn>
 		<v-divider></v-divider>
 		<v-list dense>
 			<v-list-item
@@ -204,22 +224,10 @@ export default Vue.extend({
 			</v-dialog>
 			<v-container>
 				<v-row>
-					<v-list-item two-line app>
+					<v-list-item v-for="member in room" :key="member.name" two-line app>
 						<v-list-item-content>
 							<v-list-item-title>Sender</v-list-item-title>
 							<v-list-item-subtitle>> Hello</v-list-item-subtitle>
-						</v-list-item-content>
-					</v-list-item>
-					<v-list-item two-line app>
-						<v-list-item-content>
-							<v-list-item-title>Ben</v-list-item-title>
-							<v-list-item-subtitle>> Stylé non ?</v-list-item-subtitle>
-						</v-list-item-content>
-					</v-list-item>
-					<v-list-item two-line app>
-						<v-list-item-content>
-							<v-list-item-title>Toto</v-list-item-title>
-							<v-list-item-subtitle>> À mort gros !</v-list-item-subtitle>
 						</v-list-item-content>
 					</v-list-item>
 				</v-row>
@@ -228,6 +236,7 @@ export default Vue.extend({
 		<!-- INPUT ZONE -->
 		<v-footer app inset>
 			<v-text-field
+			v-model="myMessage"
 			dense
 			hide-details
 			solo
@@ -236,10 +245,8 @@ export default Vue.extend({
 			clearable
 			clear-icon="mdi-close-circle"
 			clear-icon-color="black"
+			@keydown.enter.prevent="sendMessage()"
 			></v-text-field>
-			<v-btn text>
-				<v-icon>mdi-send</v-icon>
-			</v-btn>
 		</v-footer>
 	</div>
 </template>

@@ -17,17 +17,10 @@ export default Vue.extend({
 	},
 	methods: {
 		createClient() {
-			const client = new Colyseus.Client('https://localhost:8080')
+			const client = new Colyseus.Client('ws://localhost:8080')
 			console.log(client)
-			this.clientJoinRoom(client)
+			client.joinOrCreate("testRoom", {});
 		},
-		clientJoinRoom(client:Colyseus.Client): void {
-			client.joinOrCreate("testRoom").then(room => {
-				console.log(room.sessionId, "joined", room.name)
-			}).catch(e => {
-				console.log("JOIN ERROR", e)
-			})
-		}
 	}
 })
 </script>
