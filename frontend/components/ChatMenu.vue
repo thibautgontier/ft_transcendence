@@ -2,7 +2,7 @@
 import Vue from 'vue'
 import * as Colyseus from "colyseus.js";
 export default Vue.extend({
-	data() {
+	data() : any {
 		return {
 			members: [
 				{ name: "Ben", online: true, icon: "mdi-account", status: "ajoute des menus", menu: false, blocked: false},
@@ -28,8 +28,11 @@ export default Vue.extend({
 			title,
 		};
 	},
+	computed: {
+
+	},
 	methods: {
-		leaveChannelDialog() {
+		leaveChannelDialog() : void{
 			this.leaveDialog = !this.leaveDialog
 		},
 		leaveChannelConfirmed() {
@@ -50,8 +53,10 @@ export default Vue.extend({
             catch(e){
                 console.log("JOIN ERROR", e); }
         },
-        sendMessage() {
-            console.log(this.myMessage)
+        sendMessage() : void {
+			if (this.myMessage === '')
+				return
+			console.log(this.myMessage)
 			this.myMessage=''
 			// room.send(this.myMessage)
         },
@@ -76,7 +81,7 @@ export default Vue.extend({
 		banFromChannel() {
 
 		}
-	},
+	}
 })
 </script>
 
@@ -224,10 +229,10 @@ export default Vue.extend({
 			</v-dialog>
 			<v-container>
 				<v-row>
-					<v-list-item v-for="member in room" :key="member.name" two-line app>
+					<v-list-item two-line app>
 						<v-list-item-content>
 							<v-list-item-title>Sender</v-list-item-title>
-							<v-list-item-subtitle>> Hello</v-list-item-subtitle>
+							<v-list-item-subtitle>> Salut</v-list-item-subtitle>
 						</v-list-item-content>
 					</v-list-item>
 				</v-row>
