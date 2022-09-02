@@ -30,6 +30,9 @@ export default Vue.extend({
 	},
 	computed: {
 	},
+	mounted() {
+		this.createClient()
+	},
 	methods: {
 		leaveChannelDialog() : void{
 			this.leaveDialog = !this.leaveDialog
@@ -39,20 +42,20 @@ export default Vue.extend({
 		},
 		OnlineStatus(online: boolean) {
 			if (online === true)
-				return "🟢";
-			return "🔴";
+				return "🟢"
+			return "🔴"
 		},
-		async createClient() {
-            try {
-           		this.client = new Colyseus.Client('ws://localhost:3000')
-           		console.log(this.client)
-           		this.room = await this.client.joinOrCreate("ChatRoom");
-           		console.log(this.room.sessionId, "joined", this.room.name);
-            }
-            catch(e){
-                console.log("JOIN ERROR", e); }
-        },
-        sendMessage() : void {
+		// async createClient() {
+		// 	try {
+		// 		this.client = new Colyseus.Client('ws://localhost:3000')
+		// 		console.log(this.client)
+		// 		this.room = await this.client.joinOrCreate("ChatRoom")
+		// 		console.log(this.room.sessionId, "joined", this.room.name)
+		// 	}
+		// 	catch(e){
+		// 		console.log("JOIN ERROR", e); }
+		// },
+		sendMessage() : void {
 			if (this.myMessage === '')
 				return
 			this.room.send("Message" , this.myMessage)
@@ -98,7 +101,7 @@ export default Vue.extend({
 		<template #prepend>
 			<v-list-item-content>
 				<v-list-item-title>Conversations</v-list-item-title>
-				<v-btn @click.stop="createClient()">Create Client</v-btn>
+				<!-- <v-btn @click.stop="createClient()">Create Client</v-btn> -->
 			</v-list-item-content>
 		</template>
 		<v-divider></v-divider>
