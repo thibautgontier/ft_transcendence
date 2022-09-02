@@ -21,12 +21,18 @@ export class AuthController {
     console.log('session id: ', session.id);
     const user = await this.prisma.user.findUnique({
       where: {
-        Nickname: 'jabenjam',
+        id: 1,
       },
     });
-    if (!user) return;
-    const res = `Welcome, ${user.Nickname}`;
-    return { res };
+    if (!user)
+      return {
+        success: 0,
+      };
+    return {
+      username: user.Nickname,
+      id: user.id,
+      success: 1,
+    };
   }
 
   @Get('42')
@@ -37,7 +43,7 @@ export class AuthController {
 
   @Get('42/return')
   @UseGuards(FtOauthGuard)
-  @Redirect('http://localhost:8080')
+  @Redirect('http://localhost:3000/login')
   async ftAuthCallback(@Student() user: Profile) {
     const existingUser = await this.prisma.user.findUnique({
       where: {
