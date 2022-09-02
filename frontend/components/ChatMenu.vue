@@ -19,7 +19,8 @@ export default Vue.extend({
 			leaveDialog: false,
 			client: Colyseus.Client as any,
 			room: Colyseus.Room as any,
-			myMessage: ''
+			myMessage: '',
+			receivedMessage: '',
 		};
 	},
 	head(): {} {
@@ -61,7 +62,7 @@ export default Vue.extend({
 			this.room.send("Message" , this.myMessage)
 			this.myMessage=''
 			this.room.onMessage("Message", (message : any) => {
-				console.log(this.client.id, "received on", this.room.name, message)
+				this.receivedMessage = message
 			})
 		},
 		getChannel() {

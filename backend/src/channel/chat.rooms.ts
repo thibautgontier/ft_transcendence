@@ -13,7 +13,7 @@ export class ChatRoom extends Room {
         // Triggers when 'action' message is sent.
         //
 		this.broadcast("Message", message)
-		console.log("Message", message)
+		console.log(client.id, 'sent' ,message)
     });
 
     this.onMessage("*", (client, type, message) => {
