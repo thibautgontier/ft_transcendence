@@ -17,10 +17,11 @@ export default Vue.extend({
 			activeChannel: "Channel",
 			admin: true,
 			leaveDialog: false,
-			client: Colyseus.Client as any,
-			room: Colyseus.Room as any,
+			client: Colyseus.Client,
+			room: Colyseus.Room,
 			myMessage: '',
 			receivedMessage: '',
+			messages: []
 		};
 	},
 	head(): {} {
@@ -55,15 +56,20 @@ export default Vue.extend({
 			}
 			catch(e){
 				console.log("JOIN ERROR", e); }
+			this.room.onMessage("Message", (message : any) => {
+				this.messages.push(message)
+				console.log(this.messages)
+				console.log(this.client)
+			})
 		},
 		sendMessage() : void {
 			if (this.myMessage === '')
 				return
 			this.room.send("Message" , this.myMessage)
 			this.myMessage=''
-			this.room.onMessage("Message", (message : any) => {
-				this.receivedMessage = message
-			})
+		},
+		listenMessages() : void {
+
 		},
 		getChannel() {
 
@@ -231,11 +237,15 @@ export default Vue.extend({
 				</v-card>
 			</v-dialog>
 			<v-container>
+			<v-list-item-content>
+				<v-list-item-title>{{room.id}}</v-list-item-title>
+			</v-list-item-content>
+				<v-divider></v-divider>
 				<v-row>
-					<v-list-item two-line app>
+					<v-list-item v-for="message in messages" :key=message two-line app>
 						<v-list-item-content>
 							<v-list-item-title>Sender</v-list-item-title>
-							<v-list-item-subtitle>> Message</v-list-item-subtitle>
+							<v-list-item-subtitle>> {{message}}</v-list-item-subtitle>
 						</v-list-item-content>
 					</v-list-item>
 				</v-row>
