@@ -45,16 +45,16 @@ export default Vue.extend({
 				return "🟢"
 			return "🔴"
 		},
-		// async createClient() {
-		// 	try {
-		// 		this.client = new Colyseus.Client('ws://localhost:3000')
-		// 		console.log(this.client)
-		// 		this.room = await this.client.joinOrCreate("ChatRoom")
-		// 		console.log(this.room.sessionId, "joined", this.room.name)
-		// 	}
-		// 	catch(e){
-		// 		console.log("JOIN ERROR", e); }
-		// },
+		async createClient() {
+			try {
+				this.client = new Colyseus.Client('ws://localhost:3000')
+				console.log(this.client)
+				this.room = await this.client.joinOrCreate("ChatRoom")
+				console.log(this.room.sessionId, "joined", this.room.name)
+			}
+			catch(e){
+				console.log("JOIN ERROR", e); }
+		},
 		sendMessage() : void {
 			if (this.myMessage === '')
 				return
