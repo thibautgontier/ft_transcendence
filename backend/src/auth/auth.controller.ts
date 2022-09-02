@@ -31,6 +31,7 @@ export class AuthController {
     return {
       username: user.Nickname,
       id: user.id,
+      photo: user.Avatar,
       success: 1,
     };
   }
@@ -55,6 +56,7 @@ export class AuthController {
         data: {
           Email: user.emails[0].value,
           Nickname: user.username,
+          Avatar: user.photos[0].value,
         },
       });
     }
