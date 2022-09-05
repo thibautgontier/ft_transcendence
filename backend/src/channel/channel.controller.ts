@@ -165,6 +165,7 @@ export class ChannelController {
     @Res() res: Response,
     @Body() body: ChannelSendMsgDto,
   ): Promise<Message | null> {
+	console.log('1212')
     return await this.channelService.sendMessage(
       Number(idChan),
       Number(idUser),

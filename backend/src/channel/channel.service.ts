@@ -1,9 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Channel, Message, User } from '@prisma/client';
-import { Client } from 'colyseus.js';
 import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ChatRoom } from './chat.rooms';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
 import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
@@ -13,8 +11,7 @@ import { ChannelUpdateDto } from './dto/channel-update.dto';
 
 @Injectable()
 export class ChannelService {
-  constructor(private chatRoom: ChatRoom, private prisma: PrismaService,
-    private client: Client) {}
+  constructor(private prisma: PrismaService) {}
 
   async getAll(): Promise<Channel[]> {
     return this.prisma.channel.findMany();
@@ -338,6 +335,7 @@ export class ChannelService {
     body: ChannelSendMsgDto,
   ): Promise<Message | null> {
     try {
+		console.log(body.Content)
       if ((await this.getUser(idChan, idUser)) === undefined) {
         console.log('1\n');
         throw Error;

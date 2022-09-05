@@ -22,7 +22,7 @@ export default Vue.extend({
 			client: Colyseus.Client,
 			room: Colyseus.Room,
 			leavingRoom: Colyseus.Room,
-			newChannelName: '' as string,
+			newChannelName: '',
 			myMessage: '',
 			receivedMessage: '',
 			messages: [],
@@ -55,9 +55,10 @@ export default Vue.extend({
 		},
 		async newChannelConfirmed() {
 			try {
-				console.log(this.newChannelName)
-				this.room = await this.client.joinOrCreate(this.newChannelName);
-				console.log(this.room.sessionId, "joined", this.room.name)
+				this.room = await this.client.create('ChatRoom');
+				console.log('chan name:', this.newChannelName)
+				console.log('room id:', this.room.id)
+				console.log(this.room.sessionId, "joined", this.room.id)
 				this.rooms.push(this.room)
 				this.inChannel = true;
 			}
@@ -69,6 +70,9 @@ export default Vue.extend({
 			this.room.onMessage("Message", (message : any) => {
 				this.messages.push(message)
 			})
+			this.room.onMessage("roomId", (message : any) => {
+				// console.log(message)
+			})
 		},
 		OnlineStatus(online: boolean) {
 			if (online === true)
@@ -79,17 +83,10 @@ export default Vue.extend({
 			try {
 				this.client = new Colyseus.Client('ws://localhost:3000')
 				console.log(this.client)
-				this.room = await this.client.joinOrCreate("ChatRoom")
-				this.rooms.push(this.room)
-				this.inChannel = true;
-				console.log(this.room.sessionId, "joined", this.room.name)
 			}
 			catch(e){
-				console.log("JOIN ERROR", e);
+				console.log("Create Client ERROR", e);
 			}
-			this.room.onMessage("Message", (message : any) => {
-				this.messages.push(message)
-			})
 		},
 		sendMessage() : void {
 			if (this.myMessage === '')
