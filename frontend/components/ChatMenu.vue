@@ -17,11 +17,16 @@ export default Vue.extend({
 			activeChannel: "Channel",
 			admin: true,
 			leaveDialog: false,
+			createDialog: false,
+			inChannel: false,
 			client: Colyseus.Client,
 			room: Colyseus.Room,
+			leavingRoom: Colyseus.Room,
+			newChannelName: '' as string,
 			myMessage: '',
 			receivedMessage: '',
-			messages: []
+			messages: [],
+			rooms: []
 		};
 	},
 	head(): {} {
@@ -36,11 +41,34 @@ export default Vue.extend({
 		this.createClient()
 	},
 	methods: {
-		leaveChannelDialog() : void{
+		leaveChannelDialog(leaving : Colyseus.Room) : void{
 			this.leaveDialog = !this.leaveDialog
+			this.leavingRoom = leaving
 		},
-		leaveChannelConfirmed() {
+		leaveChannelConfirmed(leaving: Colyseus.Room) {
 			this.leaveDialog = false
+			leaving.leave();
+			const index = this.rooms.indexOf(leaving)
+			this.rooms.splice(index, 1)
+			if (this.rooms.length === 0)
+				this.inChannel = false
+		},
+		async newChannelConfirmed() {
+			try {
+				console.log(this.newChannelName)
+				this.room = await this.client.joinOrCreate(this.newChannelName);
+				console.log(this.room.sessionId, "joined", this.room.name)
+				this.rooms.push(this.room)
+				this.inChannel = true;
+			}
+			catch (e) {
+				console.error("join error", e);
+			}
+			this.newChannelName = ''
+			this.createDialog = false
+			this.room.onMessage("Message", (message : any) => {
+				this.messages.push(message)
+			})
 		},
 		OnlineStatus(online: boolean) {
 			if (online === true)
@@ -52,14 +80,15 @@ export default Vue.extend({
 				this.client = new Colyseus.Client('ws://localhost:3000')
 				console.log(this.client)
 				this.room = await this.client.joinOrCreate("ChatRoom")
+				this.rooms.push(this.room)
+				this.inChannel = true;
 				console.log(this.room.sessionId, "joined", this.room.name)
 			}
 			catch(e){
-				console.log("JOIN ERROR", e); }
+				console.log("JOIN ERROR", e);
+			}
 			this.room.onMessage("Message", (message : any) => {
 				this.messages.push(message)
-				console.log(this.messages)
-				console.log(this.client)
 			})
 		},
 		sendMessage() : void {
@@ -106,25 +135,27 @@ export default Vue.extend({
 		app
 		>
 		<template #prepend>
-			<v-list-item-content>
-				<v-list-item-title>Conversations</v-list-item-title>
-				<!-- <v-btn @click.stop="createClient()">Create Client</v-btn> -->
-			</v-list-item-content>
+			<v-list-item>
+				<v-list-item-content>
+					<v-list-item-title>Conversations</v-list-item-title>
+				</v-list-item-content>
+				<v-btn text color="white" @click.stop="createDialog=true">New</v-btn>
+			</v-list-item>
 		</template>
 		<v-divider></v-divider>
 		<v-list dense>
 			<v-list-item
-			v-for="channel in channels"
-			:key="channel.name"
-			@click.stop="getChannel()"
+			v-for="(activeRoom, index) in rooms"
+			:key="index"
+			@click.stop="room = activeRoom"
 			>
-				<v-list-item-icon>
+				<!-- <v-list-item-icon>
 					<v-icon>{{ channel.icon }}</v-icon>
-				</v-list-item-icon>
+				</v-list-item-icon> -->
 				<v-list-item-content>
-					<v-list-item-title>{{ channel.name }}</v-list-item-title>
+					<v-list-item-title>{{ activeRoom.name }}</v-list-item-title>
 				</v-list-item-content>
-				<v-btn text color="white" x-small @click.stop="leaveChannelDialog()">x</v-btn>
+				<v-btn text color="white" x-small @click.stop="leaveChannelDialog(activeRoom)">x</v-btn>
 			</v-list-item>
 		</v-list>
 		</v-navigation-drawer>
@@ -213,7 +244,7 @@ export default Vue.extend({
 				>
 				<v-card>
 					<v-card-text class="text-center">
-						<div class="white--text leaveTitle">Do you really want to leave this channel ?</div>
+						<div class="white--text dialogTitle">Do you really want to leave this channel ?</div>
 					</v-card-text>
 
 					<v-card-actions>
@@ -229,22 +260,63 @@ export default Vue.extend({
 					<v-btn
 						text
 						color="red"
-						@click="leaveChannelConfirmed()"
+						@click="leaveChannelConfirmed(room)"
 					>
 						LEAVE
 					</v-btn>
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
-			<v-container>
+			<v-dialog
+				v-model="createDialog"
+				max-width="400px"
+				>
+				<v-card>
+					<v-card-text class="text-center">
+						<div class="white--text dialogTitle">Channel name :</div>
+					</v-card-text>
+						<v-text-field
+							v-model="newChannelName"
+							dense
+							hide-details
+							solo
+							required
+							type="text"
+							placeholder="Channel name"
+							clearable
+							clear-icon="mdi-close-circle"
+							clear-icon-color="black"
+							@keydown.enter.prevent="newChannelConfirmed()"
+							></v-text-field>
+					<v-card-actions>
+					<v-spacer></v-spacer>
+
+					<v-btn
+						text
+						color="grey"
+						@click="createDialog = false"
+					>
+						CANCEL
+					</v-btn>
+					<v-btn
+						text
+						color="red"
+						@click="newChannelConfirmed(room)"
+					>
+						CREATE
+					</v-btn>
+					</v-card-actions>
+				</v-card>
+			</v-dialog>
+			<v-container v-if="inChannel">
 			<v-list-item-content>
-				<v-list-item-title>{{room.id}}</v-list-item-title>
+				<v-list-item-title>{{room.id}} - {{room.name}}</v-list-item-title>
 			</v-list-item-content>
 				<v-divider></v-divider>
 				<v-row>
-					<v-list-item v-for="message in messages" :key=message two-line app>
+					<v-list-item v-for="(message, index) in messages" :key=index two-line app>
 						<v-list-item-content>
-							<v-list-item-title>Sender</v-list-item-title>
+							<v-list-item-title>{{room.sessionId}}</v-list-item-title>
 							<v-list-item-subtitle>> {{message}}</v-list-item-subtitle>
 						</v-list-item-content>
 					</v-list-item>
@@ -256,6 +328,7 @@ export default Vue.extend({
 		app
 		inset>
 			<v-text-field
+			v-if="inChannel"
 			v-model="myMessage"
 			dense
 			hide-details
@@ -275,7 +348,7 @@ export default Vue.extend({
 	.wide {
 		width: 100%;
 	}
-	.leaveTitle {
+	.dialogTitle {
 		padding-top: 10%;
 		font-size: 1rem;
 	}
