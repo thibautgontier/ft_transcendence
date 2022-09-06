@@ -1,8 +1,8 @@
 <script lang="ts">
 import Vue from 'vue'
+import axios from 'axios'
 import * as Colyseus from "colyseus.js";
 import { ourRoom } from "../types/room"
-import axios from 'axios'
 
 export default Vue.extend({
 	data() : any {
@@ -57,7 +57,7 @@ export default Vue.extend({
 			this.activeChannel = this.rooms[0]
 		},
 		async newChannelConfirmed() {
-			let newRoom = new ourRoom();
+			const newRoom = new ourRoom();
 			try {
 				newRoom.channel = await this.client.create('ChatRoom');
 				newRoom.channelName = this.newChannelName;
@@ -83,7 +83,7 @@ export default Vue.extend({
 		},
 		async createClient() {
 			try {
-				this.client = new Colyseus.Client('ws://localhost:3000')
+				this.client = await new Colyseus.Client('ws://localhost:3000')
 				console.log(this.client)
 			}
 			catch(e){
@@ -99,6 +99,11 @@ export default Vue.extend({
 		async getChannel() {
 			const response = await axios.get('/channel/');
 			console.log(response.data);
+			for (const channel of response.data) {
+				const room =  new ourRoom();
+				room.channelName = channel.Name;
+				this.rooms.push(room);
+			}
 		},
 		openPrivateChat() {
 
