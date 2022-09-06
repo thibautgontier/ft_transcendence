@@ -1,6 +1,9 @@
 <script lang="ts">
 import Vue from 'vue'
 import * as Colyseus from "colyseus.js";
+import { ourRoom } from "../types/room"
+import axios from 'axios'
+
 export default Vue.extend({
 	data() : any {
 		return {
@@ -14,19 +17,18 @@ export default Vue.extend({
 				{ name: "Transcendence Team", icon: "mdi-account-group", id: 2 },
 				{ name: "Les Potos", icon: "mdi-account-group", id: 3 },
 			],
-			activeChannel: "Channel",
+
+			activeChannel: ourRoom,
 			admin: true,
 			leaveDialog: false,
 			createDialog: false,
 			inChannel: false,
 			client: Colyseus.Client,
-			room: Colyseus.Room,
-			leavingRoom: Colyseus.Room,
+			leavingRoom: ourRoom,
 			newChannelName: '',
 			myMessage: '',
 			receivedMessage: '',
-			messages: [],
-			rooms: []
+			rooms: [] as ourRoom[]
 		};
 	},
 	head(): {} {
@@ -38,41 +40,43 @@ export default Vue.extend({
 	computed: {
 	},
 	mounted() {
+		this.getChannel()
 		this.createClient()
 	},
 	methods: {
-		leaveChannelDialog(leaving : Colyseus.Room) : void{
+		leaveChannelDialog(leaving : ourRoom) : void{
 			this.leaveDialog = !this.leaveDialog
 			this.leavingRoom = leaving
 		},
-		leaveChannelConfirmed(leaving: Colyseus.Room) {
+		leaveChannelConfirmed(leaving: ourRoom) {
 			this.leaveDialog = false
-			leaving.leave();
+			leaving.channel.leave();
 			const index = this.rooms.indexOf(leaving)
 			this.rooms.splice(index, 1)
 			if (this.rooms.length === 0)
 				this.inChannel = false
+			this.activeChannel = this.rooms[0]
 		},
 		async newChannelConfirmed() {
+			let newRoom = new ourRoom();
 			try {
-				this.room = await this.client.create('ChatRoom');
-				console.log('chan name:', this.newChannelName)
-				console.log('room id:', this.room.id)
-				console.log(this.room.sessionId, "joined", this.room.id)
-				this.rooms.push(this.room)
+				newRoom.channel = await this.client.create('ChatRoom');
+				newRoom.channelName = this.newChannelName;
+				this.rooms.push(newRoom);
 				this.inChannel = true;
+				this.newChannelName = '';
+				this.createDialog = false;
+				newRoom.channel.onMessage("Message", (message : string) => {
+					newRoom.messages.push(message);
+				})
+				newRoom.channel.onMessage("roomId", (message : string) => {
+					// console.log(message);
+				})
+				this.activeChannel = newRoom;
 			}
 			catch (e) {
 				console.error("join error", e);
 			}
-			this.newChannelName = ''
-			this.createDialog = false
-			this.room.onMessage("Message", (message : any) => {
-				this.messages.push(message)
-			})
-			this.room.onMessage("roomId", (message : any) => {
-				// console.log(message)
-			})
 		},
 		OnlineStatus(online: boolean) {
 			if (online === true)
@@ -91,14 +95,15 @@ export default Vue.extend({
 		sendMessage() : void {
 			if (this.myMessage === '')
 				return
-			this.room.send("Message" , this.myMessage)
+			this.activeChannel.channel.send("Message" , this.myMessage)
 			this.myMessage=''
 		},
 		listenMessages() : void {
 
 		},
-		getChannel() {
-
+		async getChannel() {
+			const response = await axios.get('http://localhost:3000/channel');
+			console.log(response.data);
 		},
 		openPrivateChat() {
 
@@ -142,17 +147,17 @@ export default Vue.extend({
 		<v-divider></v-divider>
 		<v-list dense>
 			<v-list-item
-			v-for="(activeRoom, index) in rooms"
+			v-for="(room, index) in rooms"
 			:key="index"
-			@click.stop="room = activeRoom"
+			@click.stop="activeChannel = room"
 			>
 				<!-- <v-list-item-icon>
 					<v-icon>{{ channel.icon }}</v-icon>
 				</v-list-item-icon> -->
 				<v-list-item-content>
-					<v-list-item-title>{{ activeRoom.name }}</v-list-item-title>
+					<v-list-item-title>{{ room.channelName }}</v-list-item-title>
 				</v-list-item-content>
-				<v-btn text color="white" x-small @click.stop="leaveChannelDialog(activeRoom)">x</v-btn>
+				<v-btn text color="white" x-small @click.stop="leaveChannelDialog(room)">x</v-btn>
 			</v-list-item>
 		</v-list>
 		</v-navigation-drawer>
@@ -257,7 +262,7 @@ export default Vue.extend({
 					<v-btn
 						text
 						color="red"
-						@click="leaveChannelConfirmed(room)"
+						@click="leaveChannelConfirmed(leavingRoom)"
 					>
 						LEAVE
 					</v-btn>
@@ -307,13 +312,13 @@ export default Vue.extend({
 			</v-dialog>
 			<v-container v-if="inChannel">
 			<v-list-item-content>
-				<v-list-item-title>{{room.id}} - {{room.name}}</v-list-item-title>
+				<v-list-item-title>{{activeChannel.channel.id}} - {{activeChannel.channelName}}</v-list-item-title>
 			</v-list-item-content>
 				<v-divider></v-divider>
 				<v-row>
-					<v-list-item v-for="(message, index) in messages" :key=index two-line app>
+					<v-list-item v-for="(message, index) in activeChannel.messages" :key=index two-line app>
 						<v-list-item-content>
-							<v-list-item-title>{{room.sessionId}}</v-list-item-title>
+							<v-list-item-title>{{activeChannel.channel.sessionId}}</v-list-item-title>
 							<v-list-item-subtitle>> {{message}}</v-list-item-subtitle>
 						</v-list-item-content>
 					</v-list-item>
