@@ -251,7 +251,7 @@ export class ChannelController {
     );
   }
 
-  @Patch(':channelid/banUser/:idAdmin/:idUser')
+  @Patch(':channelid/unbanUser/:idAdmin/:idUser')
   async unbanUser(
     @Param('channelid') idChan: number,
     @Param('idAdmin') idAdmin: number,

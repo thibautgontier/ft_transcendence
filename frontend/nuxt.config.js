@@ -48,7 +48,8 @@ export default {
     proxy: true,
   },
   proxy: {
-    '/api/': 'http://localhost:3000',
+    '/channel': 'http://localhost:3000',
+	'/socialProfile' : 'http://localhost:3000',
   },
 
     router: {

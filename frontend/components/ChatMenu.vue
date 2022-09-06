@@ -17,7 +17,6 @@ export default Vue.extend({
 				{ name: "Transcendence Team", icon: "mdi-account-group", id: 2 },
 				{ name: "Les Potos", icon: "mdi-account-group", id: 3 },
 			],
-
 			activeChannel: ourRoom,
 			admin: true,
 			leaveDialog: false,
@@ -28,7 +27,7 @@ export default Vue.extend({
 			newChannelName: '',
 			myMessage: '',
 			receivedMessage: '',
-			rooms: [] as ourRoom[]
+			rooms: [] as ourRoom[],
 		};
 	},
 	head(): {} {
@@ -70,7 +69,6 @@ export default Vue.extend({
 					newRoom.messages.push(message);
 				})
 				newRoom.channel.onMessage("roomId", (message : string) => {
-					// console.log(message);
 				})
 				this.activeChannel = newRoom;
 			}
@@ -98,11 +96,8 @@ export default Vue.extend({
 			this.activeChannel.channel.send("Message" , this.myMessage)
 			this.myMessage=''
 		},
-		listenMessages() : void {
-
-		},
 		async getChannel() {
-			const response = await axios.get('http://localhost:3000/channel');
+			const response = await axios.get('/channel/');
 			console.log(response.data);
 		},
 		openPrivateChat() {
@@ -111,17 +106,25 @@ export default Vue.extend({
 		inviteToPlay() {
 
 		},
-		sendFriendRequest() {
-
+		async sendFriendRequest() {
+			/**
+			 * const response = await axios.patch('/socialProfile/{userID}/friend/add/{blockedID}')
+			 */
 		},
-		blockUser() {
-
+		async blockUser() {
+			/**
+			 * const response = await axios.patch('/socialProfile/{userID}/blocked/add/{blockedID}')
+			 */
 		},
-		unblockUser() {
-
+		async unblockUser() {
+			/**
+			 * const response = await axios.patch('/socialProfile/{userID}//blocked/remove/{blockedID}')
+			 */
 		},
-		banFromChannel() {
-
+		async banFromChannel() {
+			/**
+			 * const response = await axios.patch('/channel/{channelid}/banUser/{idAdmin}/{idUser}')
+			 */
 		}
 	},
 })
