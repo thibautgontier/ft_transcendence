@@ -35,11 +35,15 @@ export default Vue.extend({
 			title,
 		};
 	},
-	computed: {
+	async mounted() {
+		await this.createClient()
+		await this.getChannel()
 	},
-	mounted() {
-		this.createClient()
-		this.getChannel()
+	destroyed() {
+		for (const room of this.rooms as ourRoom[])
+		{
+			room.channel.leave()
+		}
 	},
 	methods: {
 		leaveChannelPending(current : ourRoom) : void{

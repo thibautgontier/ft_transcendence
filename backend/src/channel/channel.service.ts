@@ -342,7 +342,6 @@ export class ChannelService {
     body: ChannelSendMsgDto,
   ): Promise<Message | null> {
     try {
-      console.log(body.Content);
       if ((await this.getUser(idChan, idUser)) === undefined) {
         console.log('1\n');
         throw Error;
