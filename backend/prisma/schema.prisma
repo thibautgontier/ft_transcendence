@@ -94,8 +94,9 @@ model Channel {
   CreatedAt       DateTime        @default(now())
   UpdatedAt       DateTime        @updatedAt
   Type            channelType     @default(public)
-  Name            String?         @unique
+  Name            String          @unique
   Description     String?
+  RoomId          String
   OwnerID         Int
   Owner           User            @relation(fields: [OwnerID], references: [id])
   Users           User[]          @relation("chanUsers")

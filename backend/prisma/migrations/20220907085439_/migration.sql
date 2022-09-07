@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Channel" ALTER COLUMN "SessionId" SET DATA TYPE TEXT;

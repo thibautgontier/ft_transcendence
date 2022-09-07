@@ -2,7 +2,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 import * as Colyseus from "colyseus.js";
-import { ourRoom } from "../types/room"
+import { ourRoom, Message, Channel } from "../types/room"
 
 export default Vue.extend({
 	data() : any {
@@ -11,11 +11,6 @@ export default Vue.extend({
 				{ name: "Ben", online: true, icon: "mdi-account", status: "ajoute des menus", menu: false, blocked: false},
 				{ name: "Toto", online: true, icon: "mdi-account", status: "ajoute Colyseus", menu: false, blocked: true },
 				{ name: "Luigi", online: false, icon: "mdi-account", status: "travaille au foodtruck", menu: false, blocked: false },
-			],
-			channels: [
-				{ name: "Toto", icon: "mdi-account", id: 1 },
-				{ name: "Transcendence Team", icon: "mdi-account-group", id: 2 },
-				{ name: "Les Potos", icon: "mdi-account-group", id: 3 },
 			],
 			activeChannel: ourRoom,
 			admin: true,
@@ -39,8 +34,8 @@ export default Vue.extend({
 	computed: {
 	},
 	mounted() {
-		this.getChannel()
 		this.createClient()
+		this.getChannel()
 	},
 	methods: {
 		leaveChannelDialog(leaving : ourRoom) : void{
@@ -60,15 +55,17 @@ export default Vue.extend({
 			const newRoom = new ourRoom();
 			try {
 				newRoom.channel = await this.client.create('ChatRoom');
+				const response = axios.post('/channel/create', {"owner" : "1" ,
+					"Name" : this.newChannelName, "RoomId" : newRoom.channel.id})
 				newRoom.channelName = this.newChannelName;
 				this.rooms.push(newRoom);
 				this.inChannel = true;
 				this.newChannelName = '';
 				this.createDialog = false;
-				newRoom.channel.onMessage("Message", (message : string) => {
-					newRoom.messages.push(message);
-				})
-				newRoom.channel.onMessage("roomId", (message : string) => {
+				newRoom.channel.onMessage("Message", (message : string) => { // listening message from socket
+					const newMsg = new Message();
+					newMsg.Content = message;
+					newRoom.messages.push(newMsg);
 				})
 				this.activeChannel = newRoom;
 			}
@@ -94,15 +91,36 @@ export default Vue.extend({
 			if (this.myMessage === '')
 				return
 			this.activeChannel.channel.send("Message" , this.myMessage)
+			axios.post(`channel/${this.activeChannel.id}/sendMessage/1`, { "Content" : this.myMessage})
 			this.myMessage=''
 		},
 		async getChannel() {
 			const response = await axios.get('/channel/');
 			console.log(response.data);
-			for (const channel of response.data) {
-				const room =  new ourRoom();
+			for (const channel of response.data as Channel[]) {
+				const room = new ourRoom();
+				try {
+					room.channel = await this.client.joinById(channel.RoomId);
+				}
+				catch(e)
+				{
+					room.channel = await this.client.create('ChatRoom');
+					await axios.patch(`/channel/update/${channel.id}/1`, {"RoomId" : room.channel.id})
+				}
 				room.channelName = channel.Name;
+				room.id = channel.id;
+				room.messages = channel.Messages
 				this.rooms.push(room);
+				room.channel.onMessage("Message", (message : string) => { // listening message from socket
+					const newMsg = new Message();
+					newMsg.Content = message;
+					room.messages.push(newMsg);
+				})
+			}
+			if (this.rooms.length > 0)
+			{
+				this.activeChannel = this.rooms[0];
+				this.inChannel = true;
 			}
 		},
 		openPrivateChat() {
@@ -327,7 +345,7 @@ export default Vue.extend({
 					<v-list-item v-for="(message, index) in activeChannel.messages" :key=index two-line app>
 						<v-list-item-content>
 							<v-list-item-title>{{activeChannel.channel.sessionId}}</v-list-item-title>
-							<v-list-item-subtitle>> {{message}}</v-list-item-subtitle>
+							<v-list-item-subtitle>> {{message.Content}}</v-list-item-subtitle>
 						</v-list-item-content>
 					</v-list-item>
 				</v-row>

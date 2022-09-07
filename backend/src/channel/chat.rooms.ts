@@ -21,7 +21,6 @@ export class ChatRoom extends Room {
       // Triggers when any other type of message is sent,
       // excluding "Message", which has its own specific handler defined above.
       //
-
       console.log('client :', client.sessionId, 'sent', type, message);
     });
   }
@@ -30,7 +29,6 @@ export class ChatRoom extends Room {
     console.info(
       `Client sessionId: ${client.sessionId} roomId: ${this.roomId} joined the chat`,
     );
-	client.send('roomId', this.roomId)
   }
 
   async onLeave(client: Client, options: any) {

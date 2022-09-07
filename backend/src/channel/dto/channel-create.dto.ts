@@ -5,4 +5,14 @@ export class ChannelCreateDto {
     required: true,
   })
   owner: number;
+
+  @ApiProperty({
+    required: true,
+  })
+  Name: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  RoomId: string;
 }

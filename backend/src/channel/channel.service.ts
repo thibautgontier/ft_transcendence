@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Session } from '@nestjs/common';
 import { Channel, Message, User } from '@prisma/client';
 import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -14,7 +14,9 @@ export class ChannelService {
   constructor(private prisma: PrismaService) {}
 
   async getAll(): Promise<Channel[]> {
-    return this.prisma.channel.findMany();
+    return this.prisma.channel.findMany({
+      include: { Messages: true },
+    });
   }
 
   async findID(id: number): Promise<Channel | null> {
@@ -34,6 +36,8 @@ export class ChannelService {
           Owner: { connect: { id: Number(body.owner) } },
           Users: { connect: { id: Number(body.owner) } },
           Admins: { connect: { id: Number(body.owner) } },
+          Name: body.Name,
+		  RoomId: body.RoomId
         },
       });
       res.status(HttpStatus.CREATED).send(channel);
@@ -83,6 +87,8 @@ export class ChannelService {
             connect: [{ id: Number(body.user_1) }, { id: Number(body.user_2) }],
           },
           Type: 'private',
+		  Name: body.Name,
+		  RoomId: body.RoomId
         },
       });
       res.status(HttpStatus.CREATED).send(channel);
@@ -109,6 +115,7 @@ export class ChannelService {
         data: {
           Name: body.name,
           Description: body.Description,
+		  RoomId: body.RoomId
         },
       });
       res.status(HttpStatus.OK).send(channel);
@@ -335,7 +342,7 @@ export class ChannelService {
     body: ChannelSendMsgDto,
   ): Promise<Message | null> {
     try {
-		console.log(body.Content)
+      console.log(body.Content);
       if ((await this.getUser(idChan, idUser)) === undefined) {
         console.log('1\n');
         throw Error;
@@ -348,7 +355,6 @@ export class ChannelService {
         console.log('CONTENT.LENGTH == UNDEFINED™2@@\n');
         throw Error;
       }
-      console.log(body.Content)
       const msg = await this.prisma.message.create({
         data: {
           Content: body.Content,

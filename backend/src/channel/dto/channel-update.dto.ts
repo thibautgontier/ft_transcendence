@@ -10,4 +10,9 @@ export class ChannelUpdateDto {
     required: false,
   })
   Description?: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  RoomId: string;
 }
