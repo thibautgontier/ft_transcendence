@@ -8,17 +8,21 @@ export default Vue.extend({
 	data() : any {
 		return {
 			members: [
-				{ name: "Ben", online: true, icon: "mdi-account", status: "ajoute des menus", menu: false, blocked: false},
-				{ name: "Toto", online: true, icon: "mdi-account", status: "ajoute Colyseus", menu: false, blocked: true },
-				{ name: "Luigi", online: false, icon: "mdi-account", status: "travaille au foodtruck", menu: false, blocked: false },
+				{ name: "Ben", online: true, icon: "mdi-account", status: "ajoute des menus", menu: false, blockedSwitch: false, adminSwitch: true},
+				{ name: "Toto", online: true, icon: "mdi-account", status: "ajoute Colyseus", menu: false, blockedSwitch: true, adminSwitch: true},
+				{ name: "Luigi", online: false, icon: "mdi-account", status: "travaille au foodtruck", menu: false, blockedSwitch: false, adminSwitch: false},
 			],
+			userName: "Ben",
 			activeChannel: ourRoom,
 			admin: true,
-			leaveDialog: false,
-			createDialog: false,
+			leaveChannelDialog: false,
+			createChannelDialog: false,
+			editChannelDialog: false,
 			inChannel: false,
+			blockSwitch: false,
+			adminSwitch: false,
 			client: Colyseus.Client,
-			leavingRoom: ourRoom,
+			dialogRoom: ourRoom,
 			newChannelName: '',
 			myMessage: '',
 			receivedMessage: '',
@@ -38,18 +42,22 @@ export default Vue.extend({
 		this.getChannel()
 	},
 	methods: {
-		leaveChannelDialog(leaving : ourRoom) : void{
-			this.leaveDialog = !this.leaveDialog
-			this.leavingRoom = leaving
+		leaveChannelPending(current : ourRoom) : void{
+			this.leaveChannelDialog = !this.leaveChannelDialog
+			this.dialogRoom = current
 		},
-		leaveChannelConfirmed(leaving: ourRoom) {
-			this.leaveDialog = false
-			leaving.channel.leave();
-			const index = this.rooms.indexOf(leaving)
+		editChannelPending(current : ourRoom) : void{
+			this.editChannelDialog = !this.editChannelDialog
+			this.dialogRoom = current
+		},
+		leaveChannelConfirmed() {
+			this.leaveChannelDialog = false
+			this.dialogRoom.channel.leave();
+			const index = this.rooms.indexOf(this.dialogRoom)
 			this.rooms.splice(index, 1)
+			this.activeChannel = this.rooms[0]
 			if (this.rooms.length === 0)
 				this.inChannel = false
-			this.activeChannel = this.rooms[0]
 		},
 		async newChannelConfirmed() {
 			const newRoom = new ourRoom();
@@ -61,7 +69,7 @@ export default Vue.extend({
 				this.rooms.push(newRoom);
 				this.inChannel = true;
 				this.newChannelName = '';
-				this.createDialog = false;
+				this.createChannelDialog = false;
 				newRoom.channel.onMessage("Message", (message : string) => { // listening message from socket
 					const newMsg = new Message();
 					newMsg.Content = message;
@@ -134,15 +142,15 @@ export default Vue.extend({
 			 * const response = await axios.patch('/socialProfile/{userID}/friend/add/{blockedID}')
 			 */
 		},
-		async blockUser() {
-			/**
-			 * const response = await axios.patch('/socialProfile/{userID}/blocked/add/{blockedID}')
-			 */
+		async switchBlock() {
+			// if (this.blocked === false)
+				// const response = await axios.patch('/socialProfile/{userID}/blocked/add/{blockedID}')
+			// else
+				// const response = await axios.patch('/socialProfile/{userID}/blocked/remove/{blockedID}')
+			console.log("blocked: " + this.blockSwitch)
 		},
-		async unblockUser() {
-			/**
-			 * const response = await axios.patch('/socialProfile/{userID}//blocked/remove/{blockedID}')
-			 */
+		async switchAdmin() {
+			console.log("admin: " + this.adminSwitch)
 		},
 		async banFromChannel() {
 			/**
@@ -167,7 +175,8 @@ export default Vue.extend({
 				<v-list-item-content>
 					<v-list-item-title>Conversations</v-list-item-title>
 				</v-list-item-content>
-				<v-btn text color="white" @click.stop="createDialog=true">New</v-btn>
+				<v-btn text color="white" @click.stop="createChannelDialog=true">New</v-btn>
+				<v-btn v-if="admin" text color="white" @click.stop="editChannelDialog=true">Edit</v-btn>
 			</v-list-item>
 		</template>
 		<v-divider></v-divider>
@@ -177,13 +186,11 @@ export default Vue.extend({
 			:key="index"
 			@click.stop="activeChannel = room"
 			>
-				<!-- <v-list-item-icon>
-					<v-icon>{{ channel.icon }}</v-icon>
-				</v-list-item-icon> -->
 				<v-list-item-content>
 					<v-list-item-title>{{ room.channelName }}</v-list-item-title>
 				</v-list-item-content>
-				<v-btn text color="white" x-small @click.stop="leaveChannelDialog(room)">x</v-btn>
+				<v-btn v-if="admin" fab x-small text @click.stop="editChannelPending(room)"><v-icon>mdi-cog</v-icon></v-btn>
+				<v-btn text fab x-small @click.stop="leaveChannelPending(room)"><v-icon>mdi-close</v-icon></v-btn>
 			</v-list-item>
 		</v-list>
 		</v-navigation-drawer>
@@ -207,7 +214,7 @@ export default Vue.extend({
 			>
 				<v-menu
 				v-model="member.menu"
-				:close-on-content-click="true"
+				:close-on-content-click="false"
 				left
 				offset-x
 				transition="slide-x-reverse-transition"
@@ -224,6 +231,7 @@ export default Vue.extend({
 					</v-btn>
 				</template>
 
+					<!-- MEMBER CARD MENU -->
 					<v-card>
 						<v-list>
 							<v-list-item>
@@ -250,12 +258,13 @@ export default Vue.extend({
 							<v-list-item>
 								<v-btn @click.stop="sendFriendRequest(member)">Send friend request</v-btn>
 							</v-list-item>
-							<v-list-item>
-								<v-btn v-if="!member.blocked" @click.stop="blockUser()">Block user</v-btn>								
-								<v-btn v-else @click.stop="unblockUser(member)">Unblock user</v-btn>
+							<v-list-item v-if="member.name !== userName">
+								<v-list-item-title>Blocked</v-list-item-title>
+								<v-switch v-model="member.blockSwitch" @change="switchBlock()">Blocked</v-switch>
 							</v-list-item>
 							<v-list-item v-if="admin">
-								<v-btn @click.stop="openPrivateChat(member)">Ban from channel</v-btn>
+								<v-list-item-title>Admin</v-list-item-title>
+								<v-switch v-model="member.adminSwitch" @change="switchAdmin(member)">Admin</v-switch>
 							</v-list-item>
 						</v-list>
 					</v-card>
@@ -266,8 +275,9 @@ export default Vue.extend({
 		<!-- TOOLBAR -->
 		<!-- CHANNEL -->
 		<v-main>
+			<!-- CHANNEL LEAVE DIALOG -->
 			<v-dialog
-				v-model="leaveDialog"
+				v-model="leaveChannelDialog"
 				max-width="400px"
 				>
 				<v-card>
@@ -281,22 +291,23 @@ export default Vue.extend({
 					<v-btn
 						text
 						color="grey"
-						@click="leaveDialog = false"
+						@click="leaveChannelDialog = false"
 					>
 						CANCEL
 					</v-btn>
 					<v-btn
 						text
 						color="red"
-						@click="leaveChannelConfirmed(leavingRoom)"
+						@click="leaveChannelConfirmed()"
 					>
 						LEAVE
 					</v-btn>
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
+			<!-- CHANNEL CREATION DIALOG -->
 			<v-dialog
-				v-model="createDialog"
+				v-model="createChannelDialog"
 				max-width="400px"
 				>
 				<v-card>
@@ -322,16 +333,45 @@ export default Vue.extend({
 					<v-btn
 						text
 						color="grey"
-						@click="createDialog = false"
+						@click="createChannelDialog = false"
 					>
 						CANCEL
 					</v-btn>
 					<v-btn
 						text
 						color="red"
-						@click="newChannelConfirmed(room)"
+						@click="newChannelConfirmed()"
 					>
 						CREATE
+					</v-btn>
+					</v-card-actions>
+				</v-card>
+			</v-dialog>
+			<!-- CHANNEL CONTROL PANEL DIALOG -->
+			<v-dialog
+				v-model="editChannelDialog"
+				max-width="400px"
+				>
+				<v-card>
+					<v-card-text class="text-center">
+						<div class="white--text dialogTitle">Channel control panel</div>
+					</v-card-text>
+					<v-switch></v-switch>
+					<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn
+						text
+						color="grey"
+						@click="editChannelDialog = false"
+					>
+						CANCEL
+					</v-btn>
+					<v-btn
+						text
+						color="green"
+						@click="editChannelConfirmed()"
+					>
+						SAVE AND QUIT
 					</v-btn>
 					</v-card-actions>
 				</v-card>
