@@ -1,3 +1,4 @@
+import { thisTypeAnnotation } from '@babel/types';
 import {
   Controller,
   Get,
@@ -9,32 +10,18 @@ import {
 import { Request } from 'express';
 import { Profile } from 'passport';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthService } from './auth.service';
 import { FtOauthGuard } from './guards/ft-oauth.guard';
 import { Student } from './user.decorator';
 
 @Controller('login')
 export class AuthController {
-  constructor(private prisma: PrismaService) {}
+  constructor(private authService: AuthService) {}
 
-  @Get()
-  async login(@Req() req: Request, @Session() session: Record<string, any>) {
-    console.log('session id: ', session.id);
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: 1,
-      },
-    });
-    if (!user)
-      return {
-        success: 0,
-      };
-    return {
-      username: user.Nickname,
-      id: user.id,
-      photo: user.Avatar,
-      success: 1,
-    };
-  }
+  // @Get()
+  // login() {
+  //   return;
+  // }
 
   @Get('42')
   @UseGuards(FtOauthGuard)
@@ -44,23 +31,8 @@ export class AuthController {
 
   @Get('42/return')
   @UseGuards(FtOauthGuard)
-  @Redirect('http://localhost:3000/login')
   async ftAuthCallback(@Student() user: Profile) {
-    const existingUser = await this.prisma.user.findUnique({
-      where: {
-        Email: user.emails[0].value,
-      },
-    });
-    if (!existingUser) {
-      await this.prisma.user.create({
-        data: {
-          Email: user.emails[0].value,
-          Nickname: user.username,
-          Avatar: user.photos[0].value,
-        },
-      });
-    }
-    return;
+    return await this.authService.callBack(user);
   }
 
   @Get('logout')

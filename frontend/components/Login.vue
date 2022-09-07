@@ -14,12 +14,15 @@
 			titleTemplate: '%s - Login',
 		},
 		methods: {
-			async redirectToLog() {
-				await axios.get('/login/42')
-				.then(response => {
-					this.test = response.body;
-					console.log(response);
-				});
+			// async redirectToLog() {
+			// 	await axios.get('/login')
+			// 	.then(response => {
+			// 		this.test = response.body;
+			// 		console.log(response);
+			// 	});
+			// },
+			redirectToLog() {
+				window.location.href = "http://localhost:3000/login/42/return"
 			},
 			connectTest() {
 				this.$store.state.isLogged = 1
