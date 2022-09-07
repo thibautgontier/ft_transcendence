@@ -6,7 +6,7 @@ export const state = () => ({
 	friends: [],
 	activeComponent: 'Login',
 	activeComponent: 'MainMenu',
-	isLogged: 0
+	currentUserId: 0
 })
 
 // getters
@@ -35,7 +35,7 @@ export const mutations = {
 		state.activeComponent = component
 		console.log()
 	},
-	changeLogStatus(stat) {
-		state.isLogged = stat 
+	getCurrentUserId(state, id) {
+		state.currentUserId = id
 	}
 }

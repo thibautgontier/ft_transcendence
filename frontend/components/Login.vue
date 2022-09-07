@@ -7,7 +7,7 @@
 			return {
 				loginSuccess: 0,
 				loginFailed: 0,
-				test: 'init'
+				loginReturn: null
 			}
 		},
 		head: {
@@ -15,16 +15,27 @@
 		},
 		methods: {
 			async redirectToLog() {
-				await axios.get('/login/42')
-				.then(response => {
-					this.test = response.body;
-					console.log(response);
-				});
+				window.location.href = "http://localhost:8080/login/42"
+				await axios.get("/login")
+						   .then((response) => {
+							   this.loginReturn = response.data;
+						   });
+
+				console.log(this.loginReturn.success);
+				if (this.loginReturn.success) {
+					console.log(this.loginReturn.username);
+					this.$store.commit('getCurrentUserId', this.loginReturn.id);
+					this.loginSuccess = 1;
+				}
+				else {
+					this.loginFailed = 1
+				}
 			},
-			connectTest() {
-				this.$store.state.isLogged = 1
-				this.loginSuccess = 1
-				this.loginFailed = 0
+
+			async disconnectRequest() {
+				this.$store.commit('getCurrentUserId', null);
+				this.loginSuccess = 0;
+				this.loginFailed = 0;
 			},
 		}
 
@@ -33,7 +44,7 @@
 
 <template>
 	<v-container fill-height>
-	<h1 v-if="this.$store.state.isLogged">
+	<h1 v-if="this.$store.state.currentUserId != null">
 		<Toolbar />
 	</h1>
 		<v-col>
@@ -41,7 +52,12 @@
 				<PongLogo />
 			</v-row>
 			<v-row justify="center" align="center" style="margin-top: 10%">
-			<v-btn x-large color="black" @click.stop="redirectToLog()">42 Connect</v-btn>
+			<h1 v-if="this.$store.state.currentUserId == null">
+				<v-btn x-large color="black" @click.stop="redirectToLog()">42 Connect</v-btn>
+			</h1>
+			<h1 v-else>
+				<v-btn x-large color="black" @click.stop="disconnectRequest()">Disconnect</v-btn>
+			</h1>
 			<v-btn x-large color="black" @click.stop="connectTest()">TEST</v-btn>
 			</v-row>
 			<h1 v-if="this.loginSuccess">
