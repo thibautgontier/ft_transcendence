@@ -5,6 +5,8 @@ import { Response } from 'express';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UserFilterDto } from './dto/user-filter.dto';
 import { UserCreateDto } from './dto/user-create.dto';
+import { Profile } from 'passport';
+import { userInfo } from 'os';
 
 @Injectable()
 export class UserService {
@@ -22,14 +24,14 @@ export class UserService {
     return undefined;
   }
 
-  async getUser(query: UserFilterDto): Promise<User[]> {
+  async getAll(query: UserFilterDto): Promise<User[]> {
     const gameProfile: boolean = this.toBool(query.gameProfile);
     const social: boolean = this.toBool(query.socialProfile);
     return this.prisma.user.findMany({
       where: {
-        id: Number.isNaN(query.id) ? undefined : query.id,
-        Token: query.token,
-        Status: query.status,
+        id: Number(query.id),
+        // Token: query.token,
+        // Status: query.status,
         TwoFA: this.toBool(query.twoFA),
       },
       include: {
@@ -39,30 +41,29 @@ export class UserService {
     });
   }
 
-  async createUser(res: Response, body: UserCreateDto): Promise<User> {
-    try {
-      const user = await this.prisma.user.create({
-        data: {
-          Email: body.email,
-          Nickname: body.nickname,
-          Token: body.token,
-          RefreshToken: body.refreshToken,
-          Avatar: body.avatar,
-          Status: body.status,
-          TwoFA: body.twoFA,
-          GameProfile: { create: {} },
-          SocialProfile: { create: {} },
-        },
-      });
+  async createUser(res: Response, body: Profile): Promise<User> {
+    const user = await this.prisma.user.create({
+      data: {
+        Email: body.emails[0].value,
+        Nickname: body.username,
+        // Token: 'testtoken',
+        // RefreshToken: 'testrefreshtoken',
+        Avatar: 'default',
+        Status: 'offline',
+        TwoFA: false,
+        GameProfile: { create: {} },
+        SocialProfile: { create: {} },
+      },
+    });
 
-      //TODO: here, add code to call 42 API for get user's data
-
-      res.status(HttpStatus.CREATED).send(user);
-      return user;
-    } catch (error) {
-      res.status(HttpStatus.NOT_ACCEPTABLE).send({ error });
-      return null;
-    }
+    //TODO: here, add code to call 42 API for get user's data
+    return;
+    //   res.status(HttpStatus.CREATED).send(user);
+    //   return user;
+    // } catch (error) {
+    //   res.status(HttpStatus.NOT_ACCEPTABLE).send({ error });
+    //   return null;
+    // }
   }
 
   async deleteUser(res: Response, userID: number): Promise<User | null> {
@@ -91,8 +92,8 @@ export class UserService {
       data: {
         Email: body.email,
         Nickname: body.nickname,
-        Token: body.token,
-        RefreshToken: body.refreshToken,
+        // Token: body.token,
+        // RefreshToken: body.refreshToken,
         Avatar: body.avatar,
         Status: body.status,
         TwoFA: body.twoFA,

@@ -1,22 +1,12 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Channel, Message } from '@prisma/client';
+import { Channel } from '@prisma/client';
 import { Response } from 'express';
 import { ChannelService } from './channel.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
 import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
-import { ChannelSendMsgDto } from './dto/channel-sendMessage.dto';
-import { ChannelSwitchToPrivateDto } from './dto/channel-swicthToPrivate.dto';
+import { ChannelSwitchToPrivate } from './dto/channel-swicthToPrivate.dto';
 import { ChannelUpdateDto } from './dto/channel-update.dto';
 
 @ApiTags('channel')
@@ -40,19 +30,6 @@ export class ChannelController {
     @Body() body: ChannelCreateDto,
   ): Promise<Channel | null> {
     return await this.channelService.createChannel(res, body);
-  }
-
-  @Delete(':channelid/delete/:idAdmin')
-  async deleteChannel(
-    @Param('channelid') idChan: number,
-    @Param('idAdmin') idAdmin: number,
-    @Res() res: Response,
-  ): Promise<Channel | null> {
-    return await this.channelService.deleteChannel(
-      Number(idChan),
-      Number(idAdmin),
-      res,
-    );
   }
 
   @Post('createPriv')
@@ -130,11 +107,26 @@ export class ChannelController {
     );
   }
 
+  @Patch(':channelid/kick/:idKicker/:idToKick')
+  async kickUser(
+    @Param('channelid') idChan: number,
+    @Param('idKicker') idKicker: number,
+    @Param('idToKick') idToKick: number,
+    @Res() res: Response,
+  ): Promise<Channel | null> {
+    return await this.channelService.kickUser(
+      Number(idChan),
+      Number(idKicker),
+      Number(idToKick),
+      res,
+    );
+  }
+
   @Patch(':channelid/switchToPrivate/:idAdmin')
   async switchToPrivate(
     @Param('channelid') idChan: number,
     @Param('idAdmin') idAdmin: number,
-    @Body() body: ChannelSwitchToPrivateDto,
+    @Body() body: ChannelSwitchToPrivate,
     @Res() res: Response,
   ): Promise<Channel | null> {
     return await this.channelService.switchToPrivate(

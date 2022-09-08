@@ -8,6 +8,7 @@ import {
   Res,
   Delete,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { logStatus, User } from '@prisma/client';
 import { UserService } from './user.service';
@@ -16,6 +17,9 @@ import { Response } from 'express';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UserCreateDto } from './dto/user-create.dto';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { FtOauthGuard } from 'src/auth/guards/ft-oauth.guard';
+import { Student } from 'src/auth/user.decorator';
+import { Profile } from 'passport';
 
 @ApiTags('user')
 @Controller('user')
@@ -29,14 +33,15 @@ export class UserController {
   @ApiQuery({ name: 'twoFA', type: Boolean, required: false })
   @ApiQuery({ name: 'gameProfile', type: Boolean, required: false })
   @ApiQuery({ name: 'socialProfile', type: Boolean, required: false })
-  async getUser(@Query() query?: UserFilterDto): Promise<User[]> {
-    return await this.userService.getUser(query);
+  async getAll(@Query() query?: UserFilterDto): Promise<User[]> {
+    return await this.userService.getAll(query);
   }
 
-  @Post('create')
+  @Get('create')
+  @UseGuards(FtOauthGuard)
   async createUser(
     @Res() res: Response,
-    @Body() body: UserCreateDto,
+    @Student() body: Profile,
   ): Promise<User | null> {
     return await this.userService.createUser(res, body);
   }

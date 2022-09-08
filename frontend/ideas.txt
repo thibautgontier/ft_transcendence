@@ -89,4 +89,95 @@ Nuxt.js small guide
 https://www.codemag.com/Article/2105101/Nuxt.js-for-Busy-Developers
 
 Vuex in Nuxt
+
+raccourcis claviers pour acceder aux differents menus via des event modifiers
+(v-on:keyup.<meta>.<touche>="fonction a executer")
+
+utiliser des composants dynamiques pour les sous-menus:
+https://www.youtube.com/watch?v=09n2945JW_0&list=PL4cUxeGkcC9gQcYgjhBoeQH7wiAyZNrYa&index=30
+
+
+<template>
+	<div>
+		<keep-alive>
+			<component v-bind:is="submenu"></component>
+		</keep-alive>
+	</div>
+</template>
+
+export default {
+	submenus: {
+		'friendList': friendList,
+		'discussions': discussions,
+		'settings': settings
+	},
+	data () {
+		return {
+			submenu: '<menu souhaité>'
+		}
+	}
+}
+
+propager evenements des parents aux enfants
+https://www.youtube.com/watch?v=5pvG6fzkdFM&list=PL4cUxeGkcC9gQcYgjhBoeQH7wiAyZNrYa&index=25
+
+propager des evenements a tous les composants via un event bus
+https://www.youtube.com/watch?v=jzh4zQcfB0o&list=PL4cUxeGkcC9gQcYgjhBoeQH7wiAyZNrYa&index=26
+
+directives custom
+https://www.youtube.com/watch?v=3-fLYMEKOU0&list=PL4cUxeGkcC9gQcYgjhBoeQH7wiAyZNrYa&index=35
+
+filtres
+https://www.youtube.com/watch?v=o8UspKnsV_0&list=PL4cUxeGkcC9gQcYgjhBoeQH7wiAyZNrYa&index=36
+
+barre de recherche
+https://www.youtube.com/watch?v=G34_yNV8FMY&list=PL4cUxeGkcC9gQcYgjhBoeQH7wiAyZNrYa&index=37
+
+visibilité et responsive design
+https://www.youtube.com/watch?v=55hSO_LJeCo&list=PL4cUxeGkcC9g0MQZfHwKcuB0Yswgb3gA5&index=6
+
+transitions vuejs
+https://fr.vuejs.org/v2/guide/transitions.html
+
+dialogues
+https://vuetifyjs.com/en/components/dialogs/#form
+
+icone de jeu
+https://codepen.io/Yousra_M/pen/WjLBzX
+
+menus
+https://vuetifyjs.com/en/components/menus/
+
+snackbar
+https://www.youtube.com/watch?v=SGGW8qbsXTg
+
+chargement
+https://vuetifyjs.com/en/components/overlays/#loader
+
+music player
+https://vuetifyjs.com/en/components/bottom-sheets/#music-player
+
+statut (en ligne/absent etc)
+https://vuetifyjs.com/en/components/badges/
+
+menu complet nesté (check dialog 1)
+https://vuetifyjs.com/en/components/dialogs/#nesting
+
+menu pour le statut (choisir son etat)
+https://vuetifyjs.com/en/components/menus/#usage
+
+liste expandable dans une sidebar
+https://vuetifyjs.com/en/components/lists/#slots
+https://vuetifyjs.com/en/components/navigation-drawers/#expand-on-hover
+
+asyncData hook (used before vue instance is created)
+https://nuxtjs.org/docs/features/data-fetching/#async-data
+
+fetch hook (used after vue instance is created and during SSR)
+https://nuxtjs.org/docs/features/data-fetching/
+
+Nuxt.js small guide
+https://www.codemag.com/Article/2105101/Nuxt.js-for-Busy-Developers
+
+Vuex in Nuxt
 https://www.youtube.com/watch?v=53tRnb2d6r0

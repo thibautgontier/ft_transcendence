@@ -2,10 +2,10 @@ import { Controller, Get, Param, Patch, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Channel, SocialProfile, User } from '@prisma/client';
 import { Response } from 'express';
-import { SocialService } from './socialProfile.service';
+import { SocialService } from './social.service';
 
-@ApiTags('socialProfile')
-@Controller('socialProfile')
+@ApiTags('social')
+@Controller('social')
 export class SocialController {
   constructor(private socialService: SocialService) {}
 
@@ -21,7 +21,7 @@ export class SocialController {
   async getFriends(
     @Res() res: Response,
     @Param('userID') userID: number,
-  ): Promise<any> {
+  ): Promise<User[]> {
     return await this.socialService.getFriends(res, Number(userID));
   }
 

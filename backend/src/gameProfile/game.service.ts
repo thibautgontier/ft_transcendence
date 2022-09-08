@@ -312,33 +312,49 @@ export class GameService {
     }
   }
 
-  async getHistory(
-    userID: number,
-    partyID: number,
-    res?: Response,
-  ): Promise<Party[] | null> {
+  async getHistory(userID: number, res?: Response): Promise<Party[] | null> {
     try {
       const profile = await this.prisma.gameProfile.findUniqueOrThrow({
         where: { UserID: userID },
-        include: { History: { where: { id: partyID } } },
+        include: { History: true },
       });
       res.status(HttpStatus.OK).send(profile.History);
       return profile.History;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send(error);
+      res.status(HttpStatus.NOT_FOUND).send('User not found');
+      return null;
+    }
+  }
+
+  async getHistoryParty(
+    res: Response,
+    userID: number,
+    idParty,
+  ): Promise<Party | null> {
+    try {
+      const history = await this.getHistory(userID);
+      const party = history.find((p) => p.id === idParty);
+      if (party === undefined) {
+        res.status(HttpStatus.NOT_FOUND).send('Party not found');
+        return null;
+      }
+      res.status(HttpStatus.OK).send(party);
+      return party;
+    } catch (error) {
+      res.status(HttpStatus.NOT_FOUND).send('User not found');
       return null;
     }
   }
 
   async addToHistory(
     userID: number,
-    partyID: number,
+    idParty: number,
     res?: Response,
   ): Promise<Party[] | null> {
     try {
       const profile = await this.prisma.gameProfile.update({
         where: { UserID: userID },
-        data: { History: { connect: { id: partyID } } },
+        data: { History: { connect: { id: idParty } } },
         include: { History: true },
       });
       if (res !== undefined) {
@@ -355,13 +371,13 @@ export class GameService {
 
   async removeFromHistory(
     userID: number,
-    partyID: number,
+    idParty: number,
     res?: Response,
   ): Promise<Party[] | null> {
     try {
       const profile = await this.prisma.gameProfile.update({
         where: { UserID: userID },
-        data: { History: { disconnect: { id: partyID } } },
+        data: { History: { disconnect: { id: idParty } } },
         include: { History: true },
       });
       if (res !== undefined) {
