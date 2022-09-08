@@ -8,33 +8,26 @@ import { Student } from './user.decorator';
 export class AuthService {
   constructor(private prisma: PrismaService) {}
 
-  async callBack(@Student() user: User) {
-    const res = { id: user.id, avatar: user.Avatar, success: 1 };
-    return res;
-  }
-
-  async login() {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        Connected: false,
-      },
-    });
-    if (!user) return;
-    const res = {
-      id: (await user).id,
-      nickname: (await user).Nickname,
-      avatar: (await user).Avatar,
-      success: 1,
-    };
-    const newUser = await this.prisma.user.update({
-      where: {
-        id: (await user).id,
-      },
-      data: {
-        Connected: true,
-      },
-    });
-    console.log(newUser.Connected);
-    return res;
+  async login(): Promise<User | null> {
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          Nickname: 'jabenjam',
+        },
+      });
+      if (!user) throw Error;
+      const newUser = await this.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          Connected: true,
+        },
+      });
+      return user;
+    } catch (e) {
+      console.log('error', e, 'get login');
+      return null;
+    }
   }
 }

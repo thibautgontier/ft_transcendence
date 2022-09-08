@@ -1,14 +1,8 @@
 <script lang="ts">
 import Vue from 'vue'
-import Login from '../components/Login.vue'
-import Main from '../components/Main.vue'
-import ChatMenu from '../components/ChatMenu.vue'
 
 export default Vue.extend({
 		components: {
-			Login,
-			Main,
-			ChatMenu,
 		},
 		data () {
 			return {

@@ -1,14 +1,10 @@
-<script>
-	import {mapActions, mapState, mapGetters, mapMutations} from 'vuex';
-	import axios from "axios";
-	import {User} from '../types/User'
+<script lang='ts'>
 
 	export default {
 		data() {
 			return {
 				loginSuccess: 0,
 				loginFailed: 0,
-				loginReturn: User,
 			}
 		},
 		head: {
@@ -17,28 +13,14 @@
 		methods: {
 			async redirectToLog() {
 				window.location.href = "http://localhost:3000/login/42"
-				await axios.get("/login/")
-						   .then((response) => {
-							   this.loginReturn = response.data;
-							   console.log('le ret', response.data.nickname);
-						   });
-				console.log(this.loginReturn.nickname);
-				if (this.loginReturn.success) {
-					console.log(this.loginReturn.username);
-					this.$store.commit('getCurrentUser', this.loginReturn);
-					console.log(this.$store.state.currentUser.photo);
-					this.loginSuccess = 1;
-				}
-				else {
-					this.loginFailed = 1
-				}
+				this.$router.push('Main')
 			},
-			disconnectRequest() {
-				console.log('TEST');
-				this.$store.commit('deleteUser');
-				this.loginSuccess = 0;
-				this.loginFailed = 0;
-			},
+			// disconnectRequest() {
+			// 	console.log('TEST');
+			// 	this.$store.commit('deleteUser');
+			// 	this.loginSuccess = 0;
+			// 	this.loginFailed = 0;
+			// },
 		}
 
 	}
@@ -54,7 +36,6 @@
 				<PongLogo />
 			</v-row>
 			<v-row justify="center" align="center" style="margin-top: 10%">
-			<h1>{{this.$store.state.currentUser}}</h1>
 			<h1 v-if="!this.$store.state.currentUser.id">
 				<v-btn x-large color="black" @click.stop="redirectToLog()">42 Connect</v-btn>
 			</h1>
