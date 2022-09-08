@@ -9,28 +9,32 @@ export class AuthService {
   constructor(private prisma: PrismaService) {}
 
   async callBack(@Student() user: User) {
-    return { id: user.id, avatar: user.Avatar, success: 1 };
-    //   const existingUser = await this.prisma.user.findUnique({
-    //     where: {
-    //       Email: user.Email,
-    //     },
-    //   });
-    //   if (!existingUser) {
-    //     try {
-    //       const newuser = await this.prisma.user.create({
-    //         data: {
-    //           Email: user.Email,
-    //           Nickname: user.Nickname,
-    //           Avatar: user.Avatar,
-    //           AccessToken: user.AccessToken,
-    //         },
-    //       });
-    //       return { id: newuser.id, avatar: newuser.Avatar, success: 1 };
-    //     } catch (error) {
-    //       return { success: 0 };
-    //     }
-    //   } else {
-    //     return { id: existingUser.id, avatar: existingUser.Avatar, success: 1 };
-    //   }
+    const res = { id: user.id, avatar: user.Avatar, success: 1 };
+    return res;
+  }
+
+  async login() {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        Connected: false,
+      },
+    });
+    if (!user) return;
+    const res = {
+      id: (await user).id,
+      nickname: (await user).Nickname,
+      avatar: (await user).Avatar,
+      success: 1,
+    };
+    const newUser = await this.prisma.user.update({
+      where: {
+        id: (await user).id,
+      },
+      data: {
+        Connected: true,
+      },
+    });
+    console.log(newUser.Connected);
+    return res;
   }
 }

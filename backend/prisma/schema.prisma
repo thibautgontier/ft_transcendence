@@ -19,6 +19,7 @@ model User {
   UpdatedAt     DateTime        @updatedAt
   AccessToken   String?         @unique
   Avatar        String?
+  Connected     Boolean         @default(false)
   Status        logStatus       @default(offline)
   TwoFA         Boolean         @default(false)
   GameProfile   GameProfile?

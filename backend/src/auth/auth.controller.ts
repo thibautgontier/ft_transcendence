@@ -20,8 +20,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Get()
-  login() {
-    return;
+  async login() {
+    return await this.authService.login();
   }
 
   @Get('42')
@@ -32,7 +32,11 @@ export class AuthController {
 
   @Get('42/return')
   @UseGuards(FtOauthGuard)
+<<<<<<< HEAD
   @Redirect('http://localhost:5000')
+=======
+  @Redirect('http://localhost:8080/')
+>>>>>>> cfa5c92e550c7360f0c04d9514a17a1bef11e6b0
   async ftAuthCallback(@Student() user: User) {
     return await this.authService.callBack(user);
   }
