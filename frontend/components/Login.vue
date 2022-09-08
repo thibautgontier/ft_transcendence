@@ -15,7 +15,7 @@
 		},
 		methods: {
 			async redirectToLog() {
-				window.location.href = "http://localhost:3000/login/42/return"
+				window.location.href = "http://localhost:3000/login/42"
 				await axios.get("/login/42/return")
 						   .then((response) => {
 							   this.loginReturn = response.data;

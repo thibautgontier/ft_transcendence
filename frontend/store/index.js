@@ -1,12 +1,12 @@
 import axios from 'axios'
-
+import {User} from '../types/User'
 
 // state
 export const state = () => ({
 	friends: [],
 	activeComponent: 'Login',
 	activeComponent: 'MainMenu',
-	currentUserId: 0
+	currentUser: User,
 })
 
 // getters
@@ -18,24 +18,24 @@ export const getters = {
 
 // actions (asynchrone)
 export const actions = {
-	// async getFriends() {
-	// 	// api call qui renvoie la liste des amis
-	// 	const friends = await axios.post("https://randomuser.me/api/?results=10")
-	// 	commit("addFriend", friends)
-	// 	return friends
-	// }
 }
 
 // mutations (synchrone)
 export const mutations = {
-	// addFriends (state, friends) {
-	// 	state.friends.push({...friends})
-	// },
 	changeActiveComponent(state,component) {
 		state.activeComponent = component
 		console.log()
 	},
-	getCurrentUserId(state, id) {
-		state.currentUserId = id
-	}
+	getCurrentUser(state, newUser) {
+		state.currentUser.photo = newUser.avatar;
+		state.currentUser.id = newUser.id;
+		state.currentUser.success = newUser.success;
+		console.log('get user:', state.currentUser.id);
+	},
+	deleteUser(state) {
+		state.currentUser.photo = '';
+		state.currentUser.id = 0;
+		state.currentUser.success = 0;
+		console.log('store: ', state.currentUser.id);
+	},
 }

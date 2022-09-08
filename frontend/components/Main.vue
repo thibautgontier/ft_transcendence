@@ -13,7 +13,7 @@
 
 <template>
 	<div>
-		<h1 v-if="this.$store.state.isLogged">
+		<h1 v-if="this.$store.state.currentUserId != null">
 			<Toolbar />
 		</h1>
 		<Notification />
