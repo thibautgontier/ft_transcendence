@@ -31,9 +31,8 @@ export class AuthController {
   }
 
   @Get('42/return')
-  @Redirect('http://localhost:8080')
   @UseGuards(FtOauthGuard)
-  @Redirect('http://localhost:8080')
+  @Redirect('http://localhost:5000')
   async ftAuthCallback(@Student() user: User) {
     return await this.authService.callBack(user);
   }
