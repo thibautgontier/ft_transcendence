@@ -6,34 +6,42 @@ import { MainRoom } from './rooms/main.rooms';
 import { monitor } from '@colyseus/monitor';
 import { Server } from 'colyseus';
 import { ChatRoom } from './channel/chat.rooms';
-import * as session from 'express-session';
-import * as passport from 'passport';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const nestApp = await NestFactory.create(AppModule);
+  nestApp.enableShutdownHooks();
+  nestApp.enableCors();
+  nestApp.init();
+  nestApp.useGlobalPipes(new ValidationPipe());
+
   const config = new DocumentBuilder()
     .setTitle('Transcendence API')
     .setDescription('The Transcendence API description')
     .setVersion('1.0')
-    .addTag('user')
-    .addTag('auth')
-    .addTag('social')
-    .addTag('channel')
-    .addTag('game')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-  app.useGlobalPipes(new ValidationPipe());
-  app.use(
-    session({
-      resave: false,
-      saveUninitialized: false,
-      secret: '42transcendence',
-      cookie: { maxAge: 6000 },
+  const document = SwaggerModule.createDocument(nestApp, config);
+  SwaggerModule.setup('api', nestApp, document);
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const basicAuth = require('express-basic-auth');
+  const basicAuthMiddleware = basicAuth({
+    users: { admin: 'admin' },
+    challenge: true,
+  });
+  nestApp.use(
+    '/colyseus',
+    basicAuthMiddleware,
+    monitor({
+      columns: [
+        'roomId',
+        'name',
+        'clients',
+        { metadata: 'spectators' },
+        'locked',
+        'elapsedTime',
+      ],
     }),
   );
-  app.use(passport.initialize());
-  app.use(passport.session());
 
   const gameServer = new Server();
   gameServer.define(MainRoom.name, MainRoom);

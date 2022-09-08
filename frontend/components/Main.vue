@@ -10,11 +10,10 @@ export default Vue.extend({
     }
   },
   async mounted() {
-    const response = await axios.get('/login/')
-    this.loginReturn = response.data
-    console.log(this.loginReturn.nickname)
-    this.$store.commit('getCurrentUser', this.loginReturn)
-    console.log(this.$store.state.currentUser.photo)
+    const response = await axios.get('/login/');
+    this.loginReturn = response.data;
+    this.$store.commit('getCurrentUser', this.loginReturn);
+    console.log(this.$store.state.currentUser.photo);
     }
   },
 )
