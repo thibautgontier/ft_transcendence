@@ -17,6 +17,7 @@ model User {
   Nickname      String?         @unique
   CreatedAt     DateTime        @default(now())
   UpdatedAt     DateTime        @updatedAt
+  AccessToken   String?         @unique
   Avatar        String?
   Status        logStatus       @default(offline)
   TwoFA         Boolean         @default(false)

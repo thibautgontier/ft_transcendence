@@ -1,3 +1,4 @@
+import { User } from '.prisma/client';
 import { thisTypeAnnotation } from '@babel/types';
 import {
   Controller,
@@ -18,10 +19,10 @@ import { Student } from './user.decorator';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  // @Get()
-  // login() {
-  //   return;
-  // }
+  @Get()
+  login() {
+    return;
+  }
 
   @Get('42')
   @UseGuards(FtOauthGuard)
@@ -32,7 +33,8 @@ export class AuthController {
   @Get('42/return')
   @Redirect('http://localhost:8080')
   @UseGuards(FtOauthGuard)
-  async ftAuthCallback(@Student() user: Profile) {
+  @Redirect('http://localhost:8080')
+  async ftAuthCallback(@Student() user: User) {
     return await this.authService.callBack(user);
   }
 
