@@ -1,13 +1,14 @@
 <script>
 	import {mapActions, mapState, mapGetters, mapMutations} from 'vuex';
 	import axios from "axios";
+	import {User} from '../types/User'
 
 	export default {
 		data() {
 			return {
 				loginSuccess: 0,
 				loginFailed: 0,
-				loginReturn: null
+				loginReturn: User,
 			}
 		},
 		head: {
@@ -16,11 +17,12 @@
 		methods: {
 			async redirectToLog() {
 				window.location.href = "http://localhost:3000/login/42"
-				await axios.get("/login/42/return")
+				await axios.get("/login/")
 						   .then((response) => {
 							   this.loginReturn = response.data;
+							   console.log('le ret', response.data.nickname);
 						   });
-				console.log(this.loginReturn.success);
+				console.log(this.loginReturn.nickname);
 				if (this.loginReturn.success) {
 					console.log(this.loginReturn.username);
 					this.$store.commit('getCurrentUser', this.loginReturn);
