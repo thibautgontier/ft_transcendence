@@ -21,13 +21,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     cb: VerifyCallback,
   ): Promise<any> {
     request.session.accessToken = accessToken;
-	console.log(profile);
     console.log(accessToken);
-    // In this example, the user's 42 profile is supplied as the user
-    // record.  In a production-quality application, the 42 profile should
-    // be associated with a user record in the application's database, which
-    // allows for account linking and authentication with other identity
-    // providers.
     return cb(null, profile);
   }
 }

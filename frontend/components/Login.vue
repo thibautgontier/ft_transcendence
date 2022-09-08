@@ -15,25 +15,25 @@
 		},
 		methods: {
 			async redirectToLog() {
-				window.location.href = "http://localhost:8080/login/42"
-				await axios.get("/login")
+				window.location.href = "http://localhost:3000/login/42/return"
+				await axios.get("/login/42/return")
 						   .then((response) => {
 							   this.loginReturn = response.data;
 						   });
-
 				console.log(this.loginReturn.success);
 				if (this.loginReturn.success) {
 					console.log(this.loginReturn.username);
-					this.$store.commit('getCurrentUserId', this.loginReturn.id);
+					this.$store.commit('getCurrentUser', this.loginReturn);
+					console.log(this.$store.state.currentUser.photo);
 					this.loginSuccess = 1;
 				}
 				else {
 					this.loginFailed = 1
 				}
 			},
-
-			async disconnectRequest() {
-				this.$store.commit('getCurrentUserId', null);
+			disconnectRequest() {
+				console.log('TEST');
+				this.$store.commit('deleteUser');
 				this.loginSuccess = 0;
 				this.loginFailed = 0;
 			},
@@ -44,7 +44,7 @@
 
 <template>
 	<v-container fill-height>
-	<h1 v-if="this.$store.state.currentUserId != null">
+	<h1 v-if="this.$store.state.currentUser.id != 0">
 		<Toolbar />
 	</h1>
 		<v-col>
@@ -52,13 +52,13 @@
 				<PongLogo />
 			</v-row>
 			<v-row justify="center" align="center" style="margin-top: 10%">
-			<h1 v-if="this.$store.state.currentUserId == null">
+			<h1>{{this.$store.state.currentUser}}</h1>
+			<h1 v-if="!this.$store.state.currentUser.id">
 				<v-btn x-large color="black" @click.stop="redirectToLog()">42 Connect</v-btn>
 			</h1>
 			<h1 v-else>
 				<v-btn x-large color="black" @click.stop="disconnectRequest()">Disconnect</v-btn>
 			</h1>
-			<v-btn x-large color="black" @click.stop="connectTest()">TEST</v-btn>
 			</v-row>
 			<h1 v-if="this.loginSuccess">
 				<v-alert
