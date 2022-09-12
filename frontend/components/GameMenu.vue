@@ -17,6 +17,7 @@ export default Vue.extend({
       state: GameState,
       canvas: Document,
       ctx: CanvasRenderingContext2D,
+	  room: GameState,
     }
   },
   async mounted() {
@@ -25,16 +26,15 @@ export default Vue.extend({
     ) as HTMLCanvasElement
     this.ctx = this.canvas.getContext('2d')
     const client = new Client('ws://localhost:3000')
-    let room: Room<GameState>
     try {
-      room = await client.joinOrCreate('PongRoom', {}, GameState)
-      console.log(room.sessionId, 'joined', room.name)
+      this.room = await client.joinOrCreate('PongRoom', {}, GameState)
+      console.log(this.room.sessionId, 'joined', this.room.name)
     } catch (e) {
       console.log('JOIN ERROR', e)
     }
 
-    this.state = room.state // set initial state
-    room.onStateChange((s) => {
+    this.state = this.room.state // set initial state
+    this.room.onStateChange((s : any) => {
       // set state on every update
       this.state = s
     })
@@ -48,12 +48,12 @@ export default Vue.extend({
     document.addEventListener('keydown', (e) => {
       switch (e.key) {
         case 'ArrowUp':
-          room.send('PaddleMoveMessage', {
+          this.room.send('PaddleMoveMessage', {
             newDirection: PaddleDirection.UP,
           } as PaddleMoveMessage)
           break
         case 'ArrowDown':
-          room.send('PaddleMoveMessage', {
+          this.room.send('PaddleMoveMessage', {
             newDirection: PaddleDirection.DOWN,
           } as PaddleMoveMessage)
           break
@@ -64,7 +64,7 @@ export default Vue.extend({
       switch (e.key) {
         case 'ArrowUp':
         case 'ArrowDown':
-          room.send('PaddleMoveMessage', {
+          this.room.send('PaddleMoveMessage', {
             newDirection: PaddleDirection.STOP,
           } as PaddleMoveMessage)
       }
