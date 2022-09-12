@@ -21,7 +21,7 @@ export default Vue.extend({
 
 <template>
   <div>
-    <h1 v-if="this.$store.state.currentUserId != null">
+    <h1 v-if="$store.state.currentUserId != null">
       <Toolbar />
     </h1>
     <Notification />
