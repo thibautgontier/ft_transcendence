@@ -12,7 +12,7 @@ export class AuthService {
     try {
       const user = await this.prisma.user.findFirst({
         where: {
-          Nickname: 'jabenjam',
+          Nickname: "mbaxmann",
         },
       });
       if (!user) throw Error;

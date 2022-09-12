@@ -1,10 +1,13 @@
 <script lang="ts">
 import Vue from 'vue'
 export default Vue.extend({
+		beforeCreate() {
+			this.$store.commit('initialiseStore');
+		},
 		data () {
 			return {
 				authenticated: false,
-				activeComponent: "LoginPage"
+				activeComponent: "Login"
 			}
 		},
 		computed: {
@@ -15,7 +18,6 @@ export default Vue.extend({
 			}
 		},
 		methods : {
-
 		},
 })
 </script>
