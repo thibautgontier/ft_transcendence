@@ -6,6 +6,7 @@ import { MainRoom } from './rooms/main.rooms';
 import { monitor } from '@colyseus/monitor';
 import { Server } from 'colyseus';
 import { ChatRoom } from './channel/chat.rooms';
+import { PongRoom } from './pong/PongRoom';
 
 async function bootstrap() {
   const nestApp = await NestFactory.create(AppModule);
@@ -46,6 +47,7 @@ async function bootstrap() {
   const gameServer = new Server();
   gameServer.define(MainRoom.name, MainRoom);
   gameServer.define(ChatRoom.name, ChatRoom);
+  gameServer.define(PongRoom.name, PongRoom);
 
   gameServer.attach({ server: nestApp.getHttpServer() });
   await nestApp.listen(3000);
