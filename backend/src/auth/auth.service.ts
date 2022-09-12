@@ -8,11 +8,11 @@ import { Student } from './user.decorator';
 export class AuthService {
   constructor(private prisma: PrismaService) {}
 
-  async login(): Promise<User | null> {
+  async login(): Promise<any | null> {
     try {
       const user = await this.prisma.user.findFirst({
         where: {
-          Nickname: "mbaxmann",
+          id: 1,
         },
       });
       if (!user) throw Error;
@@ -24,7 +24,12 @@ export class AuthService {
           Connected: true,
         },
       });
-      return user;
+      return {
+        avatar: user.Avatar,
+        nickname: user.Nickname,
+        id: user.id,
+        success: 1,
+      };
     } catch (e) {
       console.log('error', e, 'get login');
       return null;
