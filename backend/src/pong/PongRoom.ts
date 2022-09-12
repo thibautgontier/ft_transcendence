@@ -18,6 +18,14 @@ export class PongRoom extends Room<GameState> {
     this.setState(new GameState());
 
     this.physics = new Physics(this.state.ball, this.state.leftPaddle, this.state.rightPaddle);
+	  // FIXME: strong typing of message is not enforced
+	this.onMessage('PaddleMoveMessage', (client: Client, message : PaddleMoveMessage) => {
+		if (client.id === this.rpId)
+		  this.physics.setRightPaddleDirection(message.newDirection);
+	
+		if (client.id === this.lpId)
+		  this.physics.setLeftPaddleDirection(message.newDirection);
+	  })
   }
 
   private update(deltaTime: number) {
@@ -51,15 +59,6 @@ export class PongRoom extends Room<GameState> {
       this.setSimulationInterval(deltaTime => this.update(deltaTime));
     }
   }
-
-  // FIXME: strong typing of message is not enforced
-//   onMessage(client: Client, message: PaddleMoveMessage) {
-//     if (client.id === this.rpId)
-//       this.physics.setRightPaddleDirection(message.newDirection);
-
-//     if (client.id === this.lpId)
-//       this.physics.setLeftPaddleDirection(message.newDirection);
-//   }
 
   onLeave(client: Client, consented: boolean) {
     // if a player leaves the game is cancelled

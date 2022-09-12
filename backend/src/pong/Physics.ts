@@ -145,8 +145,6 @@ export class Physics {
     }
   }
 
-
-
   public update(deltaTime: number) {
     this.leftPaddleCollision();
     this.rightPaddleCollision();
