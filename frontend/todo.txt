@@ -23,3 +23,5 @@ Components:
 
 - Fetch hooks hooks dans les components et pages
 - AsyncData hooks seulement dans les pages
+
+Verifier ce qu'il se passe si on se connecte deux fois avec le meme user dans deux fenetres différentes
