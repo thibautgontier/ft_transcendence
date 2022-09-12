@@ -36,6 +36,7 @@ export default Vue.extend({
 
 <template>
   <v-container fill-height>
+    <!-- <h1> {{this.$store.state.currentUser.nickname}} </h1> -->
     <v-col>
       <v-row justify="center" align="center">
         <PongLogo />
@@ -52,7 +53,7 @@ export default Vue.extend({
           >
         </h1>
       </v-row>
-      <h1 v-if="$store.state.currentUser.id != 0">
+      <h1 v-if="loginSuccess">
         <v-alert type="success" transition="scale-transition" dismissible
           >Logged successfully!</v-alert
         >
