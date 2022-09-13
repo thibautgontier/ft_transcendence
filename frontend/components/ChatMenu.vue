@@ -131,10 +131,17 @@ export default Vue.extend({
 			{
 			}
 		},
-		OnlineStatus(online: boolean) {
+		onlineStatus(online: boolean) {
 			if (online === true)
 				return "🟢"
 			return "🔴"
+		},
+		userStatus(status: string) {
+			if (status === 'Online')
+				return "🟢"
+			else if (status === 'Busy')
+				return "⛔"
+			return "🌙"
 		},
 		updateUserStatus(status: string) {
 			this.user.status = status;
@@ -260,9 +267,9 @@ export default Vue.extend({
 						<v-list-item-avatar>
 							<v-img :src="user.icon"></v-img>
 						</v-list-item-avatar>
+							<v-list-item-action-text>{{userStatus(user.status)}}</v-list-item-action-text>
 						<v-list-item-content>
 							<v-list-item-title>{{ user.name }}</v-list-item-title>
-							<v-list-item-action-text>{{ user.status }}</v-list-item-action-text>
 						</v-list-item-content>
 					</v-btn>
 				</template>
@@ -276,7 +283,7 @@ export default Vue.extend({
 								<v-list-item-content>
 									<v-list-item-title>{{ user.name }}</v-list-item-title>
 									<v-spacer></v-spacer>
-									<v-list-item-subtitle>{{ user.status }}</v-list-item-subtitle>
+									<v-list-item-subtitle>{{userStatus(user.status)}} {{ user.status }}</v-list-item-subtitle>
 								</v-list-item-content>
 							</v-list-item>
 						</v-list>
@@ -285,13 +292,13 @@ export default Vue.extend({
 
 						<v-list>
 							<v-list-item>
-								<v-btn @click.stop="updateUserStatus('Online')">Online</v-btn>
+								<v-btn @click.stop="updateUserStatus('Online')">{{userStatus('Online')}} Online</v-btn>
 							</v-list-item>
 							<v-list-item>
-								<v-btn @click.stop="updateUserStatus('Away')">Away</v-btn>
+								<v-btn @click.stop="updateUserStatus('Away')">{{userStatus('Away')}} Away</v-btn>
 							</v-list-item>
 							<v-list-item>
-								<v-btn @click.stop="updateUserStatus('Busy')">Busy</v-btn>
+								<v-btn @click.stop="updateUserStatus('Busy')">{{userStatus('Busy')}} Busy</v-btn>
 							</v-list-item>
 						</v-list>
 					</v-card>
@@ -327,7 +334,7 @@ export default Vue.extend({
 					<v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
 						<v-list-item-icon>
 							<v-icon>{{ member.icon }}</v-icon>
-							<v-list-item-title>{{ OnlineStatus(member.online) }}</v-list-item-title>
+							<v-list-item-title>{{ onlineStatus(member.online) }}</v-list-item-title>
 						</v-list-item-icon>
 						<v-list-item-content>
 							<v-list-item-title>{{ member.name }}</v-list-item-title>
@@ -341,7 +348,7 @@ export default Vue.extend({
 							<v-list-item>
 								<v-list-item-icon>
 									<v-icon>{{ member.icon }}</v-icon>
-									<v-list-item-title>{{ OnlineStatus(member.online) }}</v-list-item-title>
+									<v-list-item-title>{{ onlineStatus(member.online) }}</v-list-item-title>
 								</v-list-item-icon>
 								<v-list-item-content>
 									<v-list-item-title>{{ member.name }}</v-list-item-title>
