@@ -9,29 +9,39 @@ export class AuthService {
   constructor(private prisma: PrismaService) {}
 
   async login(): Promise<any | null> {
-    try {
+    const time = new Date().toJSON();
+    while (1) {
       const user = await this.prisma.user.findFirst({
         where: {
-          id: 1,
+          UpdatedAt: {
+            gt: time,
+          },
+        },
+      });
+      if (user) {
+        return {
+          avatar: user.Avatar,
+          nickname: user.Nickname,
+          id: user.id,
+          success: 1,
+          accessToken: user.AccessToken,
+        };
+      }
+    }
+    return null;
+  }
+
+  async findUser(accessToken: string): Promise<number | null> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          AccessToken: accessToken,
         },
       });
       if (!user) throw Error;
-      const newUser = await this.prisma.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          Connected: true,
-        },
-      });
-      return {
-        avatar: user.Avatar,
-        nickname: user.Nickname,
-        id: user.id,
-        success: 1,
-      };
+      return user.id;
     } catch (e) {
-      console.log('error', e, 'get login');
+      console.log('error: ', e);
       return null;
     }
   }

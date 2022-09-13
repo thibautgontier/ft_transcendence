@@ -37,6 +37,7 @@ export const mutations = {
 		state.currentUser.id = newUser.id;
 		state.currentUser.success = newUser.success;
 		state.currentUser.nickname = newUser.Nickname;
+		state.currentUser.accessToken = newUser.accessToken;
 		localStorage.setItem('currentUser', JSON.stringify(newUser));
 	},
 	deleteUser(state) {

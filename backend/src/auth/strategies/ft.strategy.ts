@@ -36,10 +36,17 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
           AccessToken: accessToken,
         },
       });
+      user.Connected = true;
       return cb(null, user);
     }
+    await this.prisma.user.update({
+      where: {
+        id: existingUser.id,
+      },
+      data: {
+        id: existingUser.id,
+      },
+    });
     return cb(null, existingUser);
   }
 }
-
-//rewatch how to make html send access tokens, this token comes from 42 auth.
