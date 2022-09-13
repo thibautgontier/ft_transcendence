@@ -17,7 +17,7 @@ export default Vue.extend({
       state: GameState,
       canvas: Document,
       ctx: CanvasRenderingContext2D,
-	  room: GameState,
+      room: GameState,
     }
   },
   async mounted() {
@@ -179,7 +179,7 @@ export default Vue.extend({
 </template>
 
 <style>
-html,
+/* html,
 body {
   display: flex;
   flex-direction: row;
@@ -191,5 +191,5 @@ body {
 
   margin: 0;
   padding: 0;
-}
+} */
 </style>
