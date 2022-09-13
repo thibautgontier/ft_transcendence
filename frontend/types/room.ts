@@ -5,6 +5,7 @@ export interface IRoom {
 	channelName: string,
 	messages: Message[],
 	id : number
+	Type: chanStatus,
 };
 
 export class ourRoom implements IRoom {
@@ -12,12 +13,13 @@ export class ourRoom implements IRoom {
 	channelName = '';
 	messages : Message[] = [];
 	id = 0;
+	Type= chanStatus.PUBLIC;
 };
 
 export enum chanStatus {
 	PUBLIC = "public",
-	PROTECTED = "protected",
-	PRIVATE = "private"
+	PROTECTED = "protected", //if mdp exist
+	PRIVATE = "private" // invisible
   }
 
   export interface Imessage {
@@ -25,7 +27,7 @@ export enum chanStatus {
 	CreatedAt: Date,
 	UpdatedAt: Date,
 	Content: string,
-	// UserID: number,
+	// UserID: number, a ajouter pour la modification de msg
 }
 
 export class Message implements Imessage {

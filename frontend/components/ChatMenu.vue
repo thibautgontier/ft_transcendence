@@ -2,7 +2,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 import * as Colyseus from "colyseus.js";
-import { ourRoom, Message, Channel } from "../types/room"
+import { ourRoom, Message, Channel, chanStatus } from "../types/room"
 
 export default Vue.extend({
 	data() : any {
@@ -12,8 +12,8 @@ export default Vue.extend({
 				{ name: "Toto", online: true, icon: "mdi-account", status: "ajoute Colyseus", menu: false, blockedSwitch: true, adminSwitch: true },
 				{ name: "Luigi", online: false, icon: "mdi-account", status: "travaille au foodtruck", menu: false, blockedSwitch: false, adminSwitch: false },
 			],
-			newChannel:{ name:'', private:false, password:'', confirmPassword:'', maxPeople:64 },
-			editChannel:{ name:'', private:false, password:'', confirmPassword:''},
+			newChannel:{ name:'', protected:false, password:''},
+			editChannel:{ name:'', protected:false, password:''},
 			userIcon: "",
 			userName: "Ben",
 			userStatus: "Busy",
@@ -29,7 +29,7 @@ export default Vue.extend({
 			receivedMessage: '',
 			rooms: [] as ourRoom[],
 			channelNameRules: [
-				(value: string) => (value && value.length >= 3 && value.length <= 12) || 'bewteen 3 and 12 characters'
+				(value: string) => (value && value.length >= 3 && value.length <= 12) || 'between 3 and 12 characters'
 			],
 			showPassword: false
 		};
@@ -45,7 +45,7 @@ export default Vue.extend({
 			if (!newValue) {
 				this.newChannel.name = '';
 				this.newChannel.password = '';
-				this.newChannel.private = false;
+				this.newChannel.protected = false;
 				this.newChannel.maxPeople = 64;
 				this.showPassword = false
 			}
@@ -54,7 +54,7 @@ export default Vue.extend({
 			if (!newValue) {
 				this.editChannel.name = '';
 				this.editChannel.password = '';
-				this.editChannel.private = false;
+				this.editChannel.protected = false;
 				this.showPassword = false
 			}
 		}
@@ -77,12 +77,16 @@ export default Vue.extend({
 			this.editChannelDialog = !this.editChannelDialog
 			this.dialogRoom = current
 		},
-		leaveChannelConfirmed() {
+		async leaveChannelConfirmed() {
 			this.leaveChannelDialog = false
 			this.dialogRoom.channel.leave();
 			const index = this.rooms.indexOf(this.dialogRoom)
 			this.rooms.splice(index, 1)
 			this.activeChannel = this.rooms[0]
+			/**
+			 * await axios.patch(`/channel/${this.dialogRoom.id/removeUser/${this.$store.state.currentUser.id}}`)
+			 * rajouter une fois que on chargera les channels du user et non pas les channel créés
+			 */
 			if (this.rooms.length === 0)
 				this.inChannel = false
 		},
@@ -92,7 +96,7 @@ export default Vue.extend({
 			const newRoom = new ourRoom();
 			try {
 				newRoom.channel = await this.client.create('ChatRoom');
-				const response = axios.post('/channel/create', {"owner" : "1" ,
+				const response = axios.post('/channel/create', {"owner" : `${this.$store.state.currentUser.id}` ,
 					"Name" : this.newChannel.name, "RoomId" : newRoom.channel.id})
 				newRoom.channelName = this.newChannel.name;
 				this.rooms.push(newRoom);
@@ -110,8 +114,24 @@ export default Vue.extend({
 				console.error("join error", e);
 			}
 		},
-		editChannelConfirmed() {
+		async editChannelConfirmed() {
 			this.editChannelDialog = false;
+			if (this.editChannel.name != '')
+			{
+				const response = await axios.patch(`/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
+					{ "name" : this.editChannel.name});
+			}
+			if (this.dialogRoom.Type == chanStatus.PUBLIC)
+			{
+				if (this.editChannel.protected == true)
+				{
+					const response = await axios.patch(`/channel/${this.dialogRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`,
+					{ "Password" : this.editChannel.password})
+				}
+			}
+			else 
+			{
+			}
 		},
 		OnlineStatus(online: boolean) {
 			if (online === true)
@@ -132,13 +152,14 @@ export default Vue.extend({
 		},
 		sendMessage() : void {
 			if (this.myMessage === '')
-				return
-			this.activeChannel.channel.send("Message" , this.myMessage)
-			axios.post(`channel/${this.activeChannel.id}/sendMessage/1`, { "Content" : this.myMessage})
-			this.myMessage=''
+				return;
+			this.activeChannel.channel.send("Message" , this.myMessage);
+			axios.post(`channel/${this.activeChannel.id}/sendMessage/${this.$store.state.currentUser.id}`,
+				{ "Content" : this.myMessage});
+			this.myMessage='';
 		},
 		async getChannel() {
-			const response = await axios.get('/channel/');
+			const response = await axios.get('/channel/'); // a modifier : recuperer uniquement les channels du user
 			console.log(response.data);
 			for (const channel of response.data as Channel[]) {
 				const room = new ourRoom();
@@ -148,7 +169,7 @@ export default Vue.extend({
 				catch(e)
 				{
 					room.channel = await this.client.create('ChatRoom');
-					await axios.patch(`/channel/update/${channel.id}/1`, {"RoomId" : room.channel.id})
+					await axios.patch(`/channel/update/${channel.id}/${this.$store.state.currentUser.id}`, {"RoomId" : room.channel.id})
 				}
 				room.channelName = channel.Name;
 				room.id = channel.id;
@@ -435,7 +456,7 @@ export default Vue.extend({
 						<v-spacer></v-spacer>
 						<v-list-item>
 							<v-list-item-title>Private channel</v-list-item-title>
-							<v-checkbox v-model="editChannel.private"></v-checkbox>
+							<v-checkbox v-model="newChannel.protected"></v-checkbox>
 						</v-list-item>
 					<v-card-actions>
 					<v-spacer></v-spacer>
@@ -485,7 +506,7 @@ export default Vue.extend({
 						<div class="white--text dialogTitle">Password :</div>
 					</v-card-text>
 						<v-text-field
-							v-model="newChannel.password"
+							v-model="editChannel.password"
 							dense
 							hide-details
 							solo
@@ -499,7 +520,7 @@ export default Vue.extend({
 						<v-spacer></v-spacer>
 						<v-list-item>
 							<v-list-item-title>Private channel</v-list-item-title>
-							<v-checkbox v-model="editChannel.private"></v-checkbox>
+							<v-checkbox v-model="editChannel.protected"></v-checkbox>
 						</v-list-item>
 					<v-card-actions>
 					<v-spacer></v-spacer>

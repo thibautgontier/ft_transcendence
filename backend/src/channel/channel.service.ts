@@ -115,7 +115,6 @@ export class ChannelService {
         data: {
           Name: body.name,
           Description: body.Description,
-		  RoomId: body.RoomId
         },
       });
       res.status(HttpStatus.OK).send(channel);
@@ -124,6 +123,29 @@ export class ChannelService {
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
         message: 'Cannot update Channel',
+      });
+      return null;
+    }
+  }
+
+  async updateId(
+    idChan: number,
+    body: ChannelUpdateDto,
+    res: Response,
+  ): Promise<Channel | null> {
+    try {
+      const channel = await this.prisma.channel.update({
+        where: { id: idChan },
+        data: {
+		  RoomId: body.RoomId
+        },
+      });
+      res.status(HttpStatus.OK).send(channel);
+      return channel;
+    } catch (error) {
+      res.status(HttpStatus.NOT_ACCEPTABLE).send({
+        statusCode: HttpStatus.NOT_ACCEPTABLE,
+        message: 'Cannot update roomID',
       });
       return null;
     }
@@ -300,7 +322,7 @@ export class ChannelService {
         throw Error;
       const channel = await this.prisma.channel.update({
         where: { id: idChan },
-        data: { Password: body.Password, Type: 'protected' },
+        data: { Password: body.Password, Type: 'private' },
       });
       res.status(HttpStatus.OK).send(channel);
       return channel;
@@ -329,7 +351,7 @@ export class ChannelService {
     } catch (error) {
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot switch protected to public',
+        message: 'Cannot switch private to public',
       });
       return null;
     }
