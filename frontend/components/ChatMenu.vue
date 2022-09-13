@@ -14,9 +14,7 @@ export default Vue.extend({
 			],
 			newChannel:{ name:'', protected:false, password:''},
 			editChannel:{ name:'', protected:false, password:''},
-			userIcon: "",
-			userName: "Ben",
-			userStatus: "Busy",
+			user:{ name: 'Ben', icon:'https://randomuser.me/api/portraits/lego/5.jpg', status:'Busy'},
 			activeChannel: ourRoom,
 			admin: true,
 			leaveChannelDialog: false,
@@ -139,7 +137,7 @@ export default Vue.extend({
 			return "🔴"
 		},
 		updateUserStatus(status: string) {
-			this.userStatus = status;
+			this.user.status = status;
 		},
 		async createClient() {
 			try {
@@ -249,9 +247,10 @@ export default Vue.extend({
 				<v-btn text fab x-small @click.stop="leaveChannelPending(room)"><v-icon>mdi-close</v-icon></v-btn>
 			</v-list-item>
 		</v-list>
+		<!-- USER STATUS MENU -->
 		<v-footer absolute pad outlined>
 			<v-menu
-				:close-on-content-click="true"
+				:close-on-content-click="false"
 				top
 				offset-y
 				transition="slide-y-reverse-transition"
@@ -259,26 +258,25 @@ export default Vue.extend({
 				<template #activator="{ on, attrs }">
 					<v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
 						<v-list-item-avatar>
-							<v-img src="https://randomuser.me/api/portraits/lego/5.jpg"></v-img>
+							<v-img :src="user.icon"></v-img>
 						</v-list-item-avatar>
 						<v-list-item-content>
-							<v-list-item-title>{{ userName }}</v-list-item-title>
-							<v-list-item-action-text>{{ userStatus }}</v-list-item-action-text>
+							<v-list-item-title>{{ user.name }}</v-list-item-title>
+							<v-list-item-action-text>{{ user.status }}</v-list-item-action-text>
 						</v-list-item-content>
 					</v-btn>
 				</template>
 
-					<!-- USER STATUS MENU -->
 					<v-card>
 						<v-list>
 							<v-list-item>
 								<v-list-item-avatar>
-									<v-img src="https://randomuser.me/api/portraits/lego/5.jpg"></v-img>
+									<v-img :src="user.icon"></v-img>
 								</v-list-item-avatar>
 								<v-list-item-content>
-									<v-list-item-title>{{ userName }}</v-list-item-title>
+									<v-list-item-title>{{ user.name }}</v-list-item-title>
 									<v-spacer></v-spacer>
-									<v-list-item-subtitle>{{ userStatus }}</v-list-item-subtitle>
+									<v-list-item-subtitle>{{ user.status }}</v-list-item-subtitle>
 								</v-list-item-content>
 							</v-list-item>
 						</v-list>
