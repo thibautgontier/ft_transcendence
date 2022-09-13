@@ -1,9 +1,7 @@
 <script lang="ts">
 import Vue from 'vue'
+import axios from 'axios'
 export default Vue.extend({
-		beforeCreate() {
-			this.$store.commit('initialiseStore');
-		},
 		data () {
 			return {
 				authenticated: false,
@@ -16,6 +14,9 @@ export default Vue.extend({
 					return (false)
 				return (true)
 			}
+		},
+		beforeCreate() {
+			this.$store.commit('initialiseStore');
 		},
 		methods : {
 		},

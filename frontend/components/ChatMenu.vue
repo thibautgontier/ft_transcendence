@@ -14,7 +14,9 @@ export default Vue.extend({
 			],
 			newChannel:{ name:'', private:false, password:'', confirmPassword:'', maxPeople:64 },
 			editChannel:{ name:'', private:false, password:'', confirmPassword:''},
+			userIcon: "",
 			userName: "Ben",
+			userStatus: "Busy",
 			activeChannel: ourRoom,
 			admin: true,
 			leaveChannelDialog: false,
@@ -115,6 +117,9 @@ export default Vue.extend({
 			if (online === true)
 				return "🟢"
 			return "🔴"
+		},
+		updateUserStatus(status: string) {
+			this.userStatus = status;
 		},
 		async createClient() {
 			try {
@@ -223,6 +228,55 @@ export default Vue.extend({
 				<v-btn text fab x-small @click.stop="leaveChannelPending(room)"><v-icon>mdi-close</v-icon></v-btn>
 			</v-list-item>
 		</v-list>
+		<v-footer absolute pad outlined>
+			<v-menu
+				:close-on-content-click="true"
+				top
+				offset-y
+				transition="slide-y-reverse-transition"
+				>
+				<template #activator="{ on, attrs }">
+					<v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
+						<v-list-item-icon>
+							<v-icon>{{ userIcon }}</v-icon>
+							<v-list-item-title>{{ userStatus }}</v-list-item-title>
+						</v-list-item-icon>
+						<v-list-item-content>
+							<v-list-item-title>{{ userName }}</v-list-item-title>
+						</v-list-item-content>
+					</v-btn>
+				</template>
+
+					<!-- USER STATUS MENU -->
+					<v-card>
+						<v-list>
+							<v-list-item>
+								<v-list-item-icon>
+									<v-icon>{{ userIcon }}</v-icon>
+									<v-list-item-title>{{ userStatus }}</v-list-item-title>
+								</v-list-item-icon>
+								<v-list-item-content>
+									<v-list-item-title>{{ userName }}</v-list-item-title>
+								</v-list-item-content>
+							</v-list-item>
+						</v-list>
+
+						<v-divider></v-divider>
+
+						<v-list>
+							<v-list-item>
+								<v-btn @click.stop="updateUserStatus('Online')">Online</v-btn>
+							</v-list-item>
+							<v-list-item>
+								<v-btn @click.stop="updateUserStatus('Away')">Away</v-btn>
+							</v-list-item>
+							<v-list-item>
+								<v-btn @click.stop="updateUserStatus('Busy')">Busy</v-btn>
+							</v-list-item>
+						</v-list>
+					</v-card>
+				</v-menu>
+		</v-footer>
 		</v-navigation-drawer>
 		<!-- MEMBERS -->
 		<v-navigation-drawer
@@ -483,6 +537,7 @@ export default Vue.extend({
 		</v-main>
 		<!-- INPUT ZONE -->
 		<v-footer
+		v-if="inChannel"
 		app
 		inset>
 			<v-text-field
