@@ -26,7 +26,7 @@ export default Vue.extend({
 			myMessage: '',
 			receivedMessage: '',
 			rooms: [] as ourRoom[],
-			channelNameRules: [
+			inputRules: [
 				(value: string) => (value && value.length >= 3 && value.length <= 12) || 'between 3 and 12 characters'
 			],
 			showPassword: false
@@ -89,7 +89,9 @@ export default Vue.extend({
 				this.inChannel = false
 		},
 		async newChannelConfirmed() {
-			if (this.newChannel.name.length < 3 || this.newChannel.name.length > 12)
+			if (this.newChannel.name.length < 3 || this.newChannel.name.length > 12
+				|| (this.newChannel.protected === true
+				&& (this.newChannel.password.length < 3 || this.newChannel.password.length > 12)))
 				return;
 			const newRoom = new ourRoom();
 			try {
@@ -112,24 +114,29 @@ export default Vue.extend({
 				console.error("join error", e);
 			}
 		},
-		async editChannelConfirmed() {
+		editChannelConfirmed() {
+			if (this.editChannel.name.length < 3 || this.editChannel.name.length > 12
+				|| (this.editChannel.protected === true
+				&& (this.editChannel.password.length < 3 || this.editChannel.password.length > 12)))
+				return;
 			this.editChannelDialog = false;
-			if (this.editChannel.name != '')
-			{
-				const response = await axios.patch(`/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
-					{ "name" : this.editChannel.name});
-			}
-			if (this.dialogRoom.Type == chanStatus.PUBLIC)
-			{
-				if (this.editChannel.protected == true)
-				{
-					const response = await axios.patch(`/channel/${this.dialogRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`,
-					{ "Password" : this.editChannel.password})
-				}
-			}
-			else 
-			{
-			}
+			// if (this.editChannel.name !== '')
+			// {
+			// 	const response = await axios.patch(`/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
+			// 		{ "name" : this.editChannel.name});
+			// }
+			// if (this.dialogRoom.Type === chanStatus.PUBLIC)
+			// {
+			// 	if (this.editChannel.protected === true)
+			// 	{
+			// 		const response = await axios.patch(`/channel/${this.dialogRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`,
+			// 		{ "Password" : this.editChannel.password})
+			// 	}
+			// }
+			// else 
+			// {
+			// 	console.log()
+			// }
 		},
 		onlineStatus(online: boolean) {
 			if (online === true)
@@ -369,10 +376,10 @@ export default Vue.extend({
 							<v-list-item>
 								<v-btn @click.stop="sendFriendRequest(member)">Send friend request</v-btn>
 							</v-list-item>
-							<v-list-item v-if="admin && member.name != userName">
+							<v-list-item v-if="admin && member.name != user.name">
 								<v-btn @click.stop="banFromChannel(member)">Remove from channel</v-btn>
 							</v-list-item>
-							<v-list-item v-if="member.name !== userName">
+							<v-list-item v-if="member.name !== user.name">
 								<v-list-item-title>Blocked</v-list-item-title>
 								<v-checkbox v-model="member.blockSwitch" dense @change="switchBlock(member)"></v-checkbox>
 							</v-list-item>
@@ -441,29 +448,29 @@ export default Vue.extend({
 							placeholder="must be between 3 and 12 characters"
 							clearable
 							clear-icon="mdi-close-circle"
-							:rules="channelNameRules"
+							:rules="inputRules"
 							@keydown.enter.prevent="newChannelConfirmed()"
 							></v-text-field>
-						<v-card-text class="text-center">
-							<div class="white--text dialogTitle">Password :</div>
-						</v-card-text>
+					<v-list-item>
+						<v-list-item-title>Protected channel</v-list-item-title>
+						<v-checkbox v-model="newChannel.protected"></v-checkbox>
+					</v-list-item>
+					<v-card-text v-if="newChannel.protected" class="text-center">
+						<div class="white--text dialogTitle">Password :</div>
+					</v-card-text>
 						<v-text-field
+							v-if="newChannel.protected"
 							v-model="newChannel.password"
 							dense
 							hide-details
 							solo
-							placeholder="leave blank for open channel"
-							clearable
+							placeholder="must be between 3 and 12 characters"
 							clear-icon="mdi-close-circle"
 							:append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
 							:type="!showPassword ? 'password' : 'text'"
+							:rules="inputRules"
 							@click:append="showPassword = !showPassword"
 							></v-text-field>
-						<v-spacer></v-spacer>
-						<v-list-item>
-							<v-list-item-title>Private channel</v-list-item-title>
-							<v-checkbox v-model="newChannel.protected"></v-checkbox>
-						</v-list-item>
 					<v-card-actions>
 					<v-spacer></v-spacer>
 
@@ -506,28 +513,29 @@ export default Vue.extend({
 							placeholder="must be between 3 and 12 characters"
 							clearable
 							clear-icon="mdi-close-circle"
-							:rules="channelNameRules"
+							:rules="inputRules"
+							@keydown.enter.prevent="editChannelConfirmed()"
 							></v-text-field>
-					<v-card-text class="text-center">
+					<v-list-item>
+						<v-list-item-title>Protected channel</v-list-item-title>
+						<v-checkbox v-model="editChannel.protected"></v-checkbox>
+					</v-list-item>
+					<v-card-text v-if="editChannel.protected" class="text-center">
 						<div class="white--text dialogTitle">Password :</div>
 					</v-card-text>
 						<v-text-field
+							v-if="editChannel.protected"
 							v-model="editChannel.password"
 							dense
 							hide-details
 							solo
-							placeholder="leave blank for open channel"
-							clearable
+							placeholder="must be between 3 and 12 characters"
 							clear-icon="mdi-close-circle"
 							:append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
 							:type="!showPassword ? 'password' : 'text'"
+							:rules="inputRules"
 							@click:append="showPassword = !showPassword"
 							></v-text-field>
-						<v-spacer></v-spacer>
-						<v-list-item>
-							<v-list-item-title>Private channel</v-list-item-title>
-							<v-checkbox v-model="editChannel.protected"></v-checkbox>
-						</v-list-item>
 					<v-card-actions>
 					<v-spacer></v-spacer>
 					<v-btn
