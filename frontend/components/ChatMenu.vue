@@ -258,12 +258,12 @@ export default Vue.extend({
 				>
 				<template #activator="{ on, attrs }">
 					<v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
-						<v-list-item-icon>
-							<v-icon>{{ userIcon }}</v-icon>
-							<v-list-item-title>{{ userStatus }}</v-list-item-title>
-						</v-list-item-icon>
+						<v-list-item-avatar>
+							<v-img src="https://randomuser.me/api/portraits/lego/5.jpg"></v-img>
+						</v-list-item-avatar>
 						<v-list-item-content>
 							<v-list-item-title>{{ userName }}</v-list-item-title>
+							<v-list-item-action-text>{{ userStatus }}</v-list-item-action-text>
 						</v-list-item-content>
 					</v-btn>
 				</template>
@@ -272,12 +272,13 @@ export default Vue.extend({
 					<v-card>
 						<v-list>
 							<v-list-item>
-								<v-list-item-icon>
-									<v-icon>{{ userIcon }}</v-icon>
-									<v-list-item-title>{{ userStatus }}</v-list-item-title>
-								</v-list-item-icon>
+								<v-list-item-avatar>
+									<v-img src="https://randomuser.me/api/portraits/lego/5.jpg"></v-img>
+								</v-list-item-avatar>
 								<v-list-item-content>
 									<v-list-item-title>{{ userName }}</v-list-item-title>
+									<v-spacer></v-spacer>
+									<v-list-item-subtitle>{{ userStatus }}</v-list-item-subtitle>
 								</v-list-item-content>
 							</v-list-item>
 						</v-list>
