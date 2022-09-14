@@ -120,7 +120,6 @@ export default Vue.extend({
 				|| (this.editChannel.protected === true
 				&& (this.editChannel.password.length < 3 || this.editChannel.password.length > 12)))
 				return;
-			this.editChannelDialog = false;
 			if (this.editChannel.name !== '') // changement de nom
 			{
 				const response = await axios.patch(`/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
@@ -147,6 +146,7 @@ export default Vue.extend({
 					{ "Password" : this.editChannel.password});
 				}
 			}
+			this.editChannelDialog = false;
 		},
 		onlineStatus(online: boolean) {
 			if (online === true)
