@@ -55,9 +55,10 @@ export default Vue.extend({
 				this.editChannel.protected = false;
 				this.showPassword = false
 			}
-		}
+		},
 	},
 	async mounted() {
+		console.log("User = " + this.$store.currentUser);
 		await this.createClient()
 		await this.getChannel()
 	},
