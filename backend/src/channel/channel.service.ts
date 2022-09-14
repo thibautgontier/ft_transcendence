@@ -115,6 +115,7 @@ export class ChannelService {
         data: {
           Name: body.name,
           Description: body.Description,
+          Password: body.Password,
         },
       });
       res.status(HttpStatus.OK).send(channel);

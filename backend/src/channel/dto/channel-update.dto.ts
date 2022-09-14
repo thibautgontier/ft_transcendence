@@ -15,4 +15,9 @@ export class ChannelUpdateDto {
     required: false,
   })
   RoomId?: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  Password?: string;
 }

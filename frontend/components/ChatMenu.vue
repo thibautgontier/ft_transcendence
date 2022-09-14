@@ -114,29 +114,38 @@ export default Vue.extend({
 				console.error("join error", e);
 			}
 		},
-		editChannelConfirmed() {
+		async editChannelConfirmed() {
 			if (this.editChannel.name.length < 3 || this.editChannel.name.length > 12
 				|| (this.editChannel.protected === true
 				&& (this.editChannel.password.length < 3 || this.editChannel.password.length > 12)))
 				return;
 			this.editChannelDialog = false;
-			// if (this.editChannel.name !== '')
-			// {
-			// 	const response = await axios.patch(`/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
-			// 		{ "name" : this.editChannel.name});
-			// }
-			// if (this.dialogRoom.Type === chanStatus.PUBLIC)
-			// {
-			// 	if (this.editChannel.protected === true)
-			// 	{
-			// 		const response = await axios.patch(`/channel/${this.dialogRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`,
-			// 		{ "Password" : this.editChannel.password})
-			// 	}
-			// }
-			// else 
-			// {
-			// 	console.log()
-			// }
+			if (this.editChannel.name !== '') // changement de nom
+			{
+				const response = await axios.patch(`/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
+					{ "name" : this.editChannel.name});
+			}
+			if (this.dialogRoom.Type === chanStatus.PUBLIC)
+			{
+				console.log('here! -> protected : ', this.editChannel.protected)
+				if (this.editChannel.protected === true) // channel public devient protected
+				{
+					const response = await axios.patch(`/channel/${this.dialogRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`,
+					{ "Password" : this.editChannel.password})
+				}
+			}
+			else // if channel is protected by a pw
+			{
+				if (this.editChannel.protected === false) // channel protected devient public
+				{
+					const response = await axios.patch(`/channel/${this.dialogRoom.id}/switchToPublic/${this.$store.state.currentUser.id}`);
+				}
+				else if (this.editChannel.protected === true)  // changement du mdp
+				{
+					const response = await axios.patch(`/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
+					{ "Password" : this.editChannel.password});
+				}
+			}
 		},
 		onlineStatus(online: boolean) {
 			if (online === true)
@@ -207,7 +216,7 @@ export default Vue.extend({
 		},
 		async sendFriendRequest() {
 			/**
-			 * const response = await axios.patch('/socialProfile/{userID}/friend/add/{blockedID}')
+			 * const response = await axios.patch('/socialProfile/{userID}/friend/add/{friendID}')
 			 */
 		},
 		switchBlock(member : any) {
