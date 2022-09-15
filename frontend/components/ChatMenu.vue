@@ -215,25 +215,25 @@ export default Vue.extend({
 		inviteToPlay() {
 
 		},
-		async sendFriendRequest() {
-			/**
-			 * const response = await axios.patch('/socialProfile/{userID}/friend/add/{friendID}')
-			 */
+		async sendFriendRequest(friend: any) {
+			const response = await axios.patch(
+				`/socialProfile/${this.$store.state.currentUser.id}/friend/add/${friend.id}`)
 		},
-		switchBlock(member : any) {
-			// if (this.blocked === false)
-				// const response = await axios.patch('/socialProfile/{userID}/blocked/add/{blockedID}')
-			// else
-				// const response = await axios.patch('/socialProfile/{userID}/blocked/remove/{blockedID}')
+		async switchBlock(member : any) {
+			if (this.blocked === false) {
+				const response = await axios.patch(
+					`/socialProfile/${this.$store.state.currentUser.id}/blocked/add/${member.id}`) }
+			else {
+				const response = await axios.patch(
+					`/socialProfile/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`) }
 			console.log("blocked: " + member.blockSwitch)
 		},
 		switchAdmin(member : any) {
 			console.log("admin: " + member.adminSwitch)
 		},
-		async banFromChannel() {
-			/**
-			 * const response = await axios.patch('/channel/{channelid}/banUser/{idAdmin}/{idUser}')
-			 */
+		async banFromChannel(member : any) {
+			const response = await axios.patch(
+				`/channel/${this.activeChannel.id}/banUser/${this.$store.state.currentUser.id}/${member.id}}`)
 		}
 	},
 })

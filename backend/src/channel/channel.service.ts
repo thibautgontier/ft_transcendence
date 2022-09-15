@@ -15,7 +15,7 @@ export class ChannelService {
 
   async getAll(): Promise<Channel[]> {
     return this.prisma.channel.findMany({
-      include: { Messages: true },
+      include: { Messages: true, Users: true, Admins: true},
     });
   }
 
