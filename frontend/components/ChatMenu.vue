@@ -9,8 +9,8 @@ export default Vue.extend({
 		return {
 			members: [
 				{ name: "Ben", online: true, icon: "mdi-account", status: "ajoute des menus", menu: false, blockedSwitch: false, adminSwitch: true },
-				{ name: "Toto", online: true, icon: "mdi-account", status: "ajoute Colyseus", menu: false, blockedSwitch: true, adminSwitch: true },
-				{ name: "Luigi", online: false, icon: "mdi-account", status: "travaille au foodtruck", menu: false, blockedSwitch: false, adminSwitch: false },
+				{ name: "Toto", online: true, icon: "mdi-account", status: "finit le back", menu: false, blockedSwitch: true, adminSwitch: true },
+				{ name: "Luigi", online: true, icon: "mdi-account", status: "is back!", menu: false, blockedSwitch: false, adminSwitch: false },
 			],
 			newChannel:{ name:'', protected:false, password:''},
 			editChannel:{ name:'', protected:false, password:''},
@@ -280,11 +280,12 @@ export default Vue.extend({
 				transition="slide-y-reverse-transition"
 				>
 				<template #activator="{ on, attrs }">
-					<v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
+					<v-btn large class="wide" text color="white" v-bind="attrs" v-on="on">
 						<v-list-item-avatar>
 							<v-img :src="user.icon"></v-img>
 						</v-list-item-avatar>
-							<v-list-item-action-text>{{userStatus(user.status)}}</v-list-item-action-text>
+						<v-list-item-action-text>{{userStatus(user.status)}}</v-list-item-action-text>
+						<v-spacer></v-spacer>
 						<v-list-item-content>
 							<v-list-item-title>{{ user.name }}</v-list-item-title>
 						</v-list-item-content>
