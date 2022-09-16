@@ -323,7 +323,7 @@ export class ChannelService {
         throw Error;
       const channel = await this.prisma.channel.update({
         where: { id: idChan },
-        data: { Password: body.Password, Type: 'private' },
+        data: { Password: body.Password, Type: 'protected' },
       });
       res.status(HttpStatus.OK).send(channel);
       return channel;

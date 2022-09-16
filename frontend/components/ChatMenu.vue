@@ -85,6 +85,7 @@ export default Vue.extend({
 			/**
 			 * await axios.patch(`/channel/${this.dialogRoom.id/removeUser/${this.$store.state.currentUser.id}}`)
 			 * rajouter une fois que on chargera les channels du user et non pas les channel créés
+			 * si 0 user dans le channel rm le channel
 			 */
 			if (this.rooms.length === 0)
 				this.inChannel = false
@@ -97,9 +98,11 @@ export default Vue.extend({
 			const newRoom = new ourRoom();
 			try {
 				newRoom.channel = await this.client.create('ChatRoom');
-				const response = axios.post('/channel/create', {"owner" : `${this.$store.state.currentUser.id}` ,
+				const response = await axios.post('/channel/create', {"owner" : `${this.$store.state.currentUser.id}` ,
 					"Name" : this.newChannel.name, "RoomId" : newRoom.channel.id})
+				console.log('creation du channel:', response.data);
 				newRoom.channelName = this.newChannel.name;
+				newRoom.id = response.data.id;
 				this.rooms.push(newRoom);
 				this.inChannel = true;
 				this.newChannel.name = '';
@@ -169,7 +172,7 @@ export default Vue.extend({
 				console.log(this.client)
 			}
 			catch(e){
-				console.log("Create Client ERROR", e);
+				console.error("Create Client ERROR", e);
 			}
 		},
 		sendMessage() : void {
