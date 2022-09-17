@@ -33,10 +33,8 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
           Nickname: profile.username,
           Email: profile.emails[0].value,
           Avatar: profile.photos[0].value,
-          AccessToken: accessToken,
         },
       });
-      user.Connected = true;
       return cb(null, user);
     }
     await this.prisma.user.update({
@@ -44,7 +42,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         id: existingUser.id,
       },
       data: {
-        id: existingUser.id,
+        Connected: true,
       },
     });
     return cb(null, existingUser);
