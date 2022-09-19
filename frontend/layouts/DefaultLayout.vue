@@ -5,7 +5,7 @@ export default Vue.extend({
 		data () {
 			return {
 				authenticated: false,
-				activeComponent: "Login"
+				activeComponent: "LoginPage"
 			}
 		},
 		computed: {

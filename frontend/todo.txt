@@ -25,3 +25,15 @@ Components:
 - AsyncData hooks seulement dans les pages
 
 Verifier ce qu'il se passe si on se connecte deux fois avec le meme user dans deux fenetres différentes
+
+n'importe :
+sudo dockerd
+
+backend :
+sudo docker stop frontend backend
+sudo docker-compose up -d database
+export $(grep -v '^#' ../docker/backend/.env | xargs) && npm run dev
+sudo npx prisma studio -> pour le visualiseur
+
+frontend :
+npm run dev

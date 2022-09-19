@@ -21,7 +21,6 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     profile: Profile,
     cb: VerifyCallback,
   ): Promise<any> {
-    //request.session.accessToken = accessToken;
     const existingUser = await this.prisma.user.findUnique({
       where: {
         Email: profile.emails[0].value,
@@ -33,6 +32,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
           Nickname: profile.username,
           Email: profile.emails[0].value,
           Avatar: profile.photos[0].value,
+          Connected: true,
         },
       });
       return cb(null, user);

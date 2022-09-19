@@ -31,25 +31,29 @@ export class AuthController {
 
   @Get('42/return')
   @UseGuards(FtOauthGuard)
-  // @Redirect('http://localhost:8080/')
   async ftAuthCallback(@Res({ passthrough: true }) res: Response) {
-    console.log('in callback');
     const result = await this.authService.login();
-    res.cookie('testCookie', 'hello world', {
-      httpOnly: false,
-    });
-    console.log('returning: ', result);
-    res.status(302).redirect('http://localhost:8080/');
+    if (result) {
+      const obj = JSON.stringify({
+        nickname: result.nickname,
+        id: result.id,
+        avatar: result.avatar,
+        accessToken: result.accessToken,
+      });
+      res.cookie('user', obj, {
+        httpOnly: false,
+      });
+      res.status(302).redirect('http://localhost:8080/');
+    } else {
+      console.log('failed to find user');
+    }
   }
 
   @Get('logout')
   async logOut(@Req() req: Request) {
     const token = req.headers.authorization.split(' ')[1];
-    // console.log('token:', token);
-    const id = await this.authService.findUser(token);
-    // if (id) {
-    //   console.log('id: ', id);
-    // }
+    const user = await this.authService.findUser(token);
+    console.log('user to logout:', user);
   }
 
   @Post('test')

@@ -10,7 +10,6 @@ export class AuthService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
   async login(): Promise<any | null> {
-    const time = new Date().toJSON();
     const user = await this.prisma.user.findFirst({
       where: {
         Connected: true,
@@ -24,13 +23,13 @@ export class AuthService {
         },
         data: {
           AccessToken: token.access_token,
+          Connected: false,
         },
       });
       return {
         avatar: user.Avatar,
         nickname: user.Nickname,
         id: user.id,
-        success: 1,
         accessToken: token.access_token,
       };
     }
@@ -44,7 +43,7 @@ export class AuthService {
     };
   }
 
-  async findUser(accessToken: string): Promise<number | null> {
+  async findUser(accessToken: string): Promise<User | null> {
     // console.log('token received: ', accessToken);
     try {
       const user = await this.prisma.user.findUnique({
@@ -53,10 +52,17 @@ export class AuthService {
         },
       });
       if (!user) throw Error;
-      console.log('token found:', user.AccessToken);
-      return user.id;
+      await this.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          AccessToken: '',
+        },
+      });
+      return user;
     } catch (e) {
-      console.log('error: ', e);
+      console.log('boy: ', e);
       return null;
     }
   }

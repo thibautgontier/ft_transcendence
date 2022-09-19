@@ -35,15 +35,13 @@ export const mutations = {
 	getCurrentUser(state, newUser) {
 		state.currentUser.avatar = newUser.avatar;
 		state.currentUser.id = newUser.id;
-		state.currentUser.success = newUser.success;
-		state.currentUser.nickname = newUser.Nickname;
+		state.currentUser.nickname = newUser.nickname;
 		state.currentUser.accessToken = newUser.accessToken;
 		localStorage.setItem('currentUser', JSON.stringify(newUser));
 	},
 	deleteUser(state) {
 		state.currentUser.avatar = '';
 		state.currentUser.id = 0;
-		state.currentUser.success = 0;
 		state.currentUser.nickname = '';
 		localStorage.removeItem('currentUser');
 	},

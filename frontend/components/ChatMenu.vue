@@ -2,21 +2,19 @@
 import Vue from 'vue'
 import axios from 'axios'
 import * as Colyseus from "colyseus.js";
-import { ourRoom, Message, Channel } from "../types/room"
+import { ourRoom, Message, Channel, chanStatus } from "../types/room"
 
 export default Vue.extend({
 	data() : any {
 		return {
 			members: [
 				{ name: "Ben", online: true, icon: "mdi-account", status: "ajoute des menus", menu: false, blockedSwitch: false, adminSwitch: true },
-				{ name: "Toto", online: true, icon: "mdi-account", status: "ajoute Colyseus", menu: false, blockedSwitch: true, adminSwitch: true },
-				{ name: "Luigi", online: false, icon: "mdi-account", status: "travaille au foodtruck", menu: false, blockedSwitch: false, adminSwitch: false },
+				{ name: "Toto", online: true, icon: "mdi-account", status: "finit le back", menu: false, blockedSwitch: true, adminSwitch: true },
+				{ name: "Luigi", online: true, icon: "mdi-account", status: "is back!", menu: false, blockedSwitch: false, adminSwitch: false },
 			],
-			newChannel:{ name:'', private:false, password:'', confirmPassword:'', maxPeople:64 },
-			editChannel:{ name:'', private:false, password:'', confirmPassword:''},
-			userIcon: "",
-			userName: "Ben",
-			userStatus: "Busy",
+			newChannel:{ name:'', protected:false, password:''},
+			editChannel:{ name:'', protected:false, password:''},
+			user:{ name: 'Ben', icon:'https://randomuser.me/api/portraits/lego/5.jpg', status:'Busy'},
 			activeChannel: ourRoom,
 			admin: true,
 			leaveChannelDialog: false,
@@ -28,8 +26,8 @@ export default Vue.extend({
 			myMessage: '',
 			receivedMessage: '',
 			rooms: [] as ourRoom[],
-			channelNameRules: [
-				(value: string) => (value && value.length >= 3 && value.length <= 12) || 'bewteen 3 and 12 characters'
+			inputRules: [
+				(value: string) => (value && value.length >= 3 && value.length <= 12) || 'between 3 and 12 characters'
 			],
 			showPassword: false
 		};
@@ -45,7 +43,7 @@ export default Vue.extend({
 			if (!newValue) {
 				this.newChannel.name = '';
 				this.newChannel.password = '';
-				this.newChannel.private = false;
+				this.newChannel.protected = false;
 				this.newChannel.maxPeople = 64;
 				this.showPassword = false
 			}
@@ -54,12 +52,13 @@ export default Vue.extend({
 			if (!newValue) {
 				this.editChannel.name = '';
 				this.editChannel.password = '';
-				this.editChannel.private = false;
+				this.editChannel.protected = false;
 				this.showPassword = false
 			}
-		}
+		},
 	},
 	async mounted() {
+		console.log("User = " + this.$store.currentUser);
 		await this.createClient()
 		await this.getChannel()
 	},
@@ -77,24 +76,33 @@ export default Vue.extend({
 			this.editChannelDialog = !this.editChannelDialog
 			this.dialogRoom = current
 		},
-		leaveChannelConfirmed() {
+		async leaveChannelConfirmed() {
 			this.leaveChannelDialog = false
 			this.dialogRoom.channel.leave();
 			const index = this.rooms.indexOf(this.dialogRoom)
 			this.rooms.splice(index, 1)
 			this.activeChannel = this.rooms[0]
+			/**
+			 * await axios.patch(`/channel/${this.dialogRoom.id/removeUser/${this.$store.state.currentUser.id}}`)
+			 * rajouter une fois que on chargera les channels du user et non pas les channel créés
+			 * si 0 user dans le channel rm le channel
+			 */
 			if (this.rooms.length === 0)
 				this.inChannel = false
 		},
 		async newChannelConfirmed() {
-			if (this.newChannel.name.length < 3 || this.newChannel.name.length > 12)
+			if (this.newChannel.name.length < 3 || this.newChannel.name.length > 12
+				|| (this.newChannel.protected === true
+				&& (this.newChannel.password.length < 3 || this.newChannel.password.length > 12)))
 				return;
 			const newRoom = new ourRoom();
 			try {
 				newRoom.channel = await this.client.create('ChatRoom');
-				const response = axios.post('/channel/create', {"owner" : "1" ,
+				const response = await axios.post('/channel/create', {"owner" : `${this.$store.state.currentUser.id}` ,
 					"Name" : this.newChannel.name, "RoomId" : newRoom.channel.id})
+				console.log('creation du channel:', response.data);
 				newRoom.channelName = this.newChannel.name;
+				newRoom.id = response.data.id;
 				this.rooms.push(newRoom);
 				this.inChannel = true;
 				this.newChannel.name = '';
@@ -110,16 +118,53 @@ export default Vue.extend({
 				console.error("join error", e);
 			}
 		},
-		editChannelConfirmed() {
+		async editChannelConfirmed() {
+			if (this.editChannel.name.length < 3 || this.editChannel.name.length > 12
+				|| (this.editChannel.protected === true
+				&& (this.editChannel.password.length < 3 || this.editChannel.password.length > 12)))
+				return;
+			if (this.editChannel.name !== '') // changement de nom
+			{
+				const response = await axios.patch(`/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
+					{ "name" : this.editChannel.name});
+			}
+			if (this.dialogRoom.Type === chanStatus.PUBLIC)
+			{
+				console.log('here! -> protected : ', this.editChannel.protected)
+				if (this.editChannel.protected === true) // channel public devient protected
+				{
+					const response = await axios.patch(`/channel/${this.dialogRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`,
+					{ "Password" : this.editChannel.password})
+				}
+			}
+			else // if channel is protected by a pw
+			{
+				if (this.editChannel.protected === false) // channel protected devient public
+				{
+					const response = await axios.patch(`/channel/${this.dialogRoom.id}/switchToPublic/${this.$store.state.currentUser.id}`);
+				}
+				else if (this.editChannel.protected === true)  // changement du mdp
+				{
+					const response = await axios.patch(`/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
+					{ "Password" : this.editChannel.password});
+				}
+			}
 			this.editChannelDialog = false;
 		},
-		OnlineStatus(online: boolean) {
+		onlineStatus(online: boolean) {
 			if (online === true)
 				return "🟢"
 			return "🔴"
 		},
+		userStatus(status: string) {
+			if (status === 'Online')
+				return "🟢"
+			else if (status === 'Busy')
+				return "⛔"
+			return "🌙"
+		},
 		updateUserStatus(status: string) {
-			this.userStatus = status;
+			this.user.status = status;
 		},
 		async createClient() {
 			try {
@@ -127,18 +172,19 @@ export default Vue.extend({
 				console.log(this.client)
 			}
 			catch(e){
-				console.log("Create Client ERROR", e);
+				console.error("Create Client ERROR", e);
 			}
 		},
 		sendMessage() : void {
 			if (this.myMessage === '')
-				return
-			this.activeChannel.channel.send("Message" , this.myMessage)
-			axios.post(`channel/${this.activeChannel.id}/sendMessage/1`, { "Content" : this.myMessage})
-			this.myMessage=''
+				return;
+			this.activeChannel.channel.send("Message" , this.myMessage);
+			axios.post(`channel/${this.activeChannel.id}/sendMessage/${this.$store.state.currentUser.id}`,
+				{ "Content" : this.myMessage});
+			this.myMessage='';
 		},
 		async getChannel() {
-			const response = await axios.get('/channel/');
+			const response = await axios.get('/channel/'); // a modifier : recuperer uniquement les channels du user
 			console.log(response.data);
 			for (const channel of response.data as Channel[]) {
 				const room = new ourRoom();
@@ -148,7 +194,7 @@ export default Vue.extend({
 				catch(e)
 				{
 					room.channel = await this.client.create('ChatRoom');
-					await axios.patch(`/channel/update/${channel.id}/1`, {"RoomId" : room.channel.id})
+					await axios.patch(`/channel/update/${channel.id}/${this.$store.state.currentUser.id}`, {"RoomId" : room.channel.id})
 				}
 				room.channelName = channel.Name;
 				room.id = channel.id;
@@ -172,25 +218,25 @@ export default Vue.extend({
 		inviteToPlay() {
 
 		},
-		async sendFriendRequest() {
-			/**
-			 * const response = await axios.patch('/socialProfile/{userID}/friend/add/{blockedID}')
-			 */
+		async sendFriendRequest(friend: any) {
+			const response = await axios.patch(
+				`/socialProfile/${this.$store.state.currentUser.id}/friend/add/${friend.id}`)
 		},
-		switchBlock(member : any) {
-			// if (this.blocked === false)
-				// const response = await axios.patch('/socialProfile/{userID}/blocked/add/{blockedID}')
-			// else
-				// const response = await axios.patch('/socialProfile/{userID}/blocked/remove/{blockedID}')
+		async switchBlock(member : any) {
+			if (this.blocked === false) {
+				const response = await axios.patch(
+					`/socialProfile/${this.$store.state.currentUser.id}/blocked/add/${member.id}`) }
+			else {
+				const response = await axios.patch(
+					`/socialProfile/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`) }
 			console.log("blocked: " + member.blockSwitch)
 		},
 		switchAdmin(member : any) {
 			console.log("admin: " + member.adminSwitch)
 		},
-		async banFromChannel() {
-			/**
-			 * const response = await axios.patch('/channel/{channelid}/banUser/{idAdmin}/{idUser}')
-			 */
+		async banFromChannel(member : any) {
+			const response = await axios.patch(
+				`/channel/${this.activeChannel.id}/banUser/${this.$store.state.currentUser.id}/${member.id}}`)
 		}
 	},
 })
@@ -228,35 +274,37 @@ export default Vue.extend({
 				<v-btn text fab x-small @click.stop="leaveChannelPending(room)"><v-icon>mdi-close</v-icon></v-btn>
 			</v-list-item>
 		</v-list>
+		<!-- USER STATUS MENU -->
 		<v-footer absolute pad outlined>
 			<v-menu
-				:close-on-content-click="true"
+				:close-on-content-click="false"
 				top
 				offset-y
 				transition="slide-y-reverse-transition"
 				>
 				<template #activator="{ on, attrs }">
-					<v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
-						<v-list-item-icon>
-							<v-icon>{{ userIcon }}</v-icon>
-							<v-list-item-title>{{ userStatus }}</v-list-item-title>
-						</v-list-item-icon>
+					<v-btn large class="wide" text color="white" v-bind="attrs" v-on="on">
+						<v-list-item-avatar>
+							<v-img :src="user.icon"></v-img>
+						</v-list-item-avatar>
+						<v-list-item-action-text>{{userStatus(user.status)}}</v-list-item-action-text>
+						<v-spacer></v-spacer>
 						<v-list-item-content>
-							<v-list-item-title>{{ userName }}</v-list-item-title>
+							<v-list-item-title>{{ user.name }}</v-list-item-title>
 						</v-list-item-content>
 					</v-btn>
 				</template>
 
-					<!-- USER STATUS MENU -->
 					<v-card>
 						<v-list>
 							<v-list-item>
-								<v-list-item-icon>
-									<v-icon>{{ userIcon }}</v-icon>
-									<v-list-item-title>{{ userStatus }}</v-list-item-title>
-								</v-list-item-icon>
+								<v-list-item-avatar>
+									<v-img :src="user.icon"></v-img>
+								</v-list-item-avatar>
 								<v-list-item-content>
-									<v-list-item-title>{{ userName }}</v-list-item-title>
+									<v-list-item-title>{{ user.name }}</v-list-item-title>
+									<v-spacer></v-spacer>
+									<v-list-item-subtitle>{{userStatus(user.status)}} {{ user.status }}</v-list-item-subtitle>
 								</v-list-item-content>
 							</v-list-item>
 						</v-list>
@@ -265,13 +313,13 @@ export default Vue.extend({
 
 						<v-list>
 							<v-list-item>
-								<v-btn @click.stop="updateUserStatus('Online')">Online</v-btn>
+								<v-btn @click.stop="updateUserStatus('Online')">{{userStatus('Online')}} Online</v-btn>
 							</v-list-item>
 							<v-list-item>
-								<v-btn @click.stop="updateUserStatus('Away')">Away</v-btn>
+								<v-btn @click.stop="updateUserStatus('Away')">{{userStatus('Away')}} Away</v-btn>
 							</v-list-item>
 							<v-list-item>
-								<v-btn @click.stop="updateUserStatus('Busy')">Busy</v-btn>
+								<v-btn @click.stop="updateUserStatus('Busy')">{{userStatus('Busy')}} Busy</v-btn>
 							</v-list-item>
 						</v-list>
 					</v-card>
@@ -307,7 +355,7 @@ export default Vue.extend({
 					<v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
 						<v-list-item-icon>
 							<v-icon>{{ member.icon }}</v-icon>
-							<v-list-item-title>{{ OnlineStatus(member.online) }}</v-list-item-title>
+							<v-list-item-title>{{ onlineStatus(member.online) }}</v-list-item-title>
 						</v-list-item-icon>
 						<v-list-item-content>
 							<v-list-item-title>{{ member.name }}</v-list-item-title>
@@ -321,7 +369,7 @@ export default Vue.extend({
 							<v-list-item>
 								<v-list-item-icon>
 									<v-icon>{{ member.icon }}</v-icon>
-									<v-list-item-title>{{ OnlineStatus(member.online) }}</v-list-item-title>
+									<v-list-item-title>{{ onlineStatus(member.online) }}</v-list-item-title>
 								</v-list-item-icon>
 								<v-list-item-content>
 									<v-list-item-title>{{ member.name }}</v-list-item-title>
@@ -342,10 +390,10 @@ export default Vue.extend({
 							<v-list-item>
 								<v-btn @click.stop="sendFriendRequest(member)">Send friend request</v-btn>
 							</v-list-item>
-							<v-list-item v-if="admin && member.name != userName">
+							<v-list-item v-if="admin && member.name != user.name">
 								<v-btn @click.stop="banFromChannel(member)">Remove from channel</v-btn>
 							</v-list-item>
-							<v-list-item v-if="member.name !== userName">
+							<v-list-item v-if="member.name !== user.name">
 								<v-list-item-title>Blocked</v-list-item-title>
 								<v-checkbox v-model="member.blockSwitch" dense @change="switchBlock(member)"></v-checkbox>
 							</v-list-item>
@@ -414,29 +462,29 @@ export default Vue.extend({
 							placeholder="must be between 3 and 12 characters"
 							clearable
 							clear-icon="mdi-close-circle"
-							:rules="channelNameRules"
+							:rules="inputRules"
 							@keydown.enter.prevent="newChannelConfirmed()"
 							></v-text-field>
-						<v-card-text class="text-center">
-							<div class="white--text dialogTitle">Password :</div>
-						</v-card-text>
+					<v-list-item>
+						<v-list-item-title>Protected channel</v-list-item-title>
+						<v-checkbox v-model="newChannel.protected"></v-checkbox>
+					</v-list-item>
+					<v-card-text v-if="newChannel.protected" class="text-center">
+						<div class="white--text dialogTitle">Password :</div>
+					</v-card-text>
 						<v-text-field
+							v-if="newChannel.protected"
 							v-model="newChannel.password"
 							dense
 							hide-details
 							solo
-							placeholder="leave blank for open channel"
-							clearable
+							placeholder="must be between 3 and 12 characters"
 							clear-icon="mdi-close-circle"
 							:append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
 							:type="!showPassword ? 'password' : 'text'"
+							:rules="inputRules"
 							@click:append="showPassword = !showPassword"
 							></v-text-field>
-						<v-spacer></v-spacer>
-						<v-list-item>
-							<v-list-item-title>Private channel</v-list-item-title>
-							<v-checkbox v-model="editChannel.private"></v-checkbox>
-						</v-list-item>
 					<v-card-actions>
 					<v-spacer></v-spacer>
 
@@ -479,28 +527,29 @@ export default Vue.extend({
 							placeholder="must be between 3 and 12 characters"
 							clearable
 							clear-icon="mdi-close-circle"
-							:rules="channelNameRules"
+							:rules="inputRules"
+							@keydown.enter.prevent="editChannelConfirmed()"
 							></v-text-field>
-					<v-card-text class="text-center">
+					<v-list-item>
+						<v-list-item-title>Protected channel</v-list-item-title>
+						<v-checkbox v-model="editChannel.protected"></v-checkbox>
+					</v-list-item>
+					<v-card-text v-if="editChannel.protected" class="text-center">
 						<div class="white--text dialogTitle">Password :</div>
 					</v-card-text>
 						<v-text-field
-							v-model="newChannel.password"
+							v-if="editChannel.protected"
+							v-model="editChannel.password"
 							dense
 							hide-details
 							solo
-							placeholder="leave blank for open channel"
-							clearable
+							placeholder="must be between 3 and 12 characters"
 							clear-icon="mdi-close-circle"
 							:append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
 							:type="!showPassword ? 'password' : 'text'"
+							:rules="inputRules"
 							@click:append="showPassword = !showPassword"
 							></v-text-field>
-						<v-spacer></v-spacer>
-						<v-list-item>
-							<v-list-item-title>Private channel</v-list-item-title>
-							<v-checkbox v-model="editChannel.private"></v-checkbox>
-						</v-list-item>
 					<v-card-actions>
 					<v-spacer></v-spacer>
 					<v-btn
