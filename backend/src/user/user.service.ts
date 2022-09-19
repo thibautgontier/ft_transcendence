@@ -42,6 +42,7 @@ export class UserService {
   }
 
   async createUser(res: Response, body: Profile): Promise<User> {
+  try {
     const user = await this.prisma.user.create({
       data: {
         Email: body.emails[0].value,
@@ -57,13 +58,12 @@ export class UserService {
     });
 
     //TODO: here, add code to call 42 API for get user's data
-    return;
-    //   res.status(HttpStatus.CREATED).send(user);
-    //   return user;
-    // } catch (error) {
-    //   res.status(HttpStatus.NOT_ACCEPTABLE).send({ error });
-    //   return null;
-    // }
+       res.status(HttpStatus.CREATED).send(user);
+       return user;
+    } catch (error) {
+      res.status(HttpStatus.NOT_ACCEPTABLE).send({ error });
+      return null;
+    }
   }
 
   async deleteUser(res: Response, userID: number): Promise<User | null> {
