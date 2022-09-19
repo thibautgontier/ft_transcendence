@@ -53,7 +53,7 @@ export class AuthController {
   async logOut(@Req() req: Request) {
     const token = req.headers.authorization.split(' ')[1];
     const user = await this.authService.findUser(token);
-    console.log('user to logout:', user);
+    console.log('Logging out user');
   }
 
   @Post('test')
