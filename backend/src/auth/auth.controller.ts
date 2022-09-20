@@ -1,17 +1,8 @@
 import { User } from '.prisma/client';
-import {
-  Controller,
-  Get,
-  Post,
-  Redirect,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { FtOauthGuard } from './guards/ft-oauth.guard';
-import { JwtAuthGuard } from './guards/jwt.auth.guard';
 
 @Controller('login')
 export class AuthController {
@@ -39,6 +30,7 @@ export class AuthController {
         id: result.id,
         avatar: result.avatar,
         accessToken: result.accessToken,
+        twoFA: result.twoFA,
       });
       res.cookie('user', obj, {
         httpOnly: false,
@@ -56,8 +48,19 @@ export class AuthController {
     console.log('Logging out user');
   }
 
+  // async enable2FA(@Req() req: Request, @Res() res: Response) {
+  //   const token = req.headers.authorization.split(' ')[1];
+  //   const user = await this.authService.findUser(token);
+  //   if (user) {
+  //     const secret = speakeasy.generateSecret();
+  //     qrcode.toDataURL(secret.otpauth_url, function (err, qrImage) {
+  //       if (!err) res.status(200).send({ qr: qrImage, secret: secret });
+  //       else return;
+  //     });
+  //   } else res.status(404).send();
+  // }
+
   @Post('test')
-  @UseGuards(JwtAuthGuard)
   test(@Req() req: Request) {
     const token = req.headers.authorization.split(' ')[1];
     console.log('in here boy,', token);

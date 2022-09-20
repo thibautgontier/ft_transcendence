@@ -22,7 +22,6 @@ export class AuthService {
           id: user.id,
         },
         data: {
-          AccessToken: token.access_token,
           Connected: false,
         },
       });
@@ -31,6 +30,7 @@ export class AuthService {
         nickname: user.Nickname,
         id: user.id,
         accessToken: token.access_token,
+        twoFA: user.TwoFA,
       };
     }
     return null;
@@ -46,20 +46,19 @@ export class AuthService {
   async findUser(accessToken: string): Promise<User | null> {
     // console.log('token received: ', accessToken);
     try {
+      const tokenUser = this.jwtService.decode(accessToken);
+      console.log(typeof tokenUser);
+      if (typeof tokenUser !== 'object') {
+        const username = JSON.parse(tokenUser.toString());
+        console.log('username: ', username);
+      }
+      // console.log('obj: ', typeof obj);
       const user = await this.prisma.user.findUnique({
         where: {
-          AccessToken: accessToken,
+          Nickname: 'jabenjam',
         },
       });
       if (!user) throw Error;
-      await this.prisma.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          AccessToken: '',
-        },
-      });
       return user;
     } catch (e) {
       console.log('boy: ', e);

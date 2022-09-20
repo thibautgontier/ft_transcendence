@@ -48,7 +48,7 @@ export default Vue.extend({
 
 <template>
   <v-container fill-height>
-    <!-- <h1> {{this.$store.state.currentUser.nickname}} </h1> -->
+    <!-- <h1> {{this.$store.state.currentUser.twoFA}} </h1> -->
     <v-col>
       <v-row justify="center" align="center">
         <PongLogo />
