@@ -6,6 +6,7 @@ import {version} from '../package.json';
 export const state = () => ({
 	friends: [],
 	activeComponent: 'Login',
+	twoFA: false,
 	currentUser: User,
 	version: '',
 })
@@ -28,6 +29,9 @@ export const mutations = {
 		if(localStorage.getItem('currentUser')) {
 			state.currentUser = JSON.parse(localStorage.getItem('currentUser'));
 		}
+		if(localStorage.getItem('twoFA')) {
+			state.twoFA = true;
+		}
 	},
 	changeActiveComponent(state,component) {
 		state.activeComponent = component
@@ -37,14 +41,19 @@ export const mutations = {
 		state.currentUser.id = newUser.id;
 		state.currentUser.nickname = newUser.nickname;
 		state.currentUser.accessToken = newUser.accessToken;
-		state.currentUser.twoFA = newUser.twoFA;
 		localStorage.setItem('currentUser', JSON.stringify(newUser));
 	},
 	deleteUser(state) {
 		state.currentUser.avatar = '';
 		state.currentUser.id = 0;
 		state.currentUser.nickname = '';
-		state.currentUser.twoFA = false;
 		localStorage.removeItem('currentUser');
 	},
+	change2faStatus(state) {
+		if (!state.twoFA)
+			localStorage.setItem('twoFA', true);
+		else
+			localStorage.removeItem('twoFA');
+		state.twoFA = !state.twoFA;
+	}
 }

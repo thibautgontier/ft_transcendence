@@ -6,7 +6,12 @@ export default Vue.extend({
         date: String,
         score: String,
         ennemy: String,
-    }	
+    },
+    methods: {
+        activate2fa() {
+            this.$store.commit('change2faStatus');
+        }
+    }
 })
 </script>
 
@@ -21,6 +26,7 @@ export default Vue.extend({
         <v-list-item three-line>
         <v-list-item-content>
             <v-row>
+                <v-col cols="4">
                 <div class="ml-14 mt-16">
                    <v-avatar
                         color="grey lighten-2"
@@ -28,6 +34,9 @@ export default Vue.extend({
                         <img :src="this.$store.state.currentUser.avatar">
                     </v-avatar>
                 </div>
+                <v-btn v-if="!$store.state.twoFA" class="dfa" x-large color="black" @click.stop="activate2fa()">Activate 2FA</v-btn>
+                <v-btn v-if="$store.state.twoFA" class="dfa" x-large color="black" @click.stop="activate2fa()">Deactivate 2FA</v-btn>
+                </v-col>
                 <v-card
                     elevation="1"
                     class="mx-auto my-12"
@@ -99,5 +108,10 @@ export default Vue.extend({
 
 .v-progress-circular {
   font-size: 2rem;
+}
+
+.dfa {
+    margin-left: 110px;
+    margin-top: 10px;
 }
 </style>

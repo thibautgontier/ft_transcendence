@@ -33,6 +33,7 @@ export default Vue.extend({
 					<v-btn @click.stop="activeComponent='GameMenu'">Game Menu</v-btn>
 					<v-btn @click.stop="activeComponent='ChatMenu'">Chat Menu</v-btn>
 					<v-btn @click.stop="activeComponent='TestZone'">Test Zone</v-btn>
+					<v-btn @click.stop="activeComponent='History'">History</v-btn>
 				</v-row>
 			</div>
 			<Transition name="fade" mode="out-in">
