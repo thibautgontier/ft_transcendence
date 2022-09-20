@@ -1,30 +1,18 @@
 ToDo:
 
-Components:
-- Main menu :
-	- Acces vers :
-		- Matchmaking
-		- Chat
-		- Spectate Menu
-		- Settings
-		- Leaderboard
-- Social menu
-- Chat
-- FriendList
-- Matchmaking
-- Game Page
-- Spectate Menu
-- User Settings
-- Leaderboard
-
-
 - trouver comment rendre le background aussi sombre que les boutons
-- modifier la taille de l'avatar pour le menu social
 
-- Fetch hooks hooks dans les components et pages
-- AsyncData hooks seulement dans les pages
+- Verifier ce qu'il se passe si on se connecte deux fois avec le meme user dans deux fenetres différentes
 
-Verifier ce qu'il se passe si on se connecte deux fois avec le meme user dans deux fenetres différentes
+- Update le statut depuis le store
+
+- Update le nom d'un channel en cas de changement de nom
+
+- ajouter un check pour voir si le channel existe toujours avant de rejoindre
+
+- scroll vers le dernier message a la reception
+
+- adapter le pong pour qu'il ne soit pas a 100% de width
 
 n'importe :
 sudo dockerd

@@ -14,7 +14,6 @@ export default Vue.extend({
 			],
 			newChannel:{ name:'', protected:false, password:''},
 			editChannel:{ name:'', protected:false, password:''},
-			user:{ name: 'Ben', icon:'https://randomuser.me/api/portraits/lego/5.jpg', status:'Busy'},
 			activeChannel: ourRoom,
 			admin: true,
 			leaveChannelDialog: false,
@@ -29,7 +28,7 @@ export default Vue.extend({
 			inputRules: [
 				(value: string) => (value && value.length >= 3 && value.length <= 12) || 'between 3 and 12 characters'
 			],
-			showPassword: false
+			showPassword: false,
 		};
 	},
 	head(): {} {
@@ -44,7 +43,6 @@ export default Vue.extend({
 				this.newChannel.name = '';
 				this.newChannel.password = '';
 				this.newChannel.protected = false;
-				this.newChannel.maxPeople = 64;
 				this.showPassword = false
 			}
 		},
@@ -56,9 +54,20 @@ export default Vue.extend({
 				this.showPassword = false
 			}
 		},
+		channelChange(newValue) {
+			if (!newValue) {
+				this.editChannel.name = '';
+				this.editChannel.password = '';
+				this.editChannel.protected = false;
+				this.showPassword = false
+			}
+		},
+	},
+	updated() {
+		// this.$nextTick(() => this.scrollToEnd());
+		console.log(this.activeChannel)
 	},
 	async mounted() {
-		console.log("User = " + this.$store.currentUser);
 		await this.createClient()
 		await this.getChannel()
 	},
@@ -68,6 +77,11 @@ export default Vue.extend({
 		}
 	},
 	methods: {
+		// scrollToEnd() {
+		// 	const content = this.$refs.messagesContainer;
+		// 	console.log(content);
+		// 	content.scrollTop = content.scrollHeight
+		// },
 		leaveChannelPending(current : ourRoom) : void{
 			this.leaveChannelDialog = !this.leaveChannelDialog
 			this.dialogRoom = current
@@ -156,16 +170,6 @@ export default Vue.extend({
 				return "🟢"
 			return "🔴"
 		},
-		userStatus(status: string) {
-			if (status === 'Online')
-				return "🟢"
-			else if (status === 'Busy')
-				return "⛔"
-			return "🌙"
-		},
-		updateUserStatus(status: string) {
-			this.user.status = status;
-		},
 		async createClient() {
 			try {
 				this.client = await new Colyseus.Client('ws://localhost:3000')
@@ -237,7 +241,7 @@ export default Vue.extend({
 		async banFromChannel(member : any) {
 			const response = await axios.patch(
 				`/channel/${this.activeChannel.id}/banUser/${this.$store.state.currentUser.id}/${member.id}}`)
-		}
+		},
 	},
 })
 </script>
@@ -247,102 +251,58 @@ export default Vue.extend({
 		<!-- EXIT ARROW -->
 		<!-- CONVERSATIONS -->
 		<v-navigation-drawer
-		permanent
 		clipped
 		app
+		:permanent="!$vuetify.breakpoint.smAndDown"
+		:expand-on-hover="$vuetify.breakpoint.smAndDown"
+		>
+			<template #prepend>
+				<v-list-item>
+					<v-list-item-content>
+						<v-list-item-title>Conversations</v-list-item-title>
+					</v-list-item-content>
+					<v-btn text color="white" @click.stop="createChannelDialog=true">New</v-btn>
+				</v-list-item>
+			</template>
+			<v-divider></v-divider>
+
+			<v-list dense>
+			<v-list-item-group>
+				<v-list-item
+				v-for="(room, index) in rooms"
+				:key="index"
+				@click.stop="activeChannel = room"
+				>
+					<v-list-item-content>
+						<v-list-item-title>{{ room.channelName }}</v-list-item-title>
+					</v-list-item-content>
+					<v-btn v-if="admin" fab x-small text @click.stop="editChannelPending(room)"><v-icon>mdi-cog</v-icon></v-btn>
+					<v-btn text fab x-small @click.stop="leaveChannelPending(room)"><v-icon>mdi-close</v-icon></v-btn>
+				</v-list-item>
+				</v-list-item-group>
+			</v-list>
+		</v-navigation-drawer>
+		<!-- MEMBERS -->
+		<v-navigation-drawer
+		v-if="activeChannel"
+		clipped
+		right
+		app
+		:permanent="!$vuetify.breakpoint.smAndDown"
+		:expand-on-hover="$vuetify.breakpoint.smAndDown"
 		>
 		<template #prepend>
 			<v-list-item>
 				<v-list-item-content>
-					<v-list-item-title>Conversations</v-list-item-title>
+					<v-list-item-title>Members</v-list-item-title>
 				</v-list-item-content>
-				<v-btn text color="white" @click.stop="createChannelDialog=true">New</v-btn>
-				<v-btn v-if="admin" text color="white" @click.stop="editChannelDialog=true">Edit</v-btn>
 			</v-list-item>
 		</template>
 		<v-divider></v-divider>
 		<v-list dense>
 			<v-list-item
-			v-for="(room, index) in rooms"
-			:key="index"
-			@click.stop="activeChannel = room"
-			>
-				<v-list-item-content>
-					<v-list-item-title>{{ room.channelName }}</v-list-item-title>
-				</v-list-item-content>
-				<v-btn v-if="admin" fab x-small text @click.stop="editChannelPending(room)"><v-icon>mdi-cog</v-icon></v-btn>
-				<v-btn text fab x-small @click.stop="leaveChannelPending(room)"><v-icon>mdi-close</v-icon></v-btn>
-			</v-list-item>
-		</v-list>
-		<!-- USER STATUS MENU -->
-		<v-footer absolute pad outlined>
-			<v-menu
-				:close-on-content-click="false"
-				top
-				offset-y
-				transition="slide-y-reverse-transition"
-				>
-				<template #activator="{ on, attrs }">
-					<v-btn large class="wide" text color="white" v-bind="attrs" v-on="on">
-						<v-list-item-avatar>
-							<v-img :src="user.icon"></v-img>
-						</v-list-item-avatar>
-						<v-list-item-action-text>{{userStatus(user.status)}}</v-list-item-action-text>
-						<v-spacer></v-spacer>
-						<v-list-item-content>
-							<v-list-item-title>{{ user.name }}</v-list-item-title>
-						</v-list-item-content>
-					</v-btn>
-				</template>
-
-					<v-card>
-						<v-list>
-							<v-list-item>
-								<v-list-item-avatar>
-									<v-img :src="user.icon"></v-img>
-								</v-list-item-avatar>
-								<v-list-item-content>
-									<v-list-item-title>{{ user.name }}</v-list-item-title>
-									<v-spacer></v-spacer>
-									<v-list-item-subtitle>{{userStatus(user.status)}} {{ user.status }}</v-list-item-subtitle>
-								</v-list-item-content>
-							</v-list-item>
-						</v-list>
-
-						<v-divider></v-divider>
-
-						<v-list>
-							<v-list-item>
-								<v-btn @click.stop="updateUserStatus('Online')">{{userStatus('Online')}} Online</v-btn>
-							</v-list-item>
-							<v-list-item>
-								<v-btn @click.stop="updateUserStatus('Away')">{{userStatus('Away')}} Away</v-btn>
-							</v-list-item>
-							<v-list-item>
-								<v-btn @click.stop="updateUserStatus('Busy')">{{userStatus('Busy')}} Busy</v-btn>
-							</v-list-item>
-						</v-list>
-					</v-card>
-				</v-menu>
-		</v-footer>
-		</v-navigation-drawer>
-		<!-- MEMBERS -->
-		<v-navigation-drawer
-		clipped
-		permanent
-		right
-		app
-		>
-		<template #prepend>
-			<v-list-item-content>
-				<v-list-item-title>Members</v-list-item-title>
-			</v-list-item-content>
-		</template>
-		<v-divider></v-divider>
-		<v-list dense>
-			<v-list-item
-			v-for="member in members"
-			:key="member.name"
+			v-for="member in activeChannel.Members"
+			:key="member.nickname"
 			>
 				<v-menu
 				v-model="member.menu"
@@ -358,7 +318,7 @@ export default Vue.extend({
 							<v-list-item-title>{{ onlineStatus(member.online) }}</v-list-item-title>
 						</v-list-item-icon>
 						<v-list-item-content>
-							<v-list-item-title>{{ member.name }}</v-list-item-title>
+							<v-list-item-title>{{ member.nickname }}</v-list-item-title>
 						</v-list-item-content>
 					</v-btn>
 				</template>
@@ -390,10 +350,10 @@ export default Vue.extend({
 							<v-list-item>
 								<v-btn @click.stop="sendFriendRequest(member)">Send friend request</v-btn>
 							</v-list-item>
-							<v-list-item v-if="admin && member.name != user.name">
+							<v-list-item v-if="admin && member.name != $store.state.currentUser.nickname">
 								<v-btn @click.stop="banFromChannel(member)">Remove from channel</v-btn>
 							</v-list-item>
-							<v-list-item v-if="member.name !== user.name">
+							<v-list-item v-if="member.name !== $store.state.currentUser.nickname">
 								<v-list-item-title>Blocked</v-list-item-title>
 								<v-checkbox v-model="member.blockSwitch" dense @change="switchBlock(member)"></v-checkbox>
 							</v-list-item>
@@ -569,19 +529,18 @@ export default Vue.extend({
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
+			<!-- CHANNEL MESSAGES -->
 			<v-container v-if="inChannel">
 			<v-list-item-content>
-				<v-list-item-title>{{activeChannel.channel.id}} - {{activeChannel.channelName}}</v-list-item-title>
+				<v-list-item-title>{{activeChannel.channelName}}</v-list-item-title>
 			</v-list-item-content>
-				<v-divider></v-divider>
-				<v-row>
-					<v-list-item v-for="(message, index) in activeChannel.messages" :key=index two-line app>
-						<v-list-item-content>
-							<v-list-item-title>{{activeChannel.channel.sessionId}}</v-list-item-title>
-							<v-list-item-subtitle>> {{message.Content}}</v-list-item-subtitle>
-						</v-list-item-content>
-					</v-list-item>
-				</v-row>
+			<v-divider></v-divider>
+				<v-list-item v-for="(message, index) in activeChannel.messages" :key=index refs="messagesContainer" two-line app>
+					<v-list-item-content>
+						<v-list-item-title>{{activeChannel.channel.sessionId}}</v-list-item-title>
+						<v-list-item-subtitle>> {{message.Content}}</v-list-item-subtitle>
+					</v-list-item-content>
+				</v-list-item>
 			</v-container>
 		</v-main>
 		<!-- INPUT ZONE -->
