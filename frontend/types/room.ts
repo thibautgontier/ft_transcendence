@@ -6,6 +6,7 @@ export interface IRoom {
 	messages: Message[],
 	id : number
 	Type: chanStatus,
+	members: [],
 };
 
 export class ourRoom implements IRoom {
@@ -14,6 +15,7 @@ export class ourRoom implements IRoom {
 	messages : Message[] = [];
 	id = 0;
 	Type= chanStatus.PUBLIC;
+	members = {} as any;
 };
 
 export enum chanStatus {
