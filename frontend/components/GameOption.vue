@@ -50,9 +50,7 @@ export default Vue.extend({
                   :value="((ballSpeed - 50) / 200) * 100"
                   color="blue"
                   size="100"
-                  width="10"
-                  v-bind="attrs"
-                  v-on="on">
+                  width="10">
                   {{ballSpeed / 100}}
                 </v-progress-circular>
               </v-row>
@@ -71,9 +69,7 @@ export default Vue.extend({
                     :value="((paddleSpeed - 30) / 120) * 100"
                     color="blue"
                     size="100"
-                    width="10"
-                    v-bind="attrs"
-                    v-on="on">
+                    width="10">
                     {{paddleSpeed / 100}}
                   </v-progress-circular>
                 </v-row>
@@ -95,9 +91,7 @@ export default Vue.extend({
                     :value="((pointsToWin - 30) / 120) * 100"
                     color="blue"
                     size="100"
-                    width="10"
-                    v-bind="attrs"
-                    v-on="on">
+                    width="10">
                     {{pointsToWin / 10}}
                   </v-progress-circular>
                 </v-row>
