@@ -7,7 +7,8 @@ let id = 0
 export default Vue.extend({
   data() {
     return {
-      matchNumber: 4,
+      matchNumber: 0,
+      matchInfosTest: null,
       matchInfos: [
         { id: id++, score: '3 / 1', date: '23/09/2022:21h00', victory: 1, ennemy: 'tgontier'},
         { id: id++, score: '0 / 3', date: '23/09/2022:20h36', victory: 0, ennemy: 'ben'},
@@ -16,8 +17,11 @@ export default Vue.extend({
     }
   },
   mounted() {
-  },
-  methods: {
+      axios.get("/game/2/history", {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+    } ).then(response => (this.matchInfosTest = response.data));
   }
 })
 </script>
@@ -30,9 +34,9 @@ export default Vue.extend({
             </div>
             <v-divider class="mb-5"></v-divider>
             <div
-              v-for="matchInfo in matchInfos"
-              :key="matchInfo.id">
-              <Match :ennemy='matchInfo.ennemy' :score='matchInfo.score' :victory='matchInfo.victory' :date='matchInfo.date'/>
+              v-for="match in matchInfosTest"
+              :key="match.id">
+              <Match :ennemyID='match.PlayerTwoID' :WinnerID='match.WinnerID' :score='match.WinnerID' :date='match.CreatedAt'/>
             </div>
             <Friendlist/>
           </v-col>

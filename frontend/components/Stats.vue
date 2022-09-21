@@ -1,12 +1,29 @@
 <script lang="ts">
 import Vue from 'vue'
+import axios from 'axios'
+
 export default Vue.extend({
-	props: {
-		victory: Number,
-        date: String,
-        score: String,
-        ennemy: String,
-    }	
+    data() {
+        return {
+            level: 0,
+            win: 0,
+            loose: 0,
+            Xp: 0,
+        }
+    },
+    mounted() {
+        console.log('avant le then:', this.level);
+      axios.get("/game/" + this.$store.state.currentUser.id, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+    } ).then(response => {  console.log('encore', response.data.Level);
+                            this.level = response.data.Level;
+                            this.Xp = Math.round((response.data.Xp / ((this.level * 50) + 100)) * 100);
+                          this.win = response.data.NbWin;
+                          this.loose = (response.data.NbParty - response.data.NbWin);
+                          console.log('pour etre sur:', response.data.Nbwin)});
+  }
 })
 </script>
 
@@ -41,14 +58,21 @@ export default Vue.extend({
                             </v-chip>
                         </v-card-title>
                         <v-card-text class="Text purple--text my-10" style="text-align:center">
-                            <v-progress-circular
-                                value=50
-                                color="teal"
-                                height="25"
-                                size="125"
-                                width="15">
-                                50%
-                            </v-progress-circular>
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-progress-circular
+                                        value=50
+                                        color="teal"
+                                        height="25"
+                                        size="125"
+                                        width="15"
+                                        v-bind="attrs"
+                                        v-on="on">
+                                        {{level}}
+                                    </v-progress-circular>
+                                </template>
+                                <span class="teal--text">{{Xp}}%</span>
+                            </v-tooltip>
                         </v-card-text>
                 </v-card>
                 <v-card
@@ -64,7 +88,7 @@ export default Vue.extend({
                             </v-chip>
                         </v-card-title>
                         <v-card-text class="Text green--text" style="text-align:center">
-                            56
+                            {{win}}
                         </v-card-text>
                 </v-card>
                 <v-card
@@ -80,7 +104,7 @@ export default Vue.extend({
                             </v-chip>
                         </v-card-title>
                         <v-card-text class="Text red--text" style="text-align:center">
-                            3
+                            {{loose}}
                         </v-card-text>
                 </v-card>
             </v-row>
@@ -94,7 +118,7 @@ export default Vue.extend({
 
 .Text {
     font-size: 3.75rem;
-    margin-top: 125px;
+    margin-top: 100px;
 }
 
 .v-progress-circular {

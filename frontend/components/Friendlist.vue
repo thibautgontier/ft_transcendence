@@ -10,6 +10,7 @@ export default Vue.extend({
         { id: id++, status: 1, name: 'tgontier'},
         { id: id++, status: 0, name: 'ben'},
         { id: id++, status: 2, name: 'tom'},
+        { id: id++, status: 3, name: 'luigi'},
       ]
     }
   },
@@ -39,6 +40,7 @@ export default Vue.extend({
         </v-list-item-content>
         <v-badge v-if="friend.status == 1" inline color="green"></v-badge>
         <v-badge v-if="friend.status == 2" inline color="orange"></v-badge>
+        <v-badge v-if="friend.status == 3" inline color="blue"></v-badge>
       </v-list-item>
     </v-list>
     <v-divider></v-divider>
