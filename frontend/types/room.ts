@@ -67,3 +67,13 @@ export interface Ichannel {
 	RoomId = '';
 	Messages: Message[] = [];
   }
+
+  export interface IChatRoomMessage {
+	Content: string,
+	Nickname: string,
+}
+
+export class ChatRoomMessage implements IChatRoomMessage {
+	Content = '';
+	Nickname = '';
+}
