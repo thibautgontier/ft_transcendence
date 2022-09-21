@@ -12,35 +12,6 @@ import {
 export default Vue.extend({
   data(): any {
     return {
-      members: [
-        {
-          name: 'Ben',
-          online: true,
-          icon: 'mdi-account',
-          status: 'ajoute des menus',
-          menu: false,
-          blockedSwitch: false,
-          adminSwitch: true,
-        },
-        {
-          name: 'Toto',
-          online: true,
-          icon: 'mdi-account',
-          status: 'finit le back',
-          menu: false,
-          blockedSwitch: true,
-          adminSwitch: true,
-        },
-        {
-          name: 'Luigi',
-          online: true,
-          icon: 'mdi-account',
-          status: 'is back!',
-          menu: false,
-          blockedSwitch: false,
-          adminSwitch: false,
-        },
-      ],
       newChannel: { name: '', protected: false, password: '' },
       editChannel: { name: '', protected: false, password: '' },
       activeChannel: ourRoom,
@@ -104,10 +75,6 @@ export default Vue.extend({
     }
   },
   methods: {
-    async getSenderNickName(id: number): Promise<string> {
-      const response = await axios.get(`/user/${id}`)
-      return response.data.Nickname
-    },
     leaveChannelPending(current: ourRoom): void {
       this.leaveChannelDialog = !this.leaveChannelDialog
       this.dialogRoom = current
@@ -251,8 +218,9 @@ export default Vue.extend({
         room.messages.forEach((num1, index) => {
           num1.Nickname = channel.Messages[index].User.Nickname
         })
-        this.rooms.push(room)
-        room.channel.onMessage('Message', (message: ChatRoomMessage) => {
+          room.members = channel.Users;
+          this.rooms.push(room)
+          room.channel.onMessage('Message', (message: ChatRoomMessage) => {
           const newMsg = new Message()
           newMsg.Content = message.Content
           newMsg.Nickname = message.Nickname
@@ -361,8 +329,8 @@ export default Vue.extend({
       <v-divider></v-divider>
       <v-list dense>
         <v-list-item
-          v-for="member in activeChannel.Members"
-          :key="member.nickname"
+          v-for="(member, index) in activeChannel.members"
+          :key="index"
         >
           <v-menu
             v-model="member.menu"
@@ -373,14 +341,13 @@ export default Vue.extend({
           >
             <template #activator="{ on, attrs }">
               <v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
-                <v-list-item-icon>
-                  <v-icon>{{ member.icon }}</v-icon>
-                  <v-list-item-title>{{
-                    onlineStatus(member.online)
-                  }}</v-list-item-title>
-                </v-list-item-icon>
+                <v-avatar size="32"><img :src="member.Avatar"></v-avatar>
+                <v-list-item-content class="ml-2">
+                  <v-list-item-title>{{ member.Nickname }}</v-list-item-title>
+                </v-list-item-content>
                 <v-list-item-content>
-                  <v-list-item-title>{{ member.nickname }}</v-list-item-title>
+                  <v-list-item-title>{{onlineStatus(member.Status)}}</v-list-item-title>
+                  <v-list-item-subtitle>{{ member.Status }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-btn>
             </template>
@@ -389,18 +356,14 @@ export default Vue.extend({
             <v-card>
               <v-list>
                 <v-list-item>
-                  <v-list-item-icon>
-                    <v-icon>{{ member.icon }}</v-icon>
-                    <v-list-item-title>{{
-                      onlineStatus(member.online)
-                    }}</v-list-item-title>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>{{ member.name }}</v-list-item-title>
-                    <v-list-item-subtitle>{{
-                      member.status
-                    }}</v-list-item-subtitle>
-                  </v-list-item-content>
+                    <v-avatar size="64"><img :src="member.Avatar"></v-avatar>
+                <v-list-item-content class="ml-2">
+                  <v-list-item-title>{{onlineStatus(member.Status)}}</v-list-item-title>
+                  <v-list-item-subtitle>{{ member.Status }}</v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-content>
+                  <v-list-item-title>{{ member.Nickname }}</v-list-item-title>
+                </v-list-item-content>
                 </v-list-item>
               </v-list>
 
