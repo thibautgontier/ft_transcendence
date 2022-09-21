@@ -9,11 +9,21 @@ export default Vue.extend({
     return {
       loginSuccess: 0,
       loginFailed: 0,
+      overlay: false,
+      twoFASuccess: false,
+      twoFACode: '',
     }
   },
   mounted() {
     const user = this.$cookies.get('user');
-    if (user) {
+    if (user && !this.$store.state.currentUser.nickname)
+    {
+        this.overlay = true;
+    }
+  },
+  watch: {
+    twoFASuccess() {
+      const user = this.$cookies.get('user');
       this.$store.commit('getCurrentUser', user);
       if (!this.$store.state.currentUser.nickname ) {
         this.loginFailed = 1;
@@ -23,7 +33,7 @@ export default Vue.extend({
         this.loginSuccess = 1;
         this.loginFailed = 0;
       }
-    }
+    },
   },
   methods: {
     redirectToLog() {
@@ -42,6 +52,10 @@ export default Vue.extend({
         this.loginFailed = 0;
       }
 		},
+    sendTwoFA() {
+      this.overlay = false;
+      this.twoFASuccess = true;
+    },
 	}
 })
 </script>
@@ -76,5 +90,34 @@ export default Vue.extend({
         >
       </h1>
     </v-col>
+    <v-overlay :value="overlay" opacity="0.85">
+      <v-row>
+        <v-col>
+          <v-row justify="center" class="mb-16">
+            <v-subheader class="twoFAMessage orange--text">
+              Please enter 2FA code
+            </v-subheader>
+          </v-row>
+          <v-row justify="center">
+            <v-otp-input
+              v-model="twoFACode"
+              style="max-width: 400px"
+              length="5"
+              type="number"
+              @finish="sendTwoFA"
+            ></v-otp-input>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-overlay>
   </v-container>
 </template>
+
+
+<style>
+
+.twoFAMessage {
+    font-size: 4rem;
+}
+
+</style>

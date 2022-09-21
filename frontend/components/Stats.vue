@@ -1,6 +1,15 @@
 <script lang="ts">
 import Vue from 'vue'
 export default Vue.extend({
+    data: () => ({
+            overlay: false,
+            defaultEmail: true,
+            email: '',
+            emailRules: [
+                    v => !!v || 'E-mail is required',
+                    v => /.+@.+/.test(v) || 'E-mail must be valid',
+            ],
+    }),
 	props: {
 		victory: Number,
         date: String,
@@ -10,8 +19,16 @@ export default Vue.extend({
     methods: {
         activate2fa() {
             this.$store.commit('change2faStatus');
-        }
-    }
+            if (this.$store.state.twoFA)
+                this.overlay = true;
+            else
+                this.email = '';
+            this.defaultEmail = true;
+        },
+        saveEmail() {
+            this.overlay = false;
+        },
+    },
 })
 </script>
 
@@ -25,6 +42,7 @@ export default Vue.extend({
         >
         <v-list-item three-line>
         <v-list-item-content>
+            <div>{{email}}</div>
             <v-row>
                 <v-col cols="4">
                 <div class="ml-14 mt-16">
@@ -95,6 +113,29 @@ export default Vue.extend({
             </v-row>
         </v-list-item-content>
         </v-list-item>
+        <v-overlay :value="overlay">
+            <v-card
+                elevation="2"
+                style="width: 400px; height: 200px">
+                <v-card-text>
+                    <v-checkbox
+                        v-model="defaultEmail"
+                        label="Use default 42 email"
+                    ></v-checkbox>
+                </v-card-text>
+                <v-form ref="form">
+                    <v-text-field
+                        v-model="email"
+                        :rules="emailRules"
+                        label="Email"
+                        :disabled="defaultEmail"
+                    ></v-text-field>
+                </v-form>
+                <v-row justify="end" class="mr-4">
+                    <v-btn small color="black" @click.stop="saveEmail()">ok</v-btn>
+                </v-row>
+            </v-card>
+        </v-overlay>
         </v-card>
     </h1>
 </template>
