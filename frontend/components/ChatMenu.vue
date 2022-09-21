@@ -111,7 +111,6 @@ export default Vue.extend({
           Name: this.newChannel.name,
           RoomId: newRoom.channel.id,
         })
-        console.log('creation du channel:', response.data)
         newRoom.channelName = this.newChannel.name
         newRoom.id = response.data.id
         this.rooms.push(newRoom)
@@ -147,7 +146,6 @@ export default Vue.extend({
         )
       }
       if (this.dialogRoom.Type === chanStatus.PUBLIC) {
-        console.log('here! -> protected : ', this.editChannel.protected)
         if (this.editChannel.protected === true) {
           // channel public devient protected
           const response = await axios.patch(
@@ -179,7 +177,6 @@ export default Vue.extend({
     async createClient() {
       try {
         this.client = await new Colyseus.Client('ws://localhost:3000')
-        console.log(this.client)
       } catch (e) {
         console.error('Create Client ERROR', e)
       }
@@ -200,7 +197,6 @@ export default Vue.extend({
       const response = await axios.get(
         `/user/channel/${this.$store.state.currentUser.id}`
       )
-      console.log('channel :', response.data)
       for (const channel of response.data.ChannelUser) {
         const room = new ourRoom()
         try {
@@ -249,10 +245,8 @@ export default Vue.extend({
           `/socialProfile/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
         )
       }
-      console.log('blocked: ' + member.blockSwitch)
     },
     switchAdmin(member: any) {
-      console.log('admin: ' + member.adminSwitch)
     },
     async banFromChannel(member: any) {
       const response = await axios.patch(
