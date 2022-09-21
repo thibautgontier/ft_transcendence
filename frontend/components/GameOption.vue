@@ -47,7 +47,7 @@ export default Vue.extend({
                   color="blue"
                 ></v-slider>
                 <v-progress-circular
-                  :value="ballSpeed"
+                  :value="((ballSpeed - 50) / 200) * 100"
                   color="blue"
                   size="100"
                   width="10"
@@ -68,7 +68,7 @@ export default Vue.extend({
                     color="blue"
                   ></v-slider>
                   <v-progress-circular
-                    :value="paddleSpeed"
+                    :value="((paddleSpeed - 30) / 120) * 100"
                     color="blue"
                     size="100"
                     width="10"
@@ -92,7 +92,7 @@ export default Vue.extend({
                     color="blue"
                   ></v-slider>
                   <v-progress-circular
-                    :value="pointsToWin"
+                    :value="((pointsToWin - 30) / 120) * 100"
                     color="blue"
                     size="100"
                     width="10"
