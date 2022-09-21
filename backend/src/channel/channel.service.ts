@@ -15,14 +15,14 @@ export class ChannelService {
 
   async getAll(): Promise<Channel[]> {
     return this.prisma.channel.findMany({
-      include: { Messages: true, Users: true, Admins: true},
+      include: { Messages: true ,Users: true, Admins: true},
     });
   }
 
   async findID(id: number): Promise<Channel | null> {
     return this.prisma.channel.findUnique({
       where: { id: id },
-      include: { Messages: true },
+      include: { Messages: true, Users: true, Admins: true},
     });
   }
 

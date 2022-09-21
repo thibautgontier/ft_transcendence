@@ -27,7 +27,7 @@ export enum chanStatus {
 	CreatedAt: Date,
 	UpdatedAt: Date,
 	Content: string,
-	// UserID: number, a ajouter pour la modification de msg
+	Nickname: string,
 }
 
 export class Message implements Imessage {
@@ -35,7 +35,7 @@ export class Message implements Imessage {
 	CreatedAt = new Date();
 	UpdatedAt = new Date();
 	Content = '';
-	// UserID = 0;
+	Nickname = '';
 }
 
 export interface Ichannel {

@@ -10,7 +10,7 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common';
-import { logStatus, User } from '@prisma/client';
+import { Channel, logStatus, User } from '@prisma/client';
 import { UserService } from './user.service';
 import { UserFilterDto } from './dto/user-filter.dto';
 import { Response } from 'express';
@@ -35,6 +35,22 @@ export class UserController {
   @ApiQuery({ name: 'socialProfile', type: Boolean, required: false })
   async getAll(@Query() query?: UserFilterDto): Promise<User[]> {
     return await this.userService.getAll(query);
+  }
+
+  @Get('channel/:userID')
+  async getChannel(
+  @Res() res: Response,
+  @Param('userID') userID: number,
+  ): Promise < User | null > {
+    return await this.userService.getChannel(res, Number(userID));
+  }
+
+  @Get(':userID')
+  async getUser(
+  @Res() res: Response,
+  @Param('userID') userID: number,
+  ): Promise < User | null > {
+    return await this.userService.getUser(res, Number(userID));
   }
 
   @Get('create')
