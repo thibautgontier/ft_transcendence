@@ -82,7 +82,7 @@ export class UserService {
       }
       })
       res.status(HttpStatus.OK).send(chan);
-      // return chan;
+      return chan;
     } catch (e) {
       res.status(HttpStatus.BAD_REQUEST).send({
         statusCode: HttpStatus.BAD_REQUEST,
