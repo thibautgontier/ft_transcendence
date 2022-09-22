@@ -293,7 +293,7 @@ export default Vue.extend({
         this.inChannel = true
       }
     },
-    async openPrivateChat(member: User) {
+    async openPrivateChat(member: any) {
       // if (la conversation existe dejà) {
       //  this.activeChannel = channel trouvé
       //  this.inChannel = true;
@@ -303,7 +303,7 @@ export default Vue.extend({
       // this.activeChannel = channel crée
       // this.inChannel = true;
     },
-    inviteToPlay(member: User) {},
+    inviteToPlay(member: any) {},
     async sendFriendRequest(friend: any) {
       await axios.patch(
         `/socialProfile/${this.$store.state.currentUser.id}/friend/add/${friend.id}`
