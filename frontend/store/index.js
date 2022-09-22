@@ -47,6 +47,7 @@ export const mutations = {
 		state.currentUser.avatar = '';
 		state.currentUser.id = 0;
 		state.currentUser.nickname = '';
+		state.currentUser.accessToken = '';
 		localStorage.removeItem('currentUser');
 	},
 	change2faStatus(state) {

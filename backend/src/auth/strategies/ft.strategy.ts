@@ -23,7 +23,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
   ): Promise<any> {
     const existingUser = await this.prisma.user.findUnique({
       where: {
-        Email: profile.emails[0].value,
+        Nickname: profile.username,
       },
     });
     if (!existingUser) {

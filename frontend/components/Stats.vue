@@ -19,7 +19,12 @@ export default Vue.extend({
         ennemy: String,
     },
     methods: {
-        activate2fa() {
+       async activate2fa() {
+            await axios.get("/login/2fa", {
+                headers: {
+                    'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+                }
+            });
             this.$store.commit('change2faStatus');
             if (this.$store.state.twoFA)
                 this.overlay = true;

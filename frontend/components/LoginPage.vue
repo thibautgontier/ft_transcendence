@@ -19,7 +19,7 @@ export default Vue.extend({
     if (user && !this.$store.state.currentUser.nickname)
     {
         this.$store.commit('getCurrentUser', user);
-        this.overlay = true;
+        if (this.$store.state.twoFA) this.overlay = true;
     }
   },
   watch: {
