@@ -35,7 +35,6 @@ export default Vue.extend({
         <v-row>
           <v-col>
             <div class="Stats">
-              <div>{{ID}}</div>
               <Stats :userID='ID'/>
             </div>
             <v-divider class="mb-5"></v-divider>
