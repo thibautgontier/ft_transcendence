@@ -80,7 +80,9 @@ export class UserService {
           }
         },
       },
-      include: {Users : true, Messages: true}
+      include: {
+        Users : true,
+        Messages: { include: { User : true} } }
       })
       res.status(HttpStatus.OK).send(chan);
       return chan;

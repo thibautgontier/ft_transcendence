@@ -98,11 +98,9 @@ export default Vue.extend({
         // this.joinPassword <- le mdp
       }
       try {
-        // verif si le back accepte de nous faire rejoindre
         const response = await axios.patch(`/channel/addUser/${channel.id}`, {
           user_id: this.$store.state.currentUser.id,
         })
-        console.log('here!', response.data)
       } catch (e) {
         console.warn('cannot join chan', e)
         return
@@ -121,9 +119,10 @@ export default Vue.extend({
       room.id = channel.id
       room.messages = channel.Messages
       room.messages.forEach((num1, index) => {
-        num1.Nickname = channel.Messages[index].Nickname
+        num1.Nickname = channel.Messages[index].User.Nickname
       })
-      room.members = channel.Users
+      const response = await axios.get(`channel/${channel.id}`);
+      room.members = response.data.Users
       this.rooms.push(room)
       room.channel.onMessage('Message', (message: ChatRoomMessage) => {
         const newMsg = new Message()

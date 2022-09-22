@@ -57,7 +57,8 @@ export class ChannelService {
     res: Response,
   ): Promise<Channel | null> {
     try {
-      if ((await this.getAdminChan(idChan, idAdmin)) === undefined) throw Error;
+      if ((await this.getAdminChan(idChan, idAdmin)) === undefined
+	  && idAdmin != 0) throw Error;
       const channel = await this.prisma.channel.delete({
         where: { id: idChan },
       });
@@ -187,6 +188,8 @@ export class ChannelService {
         data: { Users: { disconnect: { id: idRemove } } },
         include: { Users: true },
       });
+	  if (channel.Users.length == 0)
+	  	return this.deleteChannel(idChan, 0, res);
       res.status(HttpStatus.OK).send(channel);
       return channel;
     } catch (error) {
