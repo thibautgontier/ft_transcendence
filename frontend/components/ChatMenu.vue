@@ -2,24 +2,27 @@
 import Vue from 'vue'
 import axios from 'axios'
 import * as Colyseus from 'colyseus.js'
-import { ourRoom, Message, chanStatus, ChatRoomMessage } from '../types/room'
+import { OurRoom, Message, chanStatus, ChatRoomMessage, Channel} from '../types/room'
 
 export default Vue.extend({
   data(): any {
     return {
       newChannel: { name: '', protected: false, password: '' },
       editChannel: { name: '', protected: false, password: '' },
-      activeChannel: ourRoom,
+      activeChannel: OurRoom,
       admin: true,
-      leaveChannelDialog: false,
+      addChannelDialog: false,
       createChannelDialog: false,
       editChannelDialog: false,
+      leaveChannelDialog: false,
+      channelPasswordDialog: false,
       inChannel: false,
       client: Colyseus.Client,
-      dialogRoom: ourRoom,
+      dialogRoom: OurRoom,
       myMessage: '',
       receivedMessage: '',
-      rooms: [] as ourRoom[],
+      rooms: [] as OurRoom[],
+      availableChannels: [] as Channel[],
       inputRules: [
         (value: string) =>
           (value && value.length >= 3 && value.length <= 12) ||
@@ -65,16 +68,49 @@ export default Vue.extend({
     await this.getChannel()
   },
   destroyed() {
-    for (const room of this.rooms as ourRoom[]) {
+    for (const room of this.rooms as OurRoom[]) {
       room.channel.leave()
     }
   },
   methods: {
-    leaveChannelPending(current: ourRoom): void {
+    leaveChannelPending(current: OurRoom): void {
       this.leaveChannelDialog = !this.leaveChannelDialog
       this.dialogRoom = current
     },
-    editChannelPending(current: ourRoom): void {
+    async addChannelPending() {
+      this.addChannelDialog = !this.addChannelDialog
+      const response = await axios.get(`/user/otherChannel/${this.$store.state.currentUser.id}`)
+      this.availableChannels = response.data
+      console.log(this.availableChannels)
+    },
+    joinChannel(channel: Channel): void {
+    //   const room = new OurRoom()
+    //   if (channel.Password !== '') {
+    //     // this.channelPasswordDialog = true;
+
+    //   }
+    //   room.channel = await this.client.joinById(channel.RoomId)
+    //   room.channelName = channel.Name
+    //   room.id = channel.id
+    //   room.messages = channel.Messages
+    //   room.messages.forEach((num1, index) => {
+    //     num1.Nickname = channel.Messages[index].Nickname
+    //   })
+    //   room.members = channel.Users
+    //   this.rooms.push(room)
+    //   room.channel.onMessage('Message', (message: ChatRoomMessage) => {
+    //     const newMsg = new Message()
+    //     newMsg.Content = message.Content
+    //     newMsg.Nickname = message.Nickname
+    //     room.messages.push(newMsg)
+    //   })
+    // if (this.rooms.length > 0) {
+    //   this.activeChannel = this.rooms[0]
+    //   this.inChannel = true
+    // }
+    // }
+    },
+    editChannelPending(current: OurRoom): void {
       this.editChannelDialog = !this.editChannelDialog
       this.dialogRoom = current
     },
@@ -98,7 +134,7 @@ export default Vue.extend({
             this.newChannel.password.length > 12))
       )
         return
-      const newRoom = new ourRoom()
+      const newRoom = new OurRoom()
       try {
         newRoom.channel = await this.client.create('ChatRoom')
         const response = await axios.post('/channel/create', {
@@ -135,7 +171,7 @@ export default Vue.extend({
         return
       if (this.editChannel.name !== '') {
         // changement de nom
-        const response = await axios.patch(
+        await axios.patch(
           `/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
           { name: this.editChannel.name }
         )
@@ -143,26 +179,25 @@ export default Vue.extend({
       if (this.dialogRoom.Type === chanStatus.PUBLIC) {
         if (this.editChannel.protected === true) {
           // channel public devient protected
-          const response = await axios.patch(
+          await axios.patch(
             `/channel/${this.dialogRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`,
             { Password: this.editChannel.password }
           )
         }
       } // if channel is protected by a pw
-      else {
-        if (this.editChannel.protected === false) {
+      else if (this.editChannel.protected === false) {
           // channel protected devient public
-          const response = await axios.patch(
+          await axios.patch(
             `/channel/${this.dialogRoom.id}/switchToPublic/${this.$store.state.currentUser.id}`
           )
-        } else if (this.editChannel.protected === true) {
+        }
+        else if (this.editChannel.protected === true) {
           // changement du mdp
-          const response = await axios.patch(
+          await axios.patch(
             `/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
             { Password: this.editChannel.password }
           )
         }
-      }
       this.editChannelDialog = false
     },
     onlineStatus(online: boolean) {
@@ -200,7 +235,7 @@ export default Vue.extend({
         `/user/channel/${this.$store.state.currentUser.id}`
       )
       for (const channel of response.data.ChannelUser) {
-        const room = new ourRoom()
+        const room = new OurRoom()
         try {
           room.channel = await this.client.joinById(channel.RoomId)
         } catch (e) {
@@ -233,24 +268,24 @@ export default Vue.extend({
     openPrivateChat() {},
     inviteToPlay() {},
     async sendFriendRequest(friend: any) {
-      const response = await axios.patch(
+      await axios.patch(
         `/socialProfile/${this.$store.state.currentUser.id}/friend/add/${friend.id}`
       )
     },
     async switchBlock(member: any) {
       if (this.blocked === false) {
-        const response = await axios.patch(
+        await axios.patch(
           `/socialProfile/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
         )
       } else {
-        const response = await axios.patch(
+        await axios.patch(
           `/socialProfile/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
         )
       }
     },
     switchAdmin(member: any) {},
     async banFromChannel(member: any) {
-      const response = await axios.patch(
+      await axios.patch(
         `/channel/${this.activeChannel.id}/banUser/${this.$store.state.currentUser.id}/${member.id}}`
       )
     },
@@ -265,18 +300,17 @@ export default Vue.extend({
     <v-navigation-drawer
       clipped
       app
-      :permanent="!$vuetify.breakpoint.smAndDown"
+      permanent
       :expand-on-hover="$vuetify.breakpoint.smAndDown"
     >
+      <!-- :permanent="!$vuetify.breakpoint.smAndDown" -->
       <template #prepend>
-        <v-list-item>
-          <v-list-item-content>
+          <v-list-item link>
+            <v-list-item-icon>
+              <v-icon>mdi-chat</v-icon>
+            </v-list-item-icon>
             <v-list-item-title>Conversations</v-list-item-title>
-          </v-list-item-content>
-          <v-btn text color="white" @click.stop="createChannelDialog = true"
-            >New</v-btn
-          >
-        </v-list-item>
+          </v-list-item>
       </template>
       <v-divider></v-divider>
 
@@ -304,23 +338,29 @@ export default Vue.extend({
           </v-list-item>
         </v-list-item-group>
       </v-list>
+      <!-- ADD CHANNEL MENU -->
+		<v-footer>
+      <v-btn fab @click.stop="addChannelPending()">
+            <v-icon>mdi-plus</v-icon>
+      </v-btn>
+    </v-footer>
     </v-navigation-drawer>
     <!-- MEMBERS -->
     <v-navigation-drawer
       v-if="activeChannel"
-      clipped
       right
       app
-      :permanent="!$vuetify.breakpoint.smAndDown"
+      clipped
+      permanent
       :expand-on-hover="$vuetify.breakpoint.smAndDown"
     >
-      <template #prepend>
-        <v-list-item>
-          <v-list-item-content>
+      <!-- :permanent="!$vuetify.breakpoint.smAndDown" -->
+          <v-list-item link>
+            <v-list-item-icon>
+              <v-icon>mdi-account-group</v-icon>
+            </v-list-item-icon>
             <v-list-item-title>Members</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </template>
+          </v-list-item>
       <v-divider></v-divider>
       <v-list dense>
         <v-list-item
@@ -424,6 +464,44 @@ export default Vue.extend({
     <!-- TOOLBAR -->
     <!-- CHANNEL -->
     <v-main>
+      <!-- CHANNEL ADD DIALOG -->
+      <v-dialog v-model="addChannelDialog" max-width="400px">
+        <v-card>
+          <v-card-text class="text-center">
+            <div class="white--text mb-5 dialogTitle">
+              Available Channels :
+            </div>
+            <v-divider></v-divider>
+            <v-list
+              nav
+              dense
+            >
+              <v-list-item-group>
+                <v-list-item
+                  v-for="(channel, index) in availableChannels"
+                  :key="index"
+                  @click="joinChannel(channel)"
+                >
+                  <v-list-item-icon v-if="channel.Type !== 'public'">
+                    <v-icon v-text="'mdi-lock'"></v-icon>
+                  </v-list-item-icon>
+                  <v-spacer></v-spacer>
+                  <v-list-item-content>
+                    <v-list-item-title v-text="channel.Name"></v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn text color="green" @click="createChannelDialog=true, addChannelDialog=false">NEW</v-btn>
+            <v-btn text color="white" @click="addChannelDialog = false">
+              DONE
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <!-- CHANNEL LEAVE DIALOG -->
       <v-dialog v-model="leaveChannelDialog" max-width="400px">
         <v-card>

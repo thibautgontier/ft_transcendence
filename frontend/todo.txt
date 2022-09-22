@@ -16,6 +16,8 @@ ToDo:
 
 - ajouter un menu pour personnaliser la partie de pong avant de lancer la partie
 
+- gerer les 406 en cas de creation d'un channel qui existe deja
+
 Avec Thomas :
 
 - ajouter le fait de rejoindre un channel protégé par un mdp

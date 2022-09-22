@@ -9,7 +9,7 @@ export interface IRoom {
 	members: [],
 };
 
-export class ourRoom implements IRoom {
+export class OurRoom implements IRoom {
 	channel = new Colyseus.Room('');
 	channelName = '';
 	messages : Message[] = [];
