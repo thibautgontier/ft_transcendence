@@ -4,9 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Response } from 'express';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UserFilterDto } from './dto/user-filter.dto';
-import { UserCreateDto } from './dto/user-create.dto';
 import { Profile } from 'passport';
-import { userInfo } from 'os';
 
 @Injectable()
 export class UserService {
@@ -42,24 +40,24 @@ export class UserService {
   }
 
   async createUser(res: Response, body: Profile): Promise<User> {
-  try {
-    const user = await this.prisma.user.create({
-      data: {
-        Email: body.emails[0].value,
-        Nickname: body.username,
-        // Token: 'testtoken',
-        // RefreshToken: 'testrefreshtoken',
-        Avatar: 'default',
-        Status: 'offline',
-        TwoFA: false,
-        GameProfile: { create: {} },
-        SocialProfile: { create: {} },
-      },
-    });
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          Email: body.emails[0].value,
+          Nickname: body.username,
+          // Token: 'testtoken',
+          // RefreshToken: 'testrefreshtoken',
+          Avatar: 'default',
+          Status: 'offline',
+          TwoFA: false,
+          GameProfile: { create: {} },
+          SocialProfile: { create: {} },
+        },
+      });
 
-    //TODO: here, add code to call 42 API for get user's data
-       res.status(HttpStatus.CREATED).send(user);
-       return user;
+      //TODO: here, add code to call 42 API for get user's data
+      res.status(HttpStatus.CREATED).send(user);
+      return user;
     } catch (error) {
       res.status(HttpStatus.NOT_ACCEPTABLE).send({ error });
       return null;

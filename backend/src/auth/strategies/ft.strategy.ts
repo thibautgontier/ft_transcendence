@@ -1,4 +1,4 @@
-import { Injectable, Session } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile, VerifyCallback } from 'passport-42';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -33,8 +33,8 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
           Email: profile.emails[0].value,
           Avatar: profile.photos[0].value,
           Connected: true,
-          GameProfile: {create: {}},
-          SocialProfile: {create: {}},
+          GameProfile: { create: {} },
+          SocialProfile: { create: {} },
         },
       });
       return cb(null, user);

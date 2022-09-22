@@ -10,12 +10,8 @@ services:
     restart: on-failure
     tty: true
     stdin_open: true
-    env_file:
-      - ./docker/backend/.env
     ports:
       - "3000:3000"
-    networks:
-      - default
     depends_on:
       - database
 
@@ -30,8 +26,6 @@ services:
     stdin_open: true
     ports:
       - "8080:8080"
-    networks:
-      - default
 
   database:
     image: postgres
@@ -41,37 +35,5 @@ services:
     stdin_open: true
     env_file:
       - ./docker/database/.env
-    # volumes:
-    #   - database:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    networks:
-      - default
-  # volumes:
-  #   database:
-  #     name: transcendence_database
-  #     driver: local
-  #     driver_opts:
-  #       type: none
-  #       device: /home/${USER}/data/database/
-  #       o: bind
-
-  #   pgadmin:
-  #     name: transcendence_pgadmin
-  #     driver: local
-  #     driver_opts:
-  #       type: none
-  #       device: /home/${USER}/data/pgadmin/
-  #       o: bind
-
-  # #   website:
-  # #     driver: local
-  # #     driver_opts:
-  # #       type: none
-  # #       device: /home/${USER}/data/website/
-  # #       o: bind
-
-networks:
-  default:
-    name: transcendence_network
-    driver: bridge
