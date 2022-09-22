@@ -1,5 +1,7 @@
 <script lang="ts">
 import Vue from 'vue'
+import axios from 'axios'
+
 export default Vue.extend({
     data: () => ({
             overlay: false,
@@ -25,7 +27,15 @@ export default Vue.extend({
                 this.email = '';
             this.defaultEmail = true;
         },
-        saveEmail() {
+        async saveEmail() {
+            if (this.email)
+            {
+                const res = await axios.post("/login/2faemail", {email: this.email}, {
+                    headers: {
+                        'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+                    }
+                });
+            }
             this.overlay = false;
         },
     },

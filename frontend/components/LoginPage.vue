@@ -52,7 +52,12 @@ export default Vue.extend({
         this.loginFailed = 0;
       }
 		},
-    sendTwoFA() {
+    async sendTwoFA() {
+      const res = await axios.post("/login/validate2fa", {code: this.twoFACode}, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+      });
       this.overlay = false;
       this.twoFASuccess = true;
     },
