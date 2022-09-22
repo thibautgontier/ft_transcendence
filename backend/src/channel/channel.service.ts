@@ -158,6 +158,8 @@ export class ChannelService {
     body: ChannelAddUserDto,
   ): Promise<Channel | null> {
     try {
+		if (await this.getBanUsers(id, body.user_id) != undefined)
+		throw Error;
       const channel = await this.prisma.channel.update({
         where: { id: id },
         data: { Users: { connect: { id: Number(body.user_id) } } },

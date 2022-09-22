@@ -78,8 +78,9 @@ export class UserService {
               id : userID
             }
           }
-        }
-      }
+        },
+      },
+      include: {Users : true, Messages: true}
       })
       res.status(HttpStatus.OK).send(chan);
       return chan;

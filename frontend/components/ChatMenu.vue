@@ -2,7 +2,14 @@
 import Vue from 'vue'
 import axios from 'axios'
 import * as Colyseus from 'colyseus.js'
-import { OurRoom, Message, chanStatus, ChatRoomMessage, Channel} from '../types/room'
+import {
+  OurRoom,
+  Message,
+  chanStatus,
+  ChatRoomMessage,
+  Channel,
+} from '../types/room'
+// import { Channel as PrismaChan } from '../../backend/node_modules/@prisma/client'
 
 export default Vue.extend({
   data(): any {
@@ -79,36 +86,55 @@ export default Vue.extend({
     },
     async addChannelPending() {
       this.addChannelDialog = !this.addChannelDialog
-      const response = await axios.get(`/user/otherChannel/${this.$store.state.currentUser.id}`)
+      const response = await axios.get(
+        `/user/otherChannel/${this.$store.state.currentUser.id}`
+      )
       this.availableChannels = response.data
       console.log(this.availableChannels)
     },
-    joinChannel(channel: Channel): void {
-    //   const room = new OurRoom()
-    //   if (channel.Password !== '') {
-    //     // this.channelPasswordDialog = true;
-
-    //   }
-    //   room.channel = await this.client.joinById(channel.RoomId)
-    //   room.channelName = channel.Name
-    //   room.id = channel.id
-    //   room.messages = channel.Messages
-    //   room.messages.forEach((num1, index) => {
-    //     num1.Nickname = channel.Messages[index].Nickname
-    //   })
-    //   room.members = channel.Users
-    //   this.rooms.push(room)
-    //   room.channel.onMessage('Message', (message: ChatRoomMessage) => {
-    //     const newMsg = new Message()
-    //     newMsg.Content = message.Content
-    //     newMsg.Nickname = message.Nickname
-    //     room.messages.push(newMsg)
-    //   })
-    // if (this.rooms.length > 0) {
-    //   this.activeChannel = this.rooms[0]
-    //   this.inChannel = true
-    // }
-    // }
+    async joinChannel(channel: any) {
+      if (channel.Type == chanStatus.PROTECTED) {
+        // this.channelPasswordDialog = true;
+        // this.joinPassword <- le mdp
+      }
+      try {
+        // verif si le back accepte de nous faire rejoindre
+        const response = await axios.patch(`/channel/addUser/${channel.id}`, {
+          user_id: this.$store.state.currentUser.id,
+        })
+        console.log('here!', response.data)
+      } catch (e) {
+        console.warn('cannot join chan', e)
+        return
+      }
+      const room = new OurRoom()
+      try {
+        room.channel = await this.client.joinById(channel.RoomId)
+      } catch (e) {
+        room.channel = await this.client.create('ChatRoom')
+        await axios.patch(
+          `/channel/update/${channel.id}/${this.$store.state.currentUser.id}`,
+          { RoomId: room.channel.id }
+        )
+      }
+      room.channelName = channel.Name
+      room.id = channel.id
+      room.messages = channel.Messages
+      room.messages.forEach((num1, index) => {
+        num1.Nickname = channel.Messages[index].Nickname
+      })
+      room.members = channel.Users
+      this.rooms.push(room)
+      room.channel.onMessage('Message', (message: ChatRoomMessage) => {
+        const newMsg = new Message()
+        newMsg.Content = message.Content
+        newMsg.Nickname = message.Nickname
+        room.messages.push(newMsg)
+      })
+      if (this.rooms.length > 0) {
+        this.activeChannel = this.rooms[0]
+        this.inChannel = true
+      }
     },
     editChannelPending(current: OurRoom): void {
       this.editChannelDialog = !this.editChannelDialog
@@ -186,18 +212,17 @@ export default Vue.extend({
         }
       } // if channel is protected by a pw
       else if (this.editChannel.protected === false) {
-          // channel protected devient public
-          await axios.patch(
-            `/channel/${this.dialogRoom.id}/switchToPublic/${this.$store.state.currentUser.id}`
-          )
-        }
-        else if (this.editChannel.protected === true) {
-          // changement du mdp
-          await axios.patch(
-            `/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
-            { Password: this.editChannel.password }
-          )
-        }
+        // channel protected devient public
+        await axios.patch(
+          `/channel/${this.dialogRoom.id}/switchToPublic/${this.$store.state.currentUser.id}`
+        )
+      } else if (this.editChannel.protected === true) {
+        // changement du mdp
+        await axios.patch(
+          `/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
+          { Password: this.editChannel.password }
+        )
+      }
       this.editChannelDialog = false
     },
     onlineStatus(online: boolean) {
@@ -305,12 +330,12 @@ export default Vue.extend({
     >
       <!-- :permanent="!$vuetify.breakpoint.smAndDown" -->
       <template #prepend>
-          <v-list-item link>
-            <v-list-item-icon>
-              <v-icon>mdi-chat</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Conversations</v-list-item-title>
-          </v-list-item>
+        <v-list-item link>
+          <v-list-item-icon>
+            <v-icon>mdi-chat</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Conversations</v-list-item-title>
+        </v-list-item>
       </template>
       <v-divider></v-divider>
 
@@ -339,11 +364,11 @@ export default Vue.extend({
         </v-list-item-group>
       </v-list>
       <!-- ADD CHANNEL MENU -->
-		<v-footer>
-      <v-btn fab @click.stop="addChannelPending()">
-            <v-icon>mdi-plus</v-icon>
-      </v-btn>
-    </v-footer>
+      <v-footer>
+        <v-btn fab @click.stop="addChannelPending()">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </v-footer>
     </v-navigation-drawer>
     <!-- MEMBERS -->
     <v-navigation-drawer
@@ -355,12 +380,12 @@ export default Vue.extend({
       :expand-on-hover="$vuetify.breakpoint.smAndDown"
     >
       <!-- :permanent="!$vuetify.breakpoint.smAndDown" -->
-          <v-list-item link>
-            <v-list-item-icon>
-              <v-icon>mdi-account-group</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Members</v-list-item-title>
-          </v-list-item>
+      <v-list-item link>
+        <v-list-item-icon>
+          <v-icon>mdi-account-group</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Members</v-list-item-title>
+      </v-list-item>
       <v-divider></v-divider>
       <v-list dense>
         <v-list-item
@@ -468,14 +493,9 @@ export default Vue.extend({
       <v-dialog v-model="addChannelDialog" max-width="400px">
         <v-card>
           <v-card-text class="text-center">
-            <div class="white--text mb-5 dialogTitle">
-              Available Channels :
-            </div>
+            <div class="white--text mb-5 dialogTitle">Available Channels :</div>
             <v-divider></v-divider>
-            <v-list
-              nav
-              dense
-            >
+            <v-list nav dense>
               <v-list-item-group>
                 <v-list-item
                   v-for="(channel, index) in availableChannels"
@@ -487,15 +507,23 @@ export default Vue.extend({
                   </v-list-item-icon>
                   <v-spacer></v-spacer>
                   <v-list-item-content>
-                    <v-list-item-title v-text="channel.Name"></v-list-item-title>
+                    <v-list-item-title
+                      v-text="channel.Name"
+                    ></v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list-item-group>
-            </v-list>          </v-card-text>
+            </v-list>
+          </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
 
-            <v-btn text color="green" @click="createChannelDialog=true, addChannelDialog=false">NEW</v-btn>
+            <v-btn
+              text
+              color="green"
+              @click=";(createChannelDialog = true), (addChannelDialog = false)"
+              >NEW</v-btn
+            >
             <v-btn text color="white" @click="addChannelDialog = false">
               DONE
             </v-btn>
