@@ -10,15 +10,15 @@ export default Vue.extend({
       loginSuccess: 0,
       loginFailed: 0,
       overlay: false,
-      loginFinish: false,
       twoFACode: '',
+      loginFinish2: false,
     }
   },
   mounted() {
     const user = this.$cookies.get('user');
     if (user && !this.$store.state.currentUser.nickname)
     {
-        console.log('user: ', user);
+      console.log('done cookying');
         this.$store.commit('getCurrentUser', user);
         if (user.twoFA)
         {
@@ -26,12 +26,16 @@ export default Vue.extend({
         }
         else
         {
-          this.loginFinish = true;
+          this.$store.commit('changeLoginFinish', true);
         }
     }
+    else if (this.$store.state.currentUser.nickname && user.twoFA && !this.$store.state.loginFinish) {
+      this.overlay = true;
+    }
+    this.loginFinish2 = this.$store.state.loginFinish;
   },
   watch: {
-    loginFinish() {
+    loginFinish2() {
       if (!this.$store.state.currentUser.nickname ) {
         this.loginFailed = 1;
         this.loginSuccess = 0;
@@ -67,7 +71,8 @@ export default Vue.extend({
       });
       if (JSON.stringify(res.data) === 'true') {
         this.overlay = false;
-        this.loginFinish = true;
+        this.$store.commit('changeLoginFinish', true);
+        this.loginFinish2 = this.$store.state.loginFinish;
       } 
     },
 	}
@@ -76,7 +81,7 @@ export default Vue.extend({
 
 <template>
   <v-container fill-height>
-    <!-- <h1> {{this.$store.state.currentUser.twoFA}} </h1> -->
+    <h1> {{this.$store.state.currentUser.nickname}} </h1>
     <v-col>
       <v-row justify="center" align="center">
         <PongLogo />

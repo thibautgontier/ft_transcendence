@@ -1,4 +1,4 @@
-import { User } from '.prisma/client';
+import { User, logStatus } from '.prisma/client';
 import { Injectable, HttpException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
@@ -20,6 +20,10 @@ export class AuthService {
   ) {
   }
 
+  /*------------------------------------------------------------------------------------------------------------*/
+  /*--------------------------------------              LOGIN                -----------------------------------*/
+  /*------------------------------------------------------------------------------------------------------------*/
+
   async login(): Promise<any | null> {
     const user = await this.prisma.user.findFirst({
       where: {
@@ -34,6 +38,7 @@ export class AuthService {
         },
         data: {
           Connected: false,
+          Status: logStatus.online,
         },
       });
       if (user.TwoFA) {
@@ -59,6 +64,17 @@ export class AuthService {
     return null;
   }
 
+  async logout(user: User) {
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        Status: logStatus.offline,
+      },
+    });
+  }
+
   generateTokenFromUser(user: User) {
     const payload = { username: user.Nickname, sub: user.id };
     return {
@@ -82,6 +98,10 @@ export class AuthService {
       return null;
     }
   }
+
+  /*------------------------------------------------------------------------------------------------------------*/
+  /*--------------------------------------               2FA                 -----------------------------------*/
+  /*------------------------------------------------------------------------------------------------------------*/
 
   async sendConfirmationEmail(user: User, code: number) {
     const email = 'tgontier@student.42.fr';

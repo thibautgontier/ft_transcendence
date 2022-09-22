@@ -1,6 +1,4 @@
-import axios from 'axios'
 import {User} from '../types/User'
-import {version} from '../package.json';
 
 // state
 export const state = () => ({
@@ -9,6 +7,7 @@ export const state = () => ({
 	twoFA: false,
 	currentUser: User,
 	version: '',
+	loginFinish: false,
 })
 
 
@@ -29,9 +28,12 @@ export const mutations = {
 		if(localStorage.getItem('currentUser')) {
 			state.currentUser = JSON.parse(localStorage.getItem('currentUser'));
 		}
+		if(localStorage.getItem('loginFinish')) {
+			state.loginFinish = localStorage.getItem('loginFinish');
 		if(localStorage.getItem('twoFA')) {
 			state.twoFA = true;
 		}
+}
 	},
 	changeActiveComponent(state,component) {
 		state.activeComponent = component
@@ -42,12 +44,15 @@ export const mutations = {
 		state.currentUser.nickname = newUser.nickname;
 		state.currentUser.accessToken = newUser.accessToken;
 		localStorage.setItem('currentUser', JSON.stringify(newUser));
+		console.log('finished login');
 	},
 	deleteUser(state) {
 		state.currentUser.avatar = '';
 		state.currentUser.id = 0;
 		state.currentUser.nickname = '';
 		state.currentUser.accessToken = '';
+		state.loginFinish = false;
+		localStorage.removeItem('loginFinish');
 		localStorage.removeItem('currentUser');
 	},
 	change2faStatus(state) {
@@ -56,5 +61,9 @@ export const mutations = {
 		else
 			localStorage.removeItem('twoFA');
 		state.twoFA = !state.twoFA;
-	}
+	},
+	changeLoginFinish(state, newLoginValue) {
+		state.loginFinish = newLoginValue;
+		localStorage.setItem('loginFinish', newLoginValue);
+	},
 }
