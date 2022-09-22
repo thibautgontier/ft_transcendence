@@ -69,7 +69,7 @@ export class AuthController {
     const user = await this.authService.findUser(token);
     if (req.body.email) {
       const result = await this.authService.changeEmail(user, req.body.email);
-      return result;
+      res.status(200).send(result);
     }
   }
 }
