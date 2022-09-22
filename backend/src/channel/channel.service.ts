@@ -366,15 +366,12 @@ export class ChannelService {
   ): Promise<Message | null> {
     try {
       if ((await this.getUser(idChan, idUser)) === undefined) {
-        console.log('1\n');
         throw Error;
       }
       if ((await this.getMutedUsers(idChan, idUser)) !== undefined) {
-        console.log('2\n');
         throw Error;
       }
-      if (body.Content.length == undefined) {
-        console.log('CONTENT.LENGTH == UNDEFINED™2@@\n');
+      if (body.Content == undefined) {
         throw Error;
       }
       const msg = await this.prisma.message.create({

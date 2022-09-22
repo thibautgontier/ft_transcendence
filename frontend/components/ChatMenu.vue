@@ -2,12 +2,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 import * as Colyseus from 'colyseus.js'
-import {
-  ourRoom,
-  Message,
-  chanStatus,
-  ChatRoomMessage,
-} from '../types/room'
+import { ourRoom, Message, chanStatus, ChatRoomMessage } from '../types/room'
 
 export default Vue.extend({
   data(): any {
@@ -181,15 +176,22 @@ export default Vue.extend({
         console.error('Create Client ERROR', e)
       }
     },
-    sendMessage(): void {
+    async sendMessage() {
       if (this.myMessage === '') return
+      try {
+        const response = await axios.post(
+          `channel/${this.activeChannel.id}/sendMessage/${this.$store.state.currentUser.id}`,
+          { Content: this.myMessage }
+        )
+        console.log(response.data)
+      } catch (e) {
+        console.warn('you are ban or muted:\n', e)
+        this.myMessage = ''
+        return
+      }
       this.activeChannel.channel.send(
         'Message',
         this.$store.state.currentUser.nickname + '@:' + this.myMessage
-      )
-      axios.post(
-        `channel/${this.activeChannel.id}/sendMessage/${this.$store.state.currentUser.id}`,
-        { Content: this.myMessage }
       )
       this.myMessage = ''
     },
@@ -214,9 +216,9 @@ export default Vue.extend({
         room.messages.forEach((num1, index) => {
           num1.Nickname = channel.Messages[index].User.Nickname
         })
-          room.members = channel.Users;
-          this.rooms.push(room)
-          room.channel.onMessage('Message', (message: ChatRoomMessage) => {
+        room.members = channel.Users
+        this.rooms.push(room)
+        room.channel.onMessage('Message', (message: ChatRoomMessage) => {
           const newMsg = new Message()
           newMsg.Content = message.Content
           newMsg.Nickname = message.Nickname
@@ -246,8 +248,7 @@ export default Vue.extend({
         )
       }
     },
-    switchAdmin(member: any) {
-    },
+    switchAdmin(member: any) {},
     async banFromChannel(member: any) {
       const response = await axios.patch(
         `/channel/${this.activeChannel.id}/banUser/${this.$store.state.currentUser.id}/${member.id}}`
@@ -335,13 +336,17 @@ export default Vue.extend({
           >
             <template #activator="{ on, attrs }">
               <v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
-                <v-avatar size="32"><img :src="member.Avatar"></v-avatar>
+                <v-avatar size="32"><img :src="member.Avatar" /></v-avatar>
                 <v-list-item-content class="ml-2">
                   <v-list-item-title>{{ member.Nickname }}</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-content>
-                  <v-list-item-title>{{onlineStatus(member.Status)}}</v-list-item-title>
-                  <v-list-item-subtitle>{{ member.Status }}</v-list-item-subtitle>
+                  <v-list-item-title>{{
+                    onlineStatus(member.Status)
+                  }}</v-list-item-title>
+                  <v-list-item-subtitle>{{
+                    member.Status
+                  }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-btn>
             </template>
@@ -350,14 +355,18 @@ export default Vue.extend({
             <v-card>
               <v-list>
                 <v-list-item>
-                    <v-avatar size="64"><img :src="member.Avatar"></v-avatar>
-                <v-list-item-content class="ml-2">
-                  <v-list-item-title>{{onlineStatus(member.Status)}}</v-list-item-title>
-                  <v-list-item-subtitle>{{ member.Status }}</v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-content>
-                  <v-list-item-title>{{ member.Nickname }}</v-list-item-title>
-                </v-list-item-content>
+                  <v-avatar size="64"><img :src="member.Avatar" /></v-avatar>
+                  <v-list-item-content class="ml-2">
+                    <v-list-item-title>{{
+                      onlineStatus(member.Status)
+                    }}</v-list-item-title>
+                    <v-list-item-subtitle>{{
+                      member.Status
+                    }}</v-list-item-subtitle>
+                  </v-list-item-content>
+                  <v-list-item-content>
+                    <v-list-item-title>{{ member.Nickname }}</v-list-item-title>
+                  </v-list-item-content>
                 </v-list-item>
               </v-list>
 
