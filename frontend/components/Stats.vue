@@ -57,7 +57,7 @@ export default Vue.extend({
         >
         <v-list-item three-line>
         <v-list-item-content>
-            <div>{{email}}</div>
+            <!--<div>{{email}}</div>-->
             <v-row>
                 <v-col cols="4">
                 <div class="ml-14 mt-16">

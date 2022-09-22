@@ -10,7 +10,7 @@ export default Vue.extend({
       loginSuccess: 0,
       loginFailed: 0,
       overlay: false,
-      twoFASuccess: false,
+      loginFinish: false,
       twoFACode: '',
     }
   },
@@ -18,12 +18,20 @@ export default Vue.extend({
     const user = this.$cookies.get('user');
     if (user && !this.$store.state.currentUser.nickname)
     {
+        console.log('user: ', user);
         this.$store.commit('getCurrentUser', user);
-        if (this.$store.state.twoFA) this.overlay = true;
+        if (user.twoFA)
+        {
+          this.overlay = true;
+        }
+        else
+        {
+          this.loginFinish = true;
+        }
     }
   },
   watch: {
-    twoFASuccess() {
+    loginFinish() {
       if (!this.$store.state.currentUser.nickname ) {
         this.loginFailed = 1;
         this.loginSuccess = 0;
@@ -58,7 +66,7 @@ export default Vue.extend({
         }
       });
       this.overlay = false;
-      this.twoFASuccess = true;
+      this.loginFinish = true;
     },
 	}
 })
