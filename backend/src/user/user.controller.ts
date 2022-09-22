@@ -45,6 +45,14 @@ export class UserController {
     return await this.userService.getChannel(res, Number(userID));
   }
 
+  @Get('otherChannel/:userID')
+  async getOtherChannel(
+  @Res() res: Response,
+  @Param('userID') userID: number,
+  ): Promise < Channel[] | null > {
+    return await this.userService.getOtherChannel(res, Number(userID));
+  }
+
   @Get(':userID')
   async getUser(
   @Res() res: Response,

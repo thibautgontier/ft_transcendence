@@ -47,9 +47,10 @@ export class UserService {
         where: { id: userID },
         include: {
           ChannelUser: {
-            include: { 
-				Messages: { include: {User : true} },
-				Users: true },
+            include: {
+              Messages: { include: { User: true } },
+              Users: true,
+            },
           },
         },
       });
@@ -59,6 +60,33 @@ export class UserService {
       res.status(HttpStatus.BAD_REQUEST).send({
         statusCode: HttpStatus.BAD_REQUEST,
         message: "Can't get channel of user",
+      });
+      return null;
+    }
+  }
+
+  async getOtherChannel(
+    res: Response,
+    userID: number,
+  ): Promise<Channel[] | null> {
+    try {
+      const chan = await this.prisma.channel.findMany({
+        where: {
+          NOT :{
+          Users : {
+            some: {
+              id : userID
+            }
+          }
+        }
+      }
+      })
+      res.status(HttpStatus.OK).send(chan);
+      // return chan;
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).send({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: "Can't get channel " + e,
       });
       return null;
     }
