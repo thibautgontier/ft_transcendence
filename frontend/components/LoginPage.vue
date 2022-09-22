@@ -18,13 +18,12 @@ export default Vue.extend({
     const user = this.$cookies.get('user');
     if (user && !this.$store.state.currentUser.nickname)
     {
+        this.$store.commit('getCurrentUser', user);
         this.overlay = true;
     }
   },
   watch: {
     twoFASuccess() {
-      const user = this.$cookies.get('user');
-      this.$store.commit('getCurrentUser', user);
       if (!this.$store.state.currentUser.nickname ) {
         this.loginFailed = 1;
         this.loginSuccess = 0;
