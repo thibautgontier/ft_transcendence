@@ -1,5 +1,7 @@
 ToDo:
 
+- retirer le AccessToken de l'objet User qu'on renvoie dans les channels
+- ajouter le status (admin, bloqué etc) dans les users d'un channel
 - trouver comment rendre le background aussi sombre que les boutons
 
 - Verifier ce qu'il se passe si on se connecte deux fois avec le meme user dans deux fenetres différentes
@@ -8,13 +10,9 @@ ToDo:
 
 - ajouter un check pour voir si le channel existe toujours avant de rejoindre
 
-- scroll vers le dernier message a la reception
-
 - adapter le pong pour qu'il ne soit pas a 100% de width
 
 - ajouter le timer avant de commencer la partie de pong
-
-- ajouter un menu pour personnaliser la partie de pong avant de lancer la partie
 
 - gerer les 406 en cas de creation d'un channel qui existe deja
 
@@ -26,7 +24,7 @@ Avec Thomas :
 
 - update la liste des channels à chaque changement de state (onStateChange Colyseus)
 
-- le join des channels devrait se faire à la connexion de l'utilisateur
+- le join des channels devrait se faire à la connexion de l'utilisateur (a voir)
 
 - ajouter un bouton join pour lister tous les channels et en rejoindre
 

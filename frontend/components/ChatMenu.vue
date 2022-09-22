@@ -9,7 +9,6 @@ import {
   ChatRoomMessage,
   Channel,
 } from '../types/room'
-// import { Channel as PrismaChan } from '../../backend/node_modules/@prisma/client'
 
 export default Vue.extend({
   data(): any {
@@ -18,6 +17,7 @@ export default Vue.extend({
       editChannel: { name: '', protected: false, password: '' },
       activeChannel: OurRoom,
       admin: true,
+      snackbarValue: '',
       addChannelDialog: false,
       createChannelDialog: false,
       editChannelDialog: false,
@@ -93,11 +93,13 @@ export default Vue.extend({
       console.log(this.availableChannels)
     },
     async joinChannel(channel: any) {
-      if (channel.Type == chanStatus.PROTECTED) {
-        // this.channelPasswordDialog = true;
-        // this.joinPassword <- le mdp
-      }
       try {
+        if (channel.Type === chanStatus.PROTECTED && channel.inputPassword) {
+          const response = await axios.patch(`/channel/addUser/${channel.id}`, {
+          user_id: this.$store.state.currentUser.id,
+          password: channel.inputPassword
+        })
+        }
         const response = await axios.patch(`/channel/addUser/${channel.id}`, {
           user_id: this.$store.state.currentUser.id,
         })
@@ -130,6 +132,7 @@ export default Vue.extend({
         newMsg.Nickname = message.Nickname
         room.messages.push(newMsg)
       })
+      this.addChannelDialog = false;
       if (this.rooms.length > 0) {
         this.activeChannel = this.rooms[0]
         this.inChannel = true
@@ -145,10 +148,10 @@ export default Vue.extend({
       const index = this.rooms.indexOf(this.dialogRoom)
       this.rooms.splice(index, 1)
       this.activeChannel = this.rooms[0]
+      if (this.rooms.length === 0) this.inChannel = false
       await axios.patch(
         `/channel/${this.dialogRoom.id}/removeUser/${this.$store.state.currentUser.id}`
       )
-      if (this.rooms.length === 0) this.inChannel = false
     },
     async newChannelConfirmed() {
       if (
@@ -174,7 +177,6 @@ export default Vue.extend({
         this.newChannel.name = ''
         this.createChannelDialog = false
         newRoom.channel.onMessage('Message', (message: ChatRoomMessage) => {
-          // listening message from socket
           const newMsg = new Message()
           newMsg.Content = message.Content
           newMsg.Nickname = message.Nickname
@@ -283,14 +285,25 @@ export default Vue.extend({
           newMsg.Nickname = message.Nickname
           room.messages.push(newMsg)
         })
+        this.addChannelDialog = false;
+        channel.active = false;
       }
       if (this.rooms.length > 0) {
         this.activeChannel = this.rooms[0]
         this.inChannel = true
       }
     },
-    openPrivateChat() {},
-    inviteToPlay() {},
+    async openPrivateChat(member: User) {
+      // if (la conversation existe dejà) {
+      //  this.activeChannel = channel trouvé
+      //  this.inChannel = true;
+      //  return
+      // }
+      // creer la room
+      // this.activeChannel = channel crée
+      // this.inChannel = true;
+    },
+    inviteToPlay(member: User) {},
     async sendFriendRequest(friend: any) {
       await axios.patch(
         `/socialProfile/${this.$store.state.currentUser.id}/friend/add/${friend.id}`
@@ -307,7 +320,9 @@ export default Vue.extend({
         )
       }
     },
-    switchAdmin(member: any) {},
+    switchAdmin(member: any) {
+
+    },
     async banFromChannel(member: any) {
       await axios.patch(
         `/channel/${this.activeChannel.id}/banUser/${this.$store.state.currentUser.id}/${member.id}}`
@@ -327,7 +342,6 @@ export default Vue.extend({
       permanent
       :expand-on-hover="$vuetify.breakpoint.smAndDown"
     >
-      <!-- :permanent="!$vuetify.breakpoint.smAndDown" -->
       <template #prepend>
         <v-list-item link>
           <v-list-item-icon>
@@ -338,7 +352,7 @@ export default Vue.extend({
       </template>
       <v-divider></v-divider>
 
-      <v-list dense>
+      <v-list v-if="inChannel" dense>
         <v-list-item-group>
           <v-list-item
             v-for="(room, index) in rooms"
@@ -378,7 +392,6 @@ export default Vue.extend({
       permanent
       :expand-on-hover="$vuetify.breakpoint.smAndDown"
     >
-      <!-- :permanent="!$vuetify.breakpoint.smAndDown" -->
       <v-list-item link>
         <v-list-item-icon>
           <v-icon>mdi-account-group</v-icon>
@@ -437,24 +450,24 @@ export default Vue.extend({
               <v-divider></v-divider>
 
               <v-list>
-                <v-list-item>
+                <v-list-item v-if="member.Nickname !== $store.state.currentUser.nickname">
                   <v-btn @click.stop="openPrivateChat(member)"
                     >Private chat</v-btn
                   >
                 </v-list-item>
-                <v-list-item>
+                <v-list-item v-if="member.Nickname !== $store.state.currentUser.nickname">
                   <v-btn @click.stop="inviteToPlay(member)"
                     >Invite to a match</v-btn
                   >
                 </v-list-item>
-                <v-list-item>
+                <v-list-item v-if="member.Nickname !== $store.state.currentUser.nickname">
                   <v-btn @click.stop="sendFriendRequest(member)"
                     >Send friend request</v-btn
                   >
                 </v-list-item>
                 <v-list-item
                   v-if="
-                    admin && member.name != $store.state.currentUser.nickname
+                    admin && member.Nickname != $store.state.currentUser.nickname
                   "
                 >
                   <v-btn @click.stop="banFromChannel(member)"
@@ -462,11 +475,11 @@ export default Vue.extend({
                   >
                 </v-list-item>
                 <v-list-item
-                  v-if="member.name !== $store.state.currentUser.nickname"
+                  v-if="member.Nickname !== $store.state.currentUser.nickname"
                 >
                   <v-list-item-title>Blocked</v-list-item-title>
                   <v-checkbox
-                    v-model="member.blockSwitch"
+                    v-model="member.blocked"
                     dense
                     @change="switchBlock(member)"
                   ></v-checkbox>
@@ -474,7 +487,7 @@ export default Vue.extend({
                 <v-list-item v-if="admin">
                   <v-list-item-title>Admin</v-list-item-title>
                   <v-checkbox
-                    v-model="member.adminSwitch"
+                    v-model="member.admin"
                     dense
                     @change="switchAdmin(member)"
                   ></v-checkbox>
@@ -495,23 +508,39 @@ export default Vue.extend({
             <div class="white--text mb-5 dialogTitle">Available Channels :</div>
             <v-divider></v-divider>
             <v-list nav dense>
-              <v-list-item-group>
-                <v-list-item
-                  v-for="(channel, index) in availableChannels"
-                  :key="index"
-                  @click="joinChannel(channel)"
-                >
-                  <v-list-item-icon v-if="channel.Type !== 'public'">
-                    <v-icon v-text="'mdi-lock'"></v-icon>
-                  </v-list-item-icon>
-                  <v-spacer></v-spacer>
+              <v-list-group
+                v-for="(channel, index) in availableChannels"
+                :key="index"
+                v-model="channel.active"
+                :prepend-icon="channel.Type === 'protected' ? 'mdi-lock' : 'mdi-lock-open-variant'"
+                no-action
+              >
+                <template #activator>
                   <v-list-item-content>
-                    <v-list-item-title
-                      v-text="channel.Name"
-                    ></v-list-item-title>
+                    <v-list-item-title v-text="channel.Name"></v-list-item-title>
+                    <v-spacer></v-spacer>
+                    <v-list-item-subtitle v-text="channel.Users.length + ' people'"></v-list-item-subtitle>
                   </v-list-item-content>
+                </template>
+              <v-list-item>
+                  <v-list-item-content v-if="channel.Type === 'protected'">
+                    <v-text-field
+                      v-model="channel.inputPassword"
+                      dense
+                      placeholder="enter password"
+                      clear-icon="mdi-close-circle"
+                      class="mr-1 mt-3"
+                      :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                      :type="!showPassword ? 'password' : 'text'"
+                      :rules="inputRules"
+                      @click:append="showPassword = !showPassword"
+                      @keydown.enter.prevent="joinChannel(channel)"
+                    ></v-text-field>
+                  </v-list-item-content>
+                  <v-spacer v-if="channel.Type !== 'protected'"></v-spacer>
+                  <v-btn @click="joinChannel(channel)">Join</v-btn>
                 </v-list-item>
-              </v-list-item-group>
+              </v-list-group>
             </v-list>
           </v-card-text>
           <v-card-actions>
@@ -562,7 +591,6 @@ export default Vue.extend({
           <v-text-field
             v-model="newChannel.name"
             dense
-            hide-details
             solo
             required
             type="text"
@@ -583,7 +611,6 @@ export default Vue.extend({
             v-if="newChannel.protected"
             v-model="newChannel.password"
             dense
-            hide-details
             solo
             placeholder="must be between 3 and 12 characters"
             clear-icon="mdi-close-circle"
@@ -616,7 +643,6 @@ export default Vue.extend({
           <v-text-field
             v-model="editChannel.name"
             dense
-            hide-details
             solo
             required
             type="text"
@@ -637,7 +663,6 @@ export default Vue.extend({
             v-if="editChannel.protected"
             v-model="editChannel.password"
             dense
-            hide-details
             solo
             placeholder="must be between 3 and 12 characters"
             clear-icon="mdi-close-circle"
@@ -683,8 +708,8 @@ export default Vue.extend({
         v-if="inChannel"
         v-model="myMessage"
         dense
-        hide-details
         solo
+        hide-details
         type="text"
         placeholder="Type here"
         clearable
@@ -699,6 +724,9 @@ export default Vue.extend({
 <style>
 .wide {
   width: 100%;
+}
+.auto {
+  width: auto;
 }
 .dialogTitle {
   padding-top: 10%;
