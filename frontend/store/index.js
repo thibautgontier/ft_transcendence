@@ -5,8 +5,9 @@ import {version} from '../package.json';
 // state
 export const state = () => ({
 	friends: [],
-	activeComponent: 'Login',
+	activeComponent: 'LoginPage',
 	currentUser: User,
+	tmpID: 0,
 	version: '',
 })
 
@@ -31,6 +32,9 @@ export const mutations = {
 	},
 	changeActiveComponent(state,component) {
 		state.activeComponent = component
+	},
+	changeTmpID(state, newID) {
+		state.tmpID = newID;
 	},
 	getCurrentUser(state, newUser) {
 		state.currentUser.avatar = newUser.avatar;

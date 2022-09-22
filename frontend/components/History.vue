@@ -5,19 +5,24 @@ import axios from 'axios'
 let id = 0
 
 export default Vue.extend({
+  props: {
+		ID: Number,
+  },
   data() {
     return {
       matchNumber: 0,
       matchInfosTest: null,
-      matchInfos: [
-        { id: id++, score: '3 / 1', date: '23/09/2022:21h00', victory: 1, ennemy: 'tgontier'},
-        { id: id++, score: '0 / 3', date: '23/09/2022:20h36', victory: 0, ennemy: 'ben'},
-        { id: id++, score: '3 / 2', date: '14/09/2022:14h34', victory: 1, ennemy: 'tom'},
-      ]
     }
   },
   mounted() {
-      axios.get("/game/2/history", {
+      let userID = this.ID;
+      let path = "/game/";
+      
+      if (userID)
+        path += userID + "/history";
+      else
+        path += this.$store.state.currentUser.id + "/history"
+      axios.get(path, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
@@ -30,7 +35,7 @@ export default Vue.extend({
         <v-row>
           <v-col>
             <div class="Stats">
-              <Stats/>
+              <Stats :userID='ID'/>
             </div>
             <v-divider class="mb-5"></v-divider>
             <div
