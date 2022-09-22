@@ -3,17 +3,23 @@ import Vue from 'vue'
 import axios from 'axios'
 
 export default Vue.extend({
+    props: {
+		userID: Number,
+    },
     data() {
         return {
             level: 0,
             win: 0,
             loose: 0,
             Xp: 0,
+            photo: null,
         }
     },
     mounted() {
-        console.log('avant le then:', this.level);
-      axios.get("/game/" + this.$store.state.currentUser.id, {
+        let use = this.$store.state.currentUser.id;
+        if (this.userID)
+            use = this.userID
+        axios.get("/game/" + use, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
@@ -22,7 +28,35 @@ export default Vue.extend({
                             this.Xp = Math.round((response.data.Xp / ((this.level * 50) + 100)) * 100);
                           this.win = response.data.NbWin;
                           this.loose = (response.data.NbParty - response.data.NbWin);
-                          console.log('pour etre sur:', response.data.Nbwin)});
+                          console.log('pour etre sur:', response.data)});
+
+        axios.get("/user/?id=" + use, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+        } ).then(response => {this.photo = response.data[0].Avatar; console.log(this.photo)});
+  },
+  watch: {
+    userID() {
+        let use = this.$store.state.currentUser.id;
+        if (this.userID)
+            use = this.userID
+        axios.get("/game/" + use, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+        } ).then(response => {  console.log('encore', response.data.Level);
+                            this.level = response.data.Level;
+                            this.Xp = Math.round((response.data.Xp / ((this.level * 50) + 100)) * 100);
+                            this.win = response.data.NbWin;
+                            this.loose = (response.data.NbParty - response.data.NbWin);
+                            console.log('pour etre sur:', response.data)});
+        axios.get("/user/?id=" + use, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+        } ).then(response => {this.photo = response.data[0].Avatar; console.log(this.photo)});
+    }
   }
 })
 </script>
@@ -39,10 +73,14 @@ export default Vue.extend({
         <v-list-item-content>
             <v-row>
                 <div class="ml-14 mt-16">
+                    <v-file-input
+                        hide-input
+                        truncate-length="1"
+                    ></v-file-input>
                    <v-avatar
                         color="grey lighten-2"
                         size="275">
-                        <img :src="this.$store.state.currentUser.avatar">
+                        <img :src="this.photo">
                     </v-avatar>
                 </div>
                 <v-card
@@ -54,7 +92,7 @@ export default Vue.extend({
                             <v-chip color="blue"
                                     outlined
                                     large> 
-                                Level 
+                                Level
                             </v-chip>
                         </v-card-title>
                         <v-card-text class="Text purple--text my-10" style="text-align:center">

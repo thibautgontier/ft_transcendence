@@ -51,6 +51,7 @@ export default {
     '/game/': 'http://localhost:3000',
     '/channel': 'http://localhost:3000',
 	  '/socialProfile' : 'http://localhost:3000',
+    '/social/': 'http://localhost:3000',
 	  '/login/': 'http://localhost:3000',
     '/user': 'http://localhost:3000',
     'game': 'http://localhost:3000',
