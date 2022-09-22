@@ -7,6 +7,7 @@ export const state = () => ({
 	activeComponent: 'Login',
 	currentUser: User,
 	version: '',
+	
 })
 
 

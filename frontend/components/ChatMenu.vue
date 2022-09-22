@@ -15,9 +15,9 @@ export default Vue.extend({
     return {
       newChannel: { name: '', protected: false, password: '' },
       editChannel: { name: '', protected: false, password: '' },
+      snackbar: { active: false, errorMessage: '' },
       activeChannel: OurRoom,
       admin: true,
-      snackbarValue: '',
       addChannelDialog: false,
       createChannelDialog: false,
       editChannelDialog: false,
@@ -45,24 +45,30 @@ export default Vue.extend({
     }
   },
   watch: {
-    createChannelDialog(newValue) {
-      if (!newValue) {
+    snackbar(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.snackbar.active = false
+        this.snackbar.errorMessage = ''
+      }
+    },
+    createChannelDialog(newValue, oldValue) {
+      if (newValue !== oldValue) {
         this.newChannel.name = ''
         this.newChannel.password = ''
         this.newChannel.protected = false
         this.showPassword = false
       }
     },
-    editChannelDialog(newValue) {
-      if (!newValue) {
-        this.editChannel.name = ''
+    editChannelDialog(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.editChannel.name = this.dialogRoom.channelName
         this.editChannel.password = ''
         this.editChannel.protected = false
         this.showPassword = false
       }
     },
-    channelChange(newValue) {
-      if (!newValue) {
+    channelChange(newValue, oldValue) {
+      if (newValue !== oldValue) {
         this.editChannel.name = ''
         this.editChannel.password = ''
         this.editChannel.protected = false
@@ -105,7 +111,9 @@ export default Vue.extend({
         })
       } catch (e) {
         console.warn('cannot join chan', e)
-        return
+        this.snackbar.active = true
+        this.snackbar.errorMessage = 'Cannot join channel'
+      return
       }
       const room = new OurRoom()
       try {
@@ -185,9 +193,16 @@ export default Vue.extend({
         this.activeChannel = newRoom
       } catch (e) {
         console.error('join error', e)
+        this.snackbar.active = true
+        this.snackbar.errorMessage = 'Cannot create channel'
       }
     },
     async editChannelConfirmed() {
+      if (!this.editChannel.name) {
+        this.snackbar.active = true
+        this.snackbar.errorMessage = 'At least a name is necessary'
+        return
+      }
       if (
         this.editChannel.name.length < 3 ||
         this.editChannel.name.length > 12 ||
@@ -235,6 +250,8 @@ export default Vue.extend({
         this.client = await new Colyseus.Client('ws://localhost:3000')
       } catch (e) {
         console.error('Create Client ERROR', e)
+        this.snackbar.active = true
+        this.snackbar.errorMessage = 'Cannot create client'
       }
     },
     async sendMessage() {
@@ -247,7 +264,8 @@ export default Vue.extend({
         console.log(response.data)
       } catch (e) {
         console.warn('you are ban or muted:\n', e)
-        this.myMessage = ''
+        this.snackbar.active = true
+        this.snackbar.errorMessage = 'Cannot send message'
         return
       }
       this.activeChannel.channel.send(
@@ -337,19 +355,16 @@ export default Vue.extend({
     <!-- EXIT ARROW -->
     <!-- CONVERSATIONS -->
     <v-navigation-drawer
-      clipped
       app
       permanent
       :expand-on-hover="$vuetify.breakpoint.smAndDown"
     >
-      <template #prepend>
-        <v-list-item link>
+        <v-list-item>
           <v-list-item-icon>
             <v-icon>mdi-chat</v-icon>
           </v-list-item-icon>
           <v-list-item-title>Conversations</v-list-item-title>
         </v-list-item>
-      </template>
       <v-divider></v-divider>
 
       <v-list v-if="inChannel" dense>
@@ -378,7 +393,7 @@ export default Vue.extend({
       </v-list>
       <!-- ADD CHANNEL MENU -->
       <v-footer>
-        <v-btn fab @click.stop="addChannelPending()">
+        <v-btn class="mx-auto" fab x-small @click.stop="addChannelPending()">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-footer>
@@ -388,7 +403,6 @@ export default Vue.extend({
       v-if="activeChannel"
       right
       app
-      clipped
       permanent
       :expand-on-hover="$vuetify.breakpoint.smAndDown"
     >
@@ -538,7 +552,7 @@ export default Vue.extend({
                     ></v-text-field>
                   </v-list-item-content>
                   <v-spacer v-if="channel.Type !== 'protected'"></v-spacer>
-                  <v-btn @click="joinChannel(channel)">Join</v-btn>
+                  <v-btn small @click="joinChannel(channel)">Join</v-btn>
                 </v-list-item>
               </v-list-group>
             </v-list>
@@ -701,6 +715,7 @@ export default Vue.extend({
           </v-list-item-content>
         </v-list-item>
       </v-container>
+      <v-snackbar v-model="snackbar.active" :timeout="2000" min-width="0">{{snackbar.errorMessage}}</v-snackbar>
     </v-main>
     <!-- INPUT ZONE -->
     <v-footer v-if="inChannel" app inset>

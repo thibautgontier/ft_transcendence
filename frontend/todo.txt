@@ -16,6 +16,8 @@ ToDo:
 
 - gerer les 406 en cas de creation d'un channel qui existe deja
 
+- trouver comment ajuster le :permanent pour les conversations et les membres
+
 Avec Thomas :
 
 - ajouter le fait de rejoindre un channel protégé par un mdp
@@ -32,6 +34,11 @@ Avec Thomas :
 
 - ajouter une couronne pour les admins du channel
 
+- this.setPatchRate(16.66); pour avoir le jeu en 60fps
+
+- faire en sorte que le jeu ne bouge pas quand la console empiete sur sa height
+
+
 Avec la team :
 - friendlist
 - changement avatar
@@ -39,6 +46,9 @@ Avec la team :
 - changement statut (offline/online/ingame/absent)
 - ouverture d'un channel privé entre deux personnes
 - update le statut de l'utilisateur à la connexion
+- notification ou pas ?
+- comment accepter les demandes de parties
+- comment demander les demandes d'ami
 
 
 LANCEMENT DU PROJET
