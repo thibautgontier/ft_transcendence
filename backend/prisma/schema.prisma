@@ -21,6 +21,7 @@ model User {
   Connected     Boolean         @default(false)
   Status        logStatus       @default(offline)
   TwoFA         Boolean         @default(false)
+  TwoFaCode     Int?
   GameProfile   GameProfile?
   SocialProfile SocialProfile?
   Friend        SocialProfile[] @relation("friends")

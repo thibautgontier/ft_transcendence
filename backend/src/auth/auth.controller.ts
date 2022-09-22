@@ -45,25 +45,31 @@ export class AuthController {
   async logOut(@Req() req: Request) {
     const token = req.headers.authorization.split(' ')[1];
     const user = await this.authService.findUser(token);
-    console.log('Logging out user');
+    // console.log('Logging out ', user.Nickname);
   }
 
-  // async enable2FA(@Req() req: Request, @Res() res: Response) {
-  //   const token = req.headers.authorization.split(' ')[1];
-  //   const user = await this.authService.findUser(token);
-  //   if (user) {
-  //     const secret = speakeasy.generateSecret();
-  //     qrcode.toDataURL(secret.otpauth_url, function (err, qrImage) {
-  //       if (!err) res.status(200).send({ qr: qrImage, secret: secret });
-  //       else return;
-  //     });
-  //   } else res.status(404).send();
-  // }
-
-  @Post('test')
-  test(@Req() req: Request) {
+  @Get('2fa')
+  async setup2fa(@Req() req: Request) {
     const token = req.headers.authorization.split(' ')[1];
-    console.log('in here boy,', token);
-    return;
+    const user = await this.authService.findUser(token);
+    this.authService.setup2fa(user);
+  }
+
+  @Post('validate2fa')
+  async validate2fa(@Req() req: Request, @Res() res: Response) {
+    const token = req.headers.authorization.split(' ')[1];
+    const user = await this.authService.findUser(token);
+    const validate = await this.authService.validate2faCode(req.body.code, user);
+    return validate;
+  }
+
+  @Post('2faemail')
+  async change2faEmail(@Req() req: Request, @Res() res: Response) {
+    const token = req.headers.authorization.split(' ')[1];
+    const user = await this.authService.findUser(token);
+    if (req.body.email) {
+      const result = await this.authService.changeEmail(user, req.body.email);
+      return result;
+    }
   }
 }
