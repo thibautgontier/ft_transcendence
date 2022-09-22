@@ -72,18 +72,37 @@ export class UserService {
     try {
       const chan = await this.prisma.channel.findMany({
         where: {
-          NOT :{
-          Users : {
-            some: {
-              id : userID
-            }
-          }
+          AND: [
+            {
+              NOT: {
+                Users: {
+                  some: {
+                    id: userID,
+                  },
+                },
+              },
+            },
+            {
+              NOT: {
+                BanUsers: {
+                  some: {
+                    id: userID,
+                  },
+                },
+              },
+            },
+            {
+              NOT: {
+                Type: 'private',
+              },
+            },
+          ],
         },
-      },
-      include: {
-        Users : true,
-        Messages: { include: { User : true} } }
-      })
+        include: {
+          Users: true,
+          Messages: { include: { User: true } },
+        },
+      });
       res.status(HttpStatus.OK).send(chan);
       return chan;
     } catch (e) {

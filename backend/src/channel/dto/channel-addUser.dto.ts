@@ -5,4 +5,9 @@ export class ChannelAddUserDto {
 		required: true,
 	})
 	user_id: number;
+
+	@ApiProperty({
+		required: false,
+	})
+	password?: string;
 }

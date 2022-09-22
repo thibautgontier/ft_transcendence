@@ -154,15 +154,16 @@ export class ChannelService {
   }
 
   async addUser(
-    id: number,
+    id_chan: number,
     res: Response,
     body: ChannelAddUserDto,
   ): Promise<Channel | null> {
     try {
-		if (await this.getBanUsers(id, body.user_id) != undefined)
+		if (await this.checkPassword(id_chan, body) != true ||
+		(await this.getBanUsers(id_chan, body.user_id) != undefined))
 		throw Error;
       const channel = await this.prisma.channel.update({
-        where: { id: id },
+        where: { id: id_chan },
         data: { Users: { connect: { id: Number(body.user_id) } } },
         include: { Users: true },
       });
@@ -199,6 +200,17 @@ export class ChannelService {
       });
       return null;
     }
+  }
+
+  async checkPassword(idChan: number, body: ChannelAddUserDto): Promise<boolean> {
+	const channel = await this.prisma.channel.findUnique({
+		where: {
+			id : idChan
+		}
+	});
+	if (channel.Type == 'protected' && channel.Password == body.password || channel.Type == 'public')
+		return true;
+	return false;
   }
 
   async getOwner(idChan: number): Promise<number> {
