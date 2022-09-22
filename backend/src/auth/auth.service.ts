@@ -162,6 +162,7 @@ export class AuthService {
       });
       return true;
     }
-    else return false;
+    console.log('fail');
+    return false;
   }
 }

@@ -65,8 +65,10 @@ export default Vue.extend({
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
       });
-      this.overlay = false;
-      this.loginFinish = true;
+      if (JSON.stringify(res.data) === 'true') {
+        this.overlay = false;
+        this.loginFinish = true;
+      } 
     },
 	}
 })

@@ -11,7 +11,6 @@ export class AuthController {
   @Get()
   async login() {
     return;
-    // return await this.authService.login();
   }
 
   @Get('42')
@@ -60,7 +59,7 @@ export class AuthController {
     const token = req.headers.authorization.split(' ')[1];
     const user = await this.authService.findUser(token);
     const validate = await this.authService.validate2faCode(req.body.code, user);
-    return validate;
+    res.status(200).send(validate);
   }
 
   @Post('2faemail')
