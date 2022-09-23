@@ -1,5 +1,5 @@
 <template>
-	<div class="pong absolute mx-auto">
+	<div v-if="$store.state.inMenu" class="pong absolute mx-auto">
 		<svg
 		width="200"
 		height="200"

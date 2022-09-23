@@ -1,6 +1,6 @@
 <template>
 		<!-- Penser a changer la height pour avoir quelquechose de responsive -->
-		<v-app-bar app color="#121212" height="90px" class="nav">
+		<v-app-bar v-if="$store.state.currentUser.nickname" app color="#121212" height="90px" class="nav">
 			<div class="testbuttons mx-auto">
 				<v-btn router to="/">Home</v-btn>
 				<v-btn router to="/GameMenu">Game</v-btn>

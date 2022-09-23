@@ -18,8 +18,8 @@ export default Vue.extend({
 <template>
 	<div>
 		<v-app dark>
-			<PongBall v-if="$store.state.inMenu"/>
-			<NavBar v-if="$store.state.currentUser.nickname !== undefined"/>
+			<PongBall />
+			<NavBar />
 			<Transition name="fade" mode="out-in">
 				<nuxt-child />
 			</Transition>
