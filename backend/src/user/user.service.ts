@@ -98,4 +98,44 @@ export class UserService {
       },
     });
   }
+
+  async updateUserNickname(user: User, nickname: string, res: Response) {
+    try {
+      const newUser = await this.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          Nickname: nickname,
+        },
+      });
+      return newUser;
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).send({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'Update failed',
+      });
+      return null;
+    }
+  }
+
+  async updateUserAvatar(user: User, avatar: string, res: Response) {
+    try {
+      const newUser = await this.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          Avatar: avatar,
+        },
+      });
+      return newUser;
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).send({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'Update failed',
+      });
+      return null;
+    }
+  }
 }
