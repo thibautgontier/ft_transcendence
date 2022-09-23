@@ -67,27 +67,19 @@ export default Vue.extend({
         if (this.newNickname)
         {
             this.$store.commit('changeNickname', this.newNickname);
+            const res = await axios.patch("/user/updateNickname", this.newNickname, {
+            headers: {
+            'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            }})
         }
         if (this.newAvatar)
         {
-            console.log('aavat');
             this.$store.commit('changeAvatar', this.newAvatar);
-        }
-        console.log("debut");
-
-        let payload = {
-            "email": "mbaxmann42@gmail.com",
-            "nickname": "this.$store.state.currentUser.nickname",
-            "avatar": this.$store.state.currentUser.avatar,
-            "status": "online",
-            "twoFA": true,
-        }
-        const res = await axios.patch("/user/update/" + this.$store.state.currentUser.id, payload, {
+            const res = await axios.patch("/user/updateAvatar", this.newAvatar, {
             headers: {
             'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-            }
-        })
-        console.log("fin");
+            }})
+        }
         this.parameters = false;
     }
   }
