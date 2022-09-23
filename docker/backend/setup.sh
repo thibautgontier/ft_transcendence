@@ -2,7 +2,6 @@
 
 date -u
 
-cd backend
-npm install
+npx prisma generate
 
 exec "$@"
