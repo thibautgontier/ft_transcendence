@@ -109,6 +109,7 @@ export class UserService {
           Nickname: nickname,
         },
       });
+      res.status(HttpStatus.OK).send(newUser);
       return newUser;
     } catch (e) {
       res.status(HttpStatus.BAD_REQUEST).send({
@@ -129,6 +130,7 @@ export class UserService {
           Avatar: avatar,
         },
       });
+      res.status(HttpStatus.OK).send(newUser);
       return newUser;
     } catch (e) {
       res.status(HttpStatus.BAD_REQUEST).send({
