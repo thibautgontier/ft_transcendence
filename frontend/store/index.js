@@ -33,6 +33,12 @@ export const mutations = {
 	changeActiveComponent(state,component) {
 		state.activeComponent = component
 	},
+	changeNickname(state, newNick) {
+		state.currentUser.nickname = newNick;
+	},
+	changeAvatar(state, newAvatar) {
+		state.currentUser.nickname = newAvatar;
+	},
 	changeTmpID(state, newID) {
 		state.tmpID = newID;
 	},

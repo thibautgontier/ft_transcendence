@@ -13,6 +13,9 @@ export default Vue.extend({
             loose: 0,
             Xp: 0,
             photo: null,
+            parameters: false,
+            newNickname: '',
+            newAvatar: null,
         }
     },
     mounted() {
@@ -45,17 +48,47 @@ export default Vue.extend({
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
-        } ).then(response => {  console.log('encore', response.data.Level);
-                            this.level = response.data.Level;
+        } ).then(response => {this.level = response.data.Level;
                             this.Xp = Math.round((response.data.Xp / ((this.level * 50) + 100)) * 100);
                             this.win = response.data.NbWin;
-                            this.loose = (response.data.NbParty - response.data.NbWin);
-                            console.log('pour etre sur:', response.data)});
+                            this.loose = (response.data.NbParty - response.data.NbWin)});
         axios.get("/user/?id=" + use, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
         } ).then(response => {this.photo = response.data[0].Avatar; console.log(this.photo)});
+    }
+  },
+  methods:{
+    openParameters() {
+        this.parameters = !this.parameters;
+    },
+    async confirmSetting(){
+        if (this.newNickname)
+        {
+            this.$store.commit('changeNickname', this.newNickname);
+        }
+        if (this.newAvatar)
+        {
+            console.log('aavat');
+            this.$store.commit('changeAvatar', this.newAvatar);
+        }
+        console.log("debut");
+
+        let payload = {
+            "email": "mbaxmann42@gmail.com",
+            "nickname": "this.$store.state.currentUser.nickname",
+            "avatar": this.$store.state.currentUser.avatar,
+            "status": "online",
+            "twoFA": true,
+        }
+        const res = await axios.patch("/user/update/" + this.$store.state.currentUser.id, payload, {
+            headers: {
+            'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            }
+        })
+        console.log("fin");
+        this.parameters = false;
     }
   }
 })
@@ -63,6 +96,36 @@ export default Vue.extend({
 
 <template>
     <h1>
+        <v-row class="mt-10">
+        <v-card
+            v-if="parameters"
+            elevation="2"
+            class="setting"
+            style="width: 300px; height: 175px">
+            <v-text-field
+                v-model="newNickname"
+                :counter="10"
+                label="Nickname"
+                required
+          ></v-text-field>
+            <v-file-input
+                v-model="newAvatar"
+                prepend-icon="mdi-camera"
+                accept="image/png, image/jpeg, image/bmp"
+                label="Avatar"
+            ></v-file-input>
+            <v-btn
+                elevation="2"
+                outlined
+                class="mb-5 ml-1"
+                color="secondary"
+                small
+                @click.stop="confirmSetting()">
+                <v-icon dark>
+                    Accept
+                </v-icon>
+            </v-btn>
+        </v-card>
         <v-card
             elevation="1"
             class="mx-auto my-6"
@@ -72,11 +135,19 @@ export default Vue.extend({
         <v-list-item three-line>
         <v-list-item-content>
             <v-row>
+                <v-btn
+                    elevation="2"
+                    icon
+                    outlined
+                    class="mt-16 ml-6"
+                    color="secondary"
+                    small
+                    @click.stop="openParameters()">
+                    <v-icon dark>
+                        mdi-wrench
+                    </v-icon>
+                </v-btn>
                 <div class="ml-14 mt-16">
-                    <v-file-input
-                        hide-input
-                        truncate-length="1"
-                    ></v-file-input>
                    <v-avatar
                         color="grey lighten-2"
                         size="275">
@@ -149,6 +220,7 @@ export default Vue.extend({
         </v-list-item-content>
         </v-list-item>
         </v-card>
+        </v-row>
     </h1>
 </template>
 
@@ -162,4 +234,10 @@ export default Vue.extend({
 .v-progress-circular {
   font-size: 2rem;
 }
+
+.setting {
+    left: 180px;
+    top: 25px;
+}
+
 </style>
