@@ -26,7 +26,6 @@ export default Vue.extend({
           }
         },
 		    disconnectRequest() {
-				console.log('TEST');
 				this.$store.commit('deleteUser');
 				this.loginSuccess = 0;
 				this.loginFailed = 0;
@@ -37,9 +36,7 @@ export default Vue.extend({
 
 <template>
 <v-app dark>
-
   <v-container fill-height>
-    <!-- <h1> {{this.$store.state.currentUser.nickname}} </h1> -->
     <v-col>
       <v-row justify="center" align="center">
         <PongLogo />

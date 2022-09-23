@@ -36,8 +36,4 @@ export default Vue.extend({
 	.fade-enter, .fade-leave-to {
 		opacity: 0;
 	}
-	.testbuttons {
-		margin-top: 1%;
-		margin-bottom: 2%;
-	}
 </style>

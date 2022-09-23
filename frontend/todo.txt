@@ -36,6 +36,12 @@ Avec Thomas :
 
 - FIX LE REFRESH SUR LE CHAT
 
+- RETIRER LA PONGBALL EN CAS DE JEU EN COURS OU DE CHAT
+
+- DESACTIVER LA NAVBAR EN CAS DE PARTIE EN COURS
+
+
+
 - importer tous les objets du jeu dans le front
 
 

@@ -177,8 +177,7 @@ export default Vue.extend({
 
 <template>
 <v-app dark>
-    <canvas class="template" id="rendering-canvas"></canvas>
-  </div>
+    <canvas id="rendering-canvas" class="template"></canvas>
 </v-app>
 </template>
 

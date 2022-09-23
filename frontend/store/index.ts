@@ -4,7 +4,6 @@ import {User} from '../types/User'
 // state
 export const state = () => ({
 	friends: [],
-	activeComponent: 'Login',
 	currentUser: User,
 	version: '',
 	
@@ -28,9 +27,6 @@ export const mutations = {
 		if(localStorage.getItem('currentUser')) {
 			state.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 		}
-	},
-	changeActiveComponent(state : any ,component : any) {
-		state.activeComponent = component
 	},
 	getCurrentUser(state : any, newUser : any) {
 		state.currentUser.avatar = newUser.avatar;
