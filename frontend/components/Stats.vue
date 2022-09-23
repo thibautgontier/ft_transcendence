@@ -18,6 +18,26 @@ export default Vue.extend({
             newAvatar: null,
         }
     },
+  watch: {
+    userID() {
+        let use = this.$store.state.currentUser.id;
+        if (this.userID)
+            use = this.userID
+        axios.get("/game/" + use, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+        } ).then(response => {this.level = response.data.Level;
+                            this.Xp = Math.round((response.data.Xp / ((this.level * 50) + 100)) * 100);
+                            this.win = response.data.NbWin;
+                            this.loose = (response.data.NbParty - response.data.NbWin)});
+        axios.get("/user/?id=" + use, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+        } ).then(response => {this.photo = response.data[0].Avatar; console.log(this.photo)});
+    }
+  },
     mounted() {
         let use = this.$store.state.currentUser.id;
         if (this.userID)
@@ -38,26 +58,6 @@ export default Vue.extend({
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
         } ).then(response => {this.photo = response.data[0].Avatar; console.log(this.photo)});
-  },
-  watch: {
-    userID() {
-        let use = this.$store.state.currentUser.id;
-        if (this.userID)
-            use = this.userID
-        axios.get("/game/" + use, {
-        headers: {
-          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-        }
-        } ).then(response => {this.level = response.data.Level;
-                            this.Xp = Math.round((response.data.Xp / ((this.level * 50) + 100)) * 100);
-                            this.win = response.data.NbWin;
-                            this.loose = (response.data.NbParty - response.data.NbWin)});
-        axios.get("/user/?id=" + use, {
-        headers: {
-          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-        }
-        } ).then(response => {this.photo = response.data[0].Avatar; console.log(this.photo)});
-    }
   },
   methods:{
     openParameters() {

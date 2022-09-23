@@ -10,9 +10,6 @@ export default Vue.extend({
         absolute: true,
         timerCount: 5,
   }),
-  mounted() {
-    this.overlay = true;
-  },
   watch: {
     overlay (val) {
         val && setTimeout(() => {
@@ -29,6 +26,9 @@ export default Vue.extend({
         },
         immediate: true
     }
+  },
+  mounted() {
+    this.overlay = true;
   },
 })
 </script>

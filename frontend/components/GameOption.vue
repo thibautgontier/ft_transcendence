@@ -97,8 +97,8 @@ export default Vue.extend({
                 </v-row>
                 <v-row class="justify-space-between">
                   <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn v-bind="attrs" v-on="on" class="mt-14" x-large color="secondary" @click.stop="resetToDefault()">Default</v-btn>
+                    <template #activator="{ on, attrs }">
+                      <v-btn v-bind="attrs" class="mt-14" x-large color="secondary" v-on="on" @click.stop="resetToDefault()">Default</v-btn>
                     </template>
                     <span class="secondary--text">Reset option to the default value</span>
                   </v-tooltip>

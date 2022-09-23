@@ -3,8 +3,8 @@
 		<v-app-bar v-if="$store.state.currentUser.id" app flat color="transparent" height="90px" class="nav">
 			<div class="testbuttons mx-auto">
 				<v-btn router to="/">Home</v-btn>
-				<v-btn router to="/GameMenu">Game Menu</v-btn>
-				<v-btn router to="/ChatMenu">Chat Menu</v-btn>
+				<v-btn router to="/GameMenu">Game</v-btn>
+				<v-btn router to="/ChatMenu">Chat</v-btn>
 			</div>
 		</v-app-bar>
 </template>

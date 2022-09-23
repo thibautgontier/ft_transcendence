@@ -15,7 +15,7 @@ export default Vue.extend({
     }
   },
   mounted() {
-      let userID = this.ID;
+      const userID = this.ID;
       let path = "/game/";
       
       if (userID)

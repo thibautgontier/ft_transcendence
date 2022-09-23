@@ -40,6 +40,8 @@ Avec Thomas :
 
 - DESACTIVER LA NAVBAR EN CAS DE PARTIE EN COURS
 
+- NOTIF POUR REJOINDRE UNE DEMANDE DE GAME
+
 
 
 - importer tous les objets du jeu dans le front
