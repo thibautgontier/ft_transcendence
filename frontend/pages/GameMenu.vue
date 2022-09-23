@@ -184,8 +184,6 @@ export default Vue.extend({
 
 <style>
   .template{
-    width: 75%;
-    height: 75%;
     aspect-ratio: 16 9;
     margin: auto;
   }
