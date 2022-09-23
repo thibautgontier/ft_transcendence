@@ -15,14 +15,14 @@ export class ChannelService {
 
   async getAll(): Promise<Channel[]> {
     return this.prisma.channel.findMany({
-      include: { Messages: true, Users: true, Admins: true},
+      include: { Messages: true ,Users: true, Admins: true},
     });
   }
 
   async findID(id: number): Promise<Channel | null> {
     return this.prisma.channel.findUnique({
       where: { id: id },
-      include: { Messages: true },
+      include: { Messages: true, Users: true, Admins: true},
     });
   }
 
@@ -57,7 +57,8 @@ export class ChannelService {
     res: Response,
   ): Promise<Channel | null> {
     try {
-      if ((await this.getAdminChan(idChan, idAdmin)) === undefined) throw Error;
+      if ((await this.getAdminChan(idChan, idAdmin)) === undefined
+	  && idAdmin != 0) throw Error;
       const channel = await this.prisma.channel.delete({
         where: { id: idChan },
       });
@@ -153,13 +154,16 @@ export class ChannelService {
   }
 
   async addUser(
-    id: number,
+    id_chan: number,
     res: Response,
     body: ChannelAddUserDto,
   ): Promise<Channel | null> {
     try {
+		if (await this.checkPassword(id_chan, body) != true ||
+		(await this.getBanUsers(id_chan, body.user_id) != undefined))
+		throw Error;
       const channel = await this.prisma.channel.update({
-        where: { id: id },
+        where: { id: id_chan },
         data: { Users: { connect: { id: Number(body.user_id) } } },
         include: { Users: true },
       });
@@ -185,6 +189,8 @@ export class ChannelService {
         data: { Users: { disconnect: { id: idRemove } } },
         include: { Users: true },
       });
+	  if (channel.Users.length == 0)
+	  	return this.deleteChannel(idChan, 0, res);
       res.status(HttpStatus.OK).send(channel);
       return channel;
     } catch (error) {
@@ -194,6 +200,17 @@ export class ChannelService {
       });
       return null;
     }
+  }
+
+  async checkPassword(idChan: number, body: ChannelAddUserDto): Promise<boolean> {
+	const channel = await this.prisma.channel.findUnique({
+		where: {
+			id : idChan
+		}
+	});
+	if (channel.Type == 'protected' && channel.Password == body.password || channel.Type == 'public')
+		return true;
+	return false;
   }
 
   async getOwner(idChan: number): Promise<number> {
@@ -366,15 +383,12 @@ export class ChannelService {
   ): Promise<Message | null> {
     try {
       if ((await this.getUser(idChan, idUser)) === undefined) {
-        console.log('1\n');
         throw Error;
       }
       if ((await this.getMutedUsers(idChan, idUser)) !== undefined) {
-        console.log('2\n');
         throw Error;
       }
-      if (body.Content.length == undefined) {
-        console.log('CONTENT.LENGTH == UNDEFINED™2@@\n');
+      if (body.Content == undefined) {
         throw Error;
       }
       const msg = await this.prisma.message.create({

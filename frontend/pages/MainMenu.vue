@@ -1,6 +1,7 @@
 <script lang="ts">
 import Vue from 'vue'
 export default Vue.extend({
+	layout: 'DefaultLayout',
 	data() {
         return {};
     },
@@ -18,10 +19,12 @@ export default Vue.extend({
 
 <template>
 	<div>
-		<v-row justify="center" style="margin-top: 10%">
-			<v-btn>Leaderboard</v-btn>
-			<v-btn>Play</v-btn>
-			<v-btn>Spectate</v-btn>
-		</v-row>
+		<v-app dark>
+			<v-row justify="center" style="margin-top: 10%">
+				<v-btn>Leaderboard</v-btn>
+				<v-btn>Play</v-btn>
+				<v-btn>Spectate</v-btn>
+			</v-row>
+		</v-app>
 	</div>
 </template>

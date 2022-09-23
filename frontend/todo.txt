@@ -1,30 +1,79 @@
 ToDo:
 
-Components:
-- Main menu :
-	- Acces vers :
-		- Matchmaking
-		- Chat
-		- Spectate Menu
-		- Settings
-		- Leaderboard
-- Social menu
-- Chat
-- FriendList
-- Matchmaking
-- Game Page
-- Spectate Menu
-- User Settings
-- Leaderboard
-
-
+- retirer le AccessToken de l'objet User qu'on renvoie dans les channels
+- ajouter le status (admin, bloqué etc) dans les users d'un channel
 - trouver comment rendre le background aussi sombre que les boutons
-- modifier la taille de l'avatar pour le menu social
 
-- Fetch hooks hooks dans les components et pages
-- AsyncData hooks seulement dans les pages
+- Verifier ce qu'il se passe si on se connecte deux fois avec le meme user dans deux fenetres différentes
 
-Verifier ce qu'il se passe si on se connecte deux fois avec le meme user dans deux fenetres différentes
+- Update le nom d'un channel en cas de changement de nom
+
+- ajouter un check pour voir si le channel existe toujours avant de rejoindre
+
+- adapter le pong pour qu'il ne soit pas a 100% de width
+
+- ajouter le timer avant de commencer la partie de pong
+
+- gerer les 406 en cas de creation d'un channel qui existe deja
+
+- trouver comment ajuster le :permanent pour les conversations et les membres
+
+Avec Thomas :
+
+- ban pour une durée limitée (demandé par le sujet) / BOUTON A FAIRE SUR LE FRONT
+
+- update la liste des channels à chaque changement de state (onStateChange Colyseus)
+
+- le join des channels devrait se faire à la connexion de l'utilisateur (a voir)
+
+- ajouter un bouton join pour lister tous les channels et en rejoindre
+
+- ajouter une couronne pour les admins du channel
+
+- this.setPatchRate(16.66); pour avoir le jeu en 60fps
+
+- faire en sorte que le jeu ne bouge pas quand la console empiete sur sa height
+
+- FIX LE REFRESH SUR LE CHAT
+
+- RETIRER LA PONGBALL EN CAS DE JEU EN COURS OU DE CHAT
+
+- DESACTIVER LA NAVBAR EN CAS DE PARTIE EN COURS
+
+
+
+- importer tous les objets du jeu dans le front
+
+
+Avec la team :
+- friendlist
+- changement avatar
+- changement nickname
+- changement statut (offline/online/ingame/absent)
+- ouverture d'un channel privé entre deux personnes
+- update le statut de l'utilisateur à la connexion
+- notification ou pas ?
+- comment accepter les demandes de parties
+- comment demander les demandes d'ami
+
+POUR LE JEU RESPONSIVE :
+<template>
+<v-app dark>
+    <canvas class="template" id="rendering-canvas"></canvas>
+  </div>
+</v-app>
+</template>
+
+<style>
+  .template{
+    width: 75%;
+    height: 75%;
+    aspect-ratio: 16 9;
+    margin: auto;
+  }
+</style>
+
+LANCEMENT DU PROJET
 
 n'importe :
 sudo dockerd

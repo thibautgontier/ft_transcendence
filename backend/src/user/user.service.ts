@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Channel, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Response } from 'express';
 import { UserUpdateDto } from './dto/user-update.dto';
@@ -37,6 +37,95 @@ export class UserService {
         SocialProfile: social === undefined ? false : social,
       },
     });
+  }
+
+  async getChannel(res: Response, userID: number): Promise<User | null> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userID },
+        include: {
+          ChannelUser: {
+            include: {
+              Messages: { include: { User: true } },
+              Users: true,
+            },
+          },
+        },
+      });
+      res.status(HttpStatus.OK).send(user);
+      return user;
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).send({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: "Can't get channel of user",
+      });
+      return null;
+    }
+  }
+
+  async getOtherChannel(
+    res: Response,
+    userID: number,
+  ): Promise<Channel[] | null> {
+    try {
+      const chan = await this.prisma.channel.findMany({
+        where: {
+          AND: [
+            {
+              NOT: {
+                Users: {
+                  some: {
+                    id: userID,
+                  },
+                },
+              },
+            },
+            {
+              NOT: {
+                BanUsers: {
+                  some: {
+                    id: userID,
+                  },
+                },
+              },
+            },
+            {
+              NOT: {
+                Type: 'private',
+              },
+            },
+          ],
+        },
+        include: {
+          Users: true,
+          Messages: { include: { User: true } },
+        },
+      });
+      res.status(HttpStatus.OK).send(chan);
+      return chan;
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).send({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: "Can't get channel " + e,
+      });
+      return null;
+    }
+  }
+
+  async getUser(res: Response, userID: number): Promise<User | null> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userID },
+      });
+      res.status(HttpStatus.OK).send(user);
+      return user;
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).send({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: "Can't get user",
+      });
+      return null;
+    }
   }
 
   async createUser(res: Response, body: Profile): Promise<User> {

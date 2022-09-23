@@ -1,5 +1,15 @@
 import { Client, Room } from 'colyseus';
 
+export interface IChatRoomMessage {
+  Content: string;
+  Nickname: string;
+}
+
+export class ChatRoomMessage implements IChatRoomMessage {
+  Content = '';
+  Nickname = '';
+}
+
 export class ChatRoom extends Room {
   constructor() {
     super();
@@ -8,19 +18,19 @@ export class ChatRoom extends Room {
   async onCreate(options: any) {
     console.info('Chat room created: ', options);
 
-    this.onMessage('Message', (client, message) => {
-      //
-      // Triggers when 'Message' message is sent.
-      //
-      this.broadcast('Message', message);
+    this.onMessage('Message', (client, message: string) => {
+      let msg = new ChatRoomMessage();
+      msg.Content = message.substring(
+        message.indexOf('@:') + 2,
+        message.length,
+      );
+      msg.Nickname = message.substring(0, message.indexOf('@:'));
+
+      this.broadcast('Message', msg);
       console.log('client :', client.sessionId, 'sent', message);
     });
 
     this.onMessage('*', (client, type, message) => {
-      //
-      // Triggers when any other type of message is sent,
-      // excluding "Message", which has its own specific handler defined above.
-      //
       console.log('client :', client.sessionId, 'sent', type, message);
     });
   }
@@ -38,5 +48,4 @@ export class ChatRoom extends Room {
   async onDispose() {
     console.info(`Chat room : ${this.roomId} disposed`);
   }
-
 }

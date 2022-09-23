@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Client, Room } from 'colyseus.js'
-import { PaddleMoveMessage } from '../../backend/src/pong/PongRoom'
+import { PaddleMoveMessage } from '../types/PongRoom'
 import {
   GameState,
   GameDimensions,
@@ -9,9 +9,10 @@ import {
   Paddle,
   Scoreboard,
   GameStatus,
-} from '../../backend/src/pong/schema'
-import { PaddleDirection } from '../../backend/src/pong/Physics'
+} from '../types/schema'
+import { PaddleDirection } from '../types/Physics'
 export default Vue.extend({
+  layout: 'DefaultLayout',
   data(): any {
     return {
       state: GameState,
@@ -175,21 +176,14 @@ export default Vue.extend({
 </script>
 
 <template>
-  <canvas id="rendering-canvas"></canvas>
+<v-app dark>
+    <canvas id="rendering-canvas" class="template"></canvas>
+</v-app>
 </template>
 
 <style>
-/* html,
-body {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-
-  width: 100%;
-  height: 100%;
-
-  margin: 0;
-  padding: 0;
-} */
+  .template{
+    aspect-ratio: 16 9;
+    margin: auto;
+  }
 </style>

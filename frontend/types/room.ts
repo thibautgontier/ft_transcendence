@@ -6,14 +6,16 @@ export interface IRoom {
 	messages: Message[],
 	id : number
 	Type: chanStatus,
+	members: [],
 };
 
-export class ourRoom implements IRoom {
+export class OurRoom implements IRoom {
 	channel = new Colyseus.Room('');
 	channelName = '';
 	messages : Message[] = [];
 	id = 0;
 	Type= chanStatus.PUBLIC;
+	members = {} as any;
 };
 
 export enum chanStatus {
@@ -27,7 +29,7 @@ export enum chanStatus {
 	CreatedAt: Date,
 	UpdatedAt: Date,
 	Content: string,
-	// UserID: number, a ajouter pour la modification de msg
+	Nickname: string,
 }
 
 export class Message implements Imessage {
@@ -35,7 +37,7 @@ export class Message implements Imessage {
 	CreatedAt = new Date();
 	UpdatedAt = new Date();
 	Content = '';
-	// UserID = 0;
+	Nickname = '';
 }
 
 export interface Ichannel {
@@ -50,6 +52,8 @@ export interface Ichannel {
 	id: number,
 	RoomId: String,
 	Messages: Message[];
+	active: boolean;
+	inputPassword: string;
   }
 
   export class Channel implements Ichannel {
@@ -64,4 +68,16 @@ export interface Ichannel {
 	id = 0;
 	RoomId = '';
 	Messages: Message[] = [];
+	active = false;
+	inputPassword = '';
   }
+
+  export interface IChatRoomMessage {
+	Content: string,
+	Nickname: string,
+}
+
+export class ChatRoomMessage implements IChatRoomMessage {
+	Content = '';
+	Nickname = '';
+}
