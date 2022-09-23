@@ -35,6 +35,8 @@ export default Vue.extend({
 </script>
 
 <template>
+<v-app dark>
+
   <v-container fill-height>
     <!-- <h1> {{this.$store.state.currentUser.nickname}} </h1> -->
     <v-col>
@@ -65,4 +67,5 @@ export default Vue.extend({
       </h1>
     </v-col>
   </v-container>
+</v-app>
 </template>

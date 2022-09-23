@@ -5,12 +5,15 @@ export default Vue.extend({
 })
 </script>
 
+<template>
+	
+</template>
+
 <!-- eslint-disable vue/multi-word-component-names -->
 <style>
 	body {
 		overflow: hidden;
 	}
-
 	.fade-enter-active, .fade-leave-active {
 		transition: opacity 0.2s;
 	}

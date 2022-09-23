@@ -1,19 +1,9 @@
 <script lang="ts">
 import Vue from 'vue'
-
 export default Vue.extend({
 		data () {
-			return {
-				authenticated: false,
-				activeComponent: "LoginPage"
-			}
-		},
-		computed: {
-			inGame () {
-				if (this.activeComponent !== 'ChatMenu' && this.activeComponent !== 'GameMenu')
-					return (false)
-				return (true)
-			}
+		return {
+		}
 		},
 		beforeCreate() {
 			this.$store.commit('initialiseStore');
@@ -24,24 +14,22 @@ export default Vue.extend({
 </script>
 
 <template>
-	<v-app dark>
-		<PongBall v-if="!inGame" />
-			<div class="testbuttons">
-				<v-row justify="center">
-					<v-btn @click.stop="activeComponent='LoginPage'">Login Page</v-btn>
-					<v-btn @click.stop="activeComponent='MainMenu'">Main Menu</v-btn>
-					<v-btn @click.stop="activeComponent='GameMenu'">Game Menu</v-btn>
-					<v-btn @click.stop="activeComponent='ChatMenu'">Chat Menu</v-btn>
-					<v-btn @click.stop="activeComponent='TestZone'">Test Zone</v-btn>
-				</v-row>
-			</div>
+	<div>
+		<v-app dark>
+			<PongBall />
+			<NavBar />
+
 			<Transition name="fade" mode="out-in">
-				<component :is="activeComponent"></component>
+				<nuxt-child />
 			</Transition>
-	</v-app>
+		</v-app>
+	</div>
 </template>
 
 <style>
+	body {
+		overflow: hidden;
+	}
 	.fade-enter-active, .fade-leave-active {
 		transition: opacity 0.12s;
 	}

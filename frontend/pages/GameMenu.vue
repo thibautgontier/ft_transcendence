@@ -175,7 +175,9 @@ export default Vue.extend({
 </script>
 
 <template>
+<v-app dark>
   <canvas id="rendering-canvas"></canvas>
+</v-app>
 </template>
 
 <style>
