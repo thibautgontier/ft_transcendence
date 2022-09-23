@@ -12,6 +12,7 @@ import {
 } from '../../backend/src/pong/schema'
 import { PaddleDirection } from '../../backend/src/pong/Physics'
 export default Vue.extend({
+  layout: 'DefaultLayout',
   data(): any {
     return {
       state: GameState,
@@ -176,10 +177,16 @@ export default Vue.extend({
 
 <template>
 <v-app dark>
-  <canvas id="rendering-canvas"></canvas>
+    <canvas class="template" id="rendering-canvas"></canvas>
+  </div>
 </v-app>
 </template>
 
 <style>
-
+  .template{
+    width: 75%;
+    height: 75%;
+    aspect-ratio: 16 9;
+    margin: auto;
+  }
 </style>

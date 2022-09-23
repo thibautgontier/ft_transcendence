@@ -2,6 +2,7 @@
 import Vue from 'vue'
 import * as Colyseus from "colyseus.js";
 export default Vue.extend({
+	layout: 'DefaultLayout',
 	data () {
 		return {
 			snackbar: false,

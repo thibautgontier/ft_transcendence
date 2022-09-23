@@ -1,7 +1,7 @@
 <template>
 	<nav>
 		<!-- Penser a changer la height pour avoir quelquechose de responsive -->
-		<v-app-bar flat app color="transparent" height="150">
+		<v-app-bar flat app color="transparent" height="150" class="mx-auto">
 			<div class="testbuttons">
 				<v-row justify="center">
 					<v-btn router to="/">ft_pong</v-btn>

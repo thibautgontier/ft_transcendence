@@ -3,6 +3,7 @@ import Vue from 'vue'
 import axios from 'axios'
 
 export default Vue.extend({
+  layout: 'DefaultLayout',
   data() {
     return {
       loginSuccess: 0,

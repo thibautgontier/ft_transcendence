@@ -11,6 +11,7 @@ import {
 } from '../types/room'
 
 export default Vue.extend({
+  layout: 'DefaultLayout',
   data(): any {
     return {
       newChannel: { name: '', protected: false, password: '' },
