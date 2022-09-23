@@ -31,8 +31,12 @@ export class ChannelService {
     body: ChannelCreateDto,
   ): Promise<Channel | null> {
     try {
+      const pw = await this.prisma.channelPassword.create({
+        data: {}
+      });
       const channel = await this.prisma.channel.create({
         data: {
+          Password: { connect: { id: pw.id } },
           Owner: { connect: { id: Number(body.owner) } },
           Users: { connect: { id: Number(body.owner) } },
           Admins: { connect: { id: Number(body.owner) } },
@@ -81,8 +85,12 @@ export class ChannelService {
     body: ChannelCreatePrivDto,
   ): Promise<Channel | null> {
     try {
+      const pw = await this.prisma.channelPassword.create({
+        data: {}
+      });
       const channel = await this.prisma.channel.create({
         data: {
+          Password: { connect : {id: pw.id } },
           Owner: { connect: { id: Number(body.user_1) } },
           Users: {
             connect: [{ id: Number(body.user_1) }, { id: Number(body.user_2) }],
@@ -119,7 +127,7 @@ export class ChannelService {
         data: {
           Name: body.name,
           Description: body.Description,
-          Password: body.Password,
+          // Password.Password : body.Password,
         },
       });
       res.status(HttpStatus.OK).send(channel);
@@ -215,8 +223,11 @@ export class ChannelService {
         id: idChan,
       },
     });
+    const password = await this.prisma.channelPassword.findUnique({
+      where: { id: channel.PasswordID }
+    })
     if (
-      (channel.Type == 'protected' && channel.Password == body.password) ||
+      (channel.Type == 'protected' && password.Password == body.password) ||
       channel.Type == 'public'
     )
       return true;
@@ -350,8 +361,9 @@ export class ChannelService {
         throw Error;
       const channel = await this.prisma.channel.update({
         where: { id: idChan },
-        data: { Password: body.Password, Type: 'protected' },
+        data: { /*Password: body.Password,*/ Type: 'protected' },
       });
+      if (channel.PasswordID == null)
       res.status(HttpStatus.OK).send(channel);
       return channel;
     } catch (error) {

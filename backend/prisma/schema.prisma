@@ -33,10 +33,10 @@ model User {
   ChannelUser   Channel[]       @relation(name: "chanUsers")
   ChannelAdmin  Channel[]       @relation(name: "admin")
   MutedUser     Channel[]       @relation(name: "mutedUser")
-  BanUser    	Channel[]       @relation(name: "banUser")
+  BanUser       Channel[]       @relation(name: "banUser")
   UserNotifyID  Int?            @unique
   UserNotify    Notify?         @relation(fields: [UserNotifyID], references: [id])
-  UserMessage	Message[]
+  UserMessage   Message[]
 }
 
 model GameProfile {
@@ -104,10 +104,17 @@ model Channel {
   MutedUsers      User[]          @relation("mutedUser")
   BanUsers        User[]          @relation("banUser")
   Messages        Message[]
-  Password        String?
+  PasswordID      Int             @unique
+  Password        ChannelPassword @relation(fields: [PasswordID], references: [id], onDelete: Cascade)
   SocialChannel   SocialProfile[] @relation("channels")
   ChannelNotifyID Int?            @unique
   ChannelNotify   Notify?         @relation(fields: [ChannelNotifyID], references: [id])
+}
+
+model ChannelPassword {
+  id              Int             @id @default(autoincrement())
+  Password        String?
+  Channel         Channel?
 }
 
 model Message {

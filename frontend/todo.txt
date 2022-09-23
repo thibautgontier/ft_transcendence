@@ -20,8 +20,6 @@ ToDo:
 
 Avec Thomas :
 
-- ajouter le fait de rejoindre un channel protégé par un mdp
-
 - ban pour une durée limitée (demandé par le sujet) / BOUTON A FAIRE SUR LE FRONT
 
 - update la liste des channels à chaque changement de state (onStateChange Colyseus)
