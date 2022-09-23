@@ -14,7 +14,7 @@ import {
 import { logStatus, User } from '@prisma/client';
 import { UserService } from './user.service';
 import { UserFilterDto } from './dto/user-filter.dto';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UserCreateDto } from './dto/user-create.dto';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
