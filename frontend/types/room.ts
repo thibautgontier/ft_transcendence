@@ -52,6 +52,8 @@ export interface Ichannel {
 	id: number,
 	RoomId: String,
 	Messages: Message[];
+	active: boolean;
+	inputPassword: string;
   }
 
   export class Channel implements Ichannel {
@@ -66,6 +68,8 @@ export interface Ichannel {
 	id = 0;
 	RoomId = '';
 	Messages: Message[] = [];
+	active = false;
+	inputPassword = '';
   }
 
   export interface IChatRoomMessage {
