@@ -79,7 +79,7 @@ export class UserController {
     return await this.userService.updateUserNickname(user, body, res);
   }
 
-  @Patch('updateNickname')
+  @Patch('updateAvatar')
   async updateUserAvatar(
     @Req() req: Request,
     @Body() body: string,
