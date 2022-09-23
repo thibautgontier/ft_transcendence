@@ -18,7 +18,6 @@ export default Vue.extend({
 		<v-app dark>
 			<PongBall />
 			<NavBar />
-
 			<Transition name="fade" mode="out-in">
 				<nuxt-child />
 			</Transition>
