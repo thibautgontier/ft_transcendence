@@ -1,8 +1,52 @@
 ToDo:
 
-- retirer le AccessToken de l'objet User qu'on renvoie dans les channels
+SUJET ET GRILLE DE CORRECTION:
+
+• The user should be able to invite other users to play a Pong game through the chat
+interface
+
+◦ The administrators of a channel can ban or mute users for a limited time.
+
+◦ The channel owner is a channel administrator. They can set other users as
+administrators.
+
+• The user should be able to add other users as friends and see their current status
+(online, offline, in a game, and so forth).
+
+Fix le bug du lancement de partie de pong en solo en rechargant le composant
+
+• You must offer some customization options (for example, power-ups or different
+maps). However, the user should be able to select a default version of the game
+without any extra features if they want to.
+
+The user should be able to watch a live play between other users without interfering
+with it.
+
+Ensure that the website is secured. Check the database to verify that
+passwords are encrypted (THOMAS POUR LES MDP DE CHANNEL (A VOIR))
+
+Check si le nickname n'est pas pris quand on le change
+
+User can block other users. This means they won't receive private messages
+from the accounts they blocked nor view their messages in public/private
+channels.
+
+The users can chat. Messages must be sent/received instantly.
+If the user blocked another user, the messages from the blocked person
+must be hidden. The user can access the user profile of other players
+from the chat interface and also invite them for a Pong duel.
+
+There is a spectator mode. The user can watch any live games. They can be
+accessed through the chat interface or the friend interface.
+There can also be a page dedicated to live games from which the user can
+access any of them.
+
+
+
+
+----------------------------------------------------------------------------------
+
 - ajouter le status (admin, bloqué etc) dans les users d'un channel
-- trouver comment rendre le background aussi sombre que les boutons
 
 - Verifier ce qu'il se passe si on se connecte deux fois avec le meme user dans deux fenetres différentes
 
@@ -10,11 +54,7 @@ ToDo:
 
 - ajouter un check pour voir si le channel existe toujours avant de rejoindre
 
-- adapter le pong pour qu'il ne soit pas a 100% de width
-
 - ajouter le timer avant de commencer la partie de pong
-
-- gerer les 406 en cas de creation d'un channel qui existe deja
 
 - trouver comment ajuster le :permanent pour les conversations et les membres
 
@@ -42,8 +82,6 @@ Avec Thomas :
 
 - NOTIF POUR REJOINDRE UNE DEMANDE DE GAME
 
-
-
 - importer tous les objets du jeu dans le front
 
 
@@ -68,8 +106,6 @@ POUR LE JEU RESPONSIVE :
 
 <style>
   .template{
-    width: 75%;
-    height: 75%;
     aspect-ratio: 16 9;
     margin: auto;
   }

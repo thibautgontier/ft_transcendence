@@ -140,7 +140,7 @@ export default Vue.extend({
 
       switch (state.gameStatus) {
         case GameStatus.WAITING:
-          this.drawTextCenter('Waiting for opponent...')
+          this.drawTextCenter('Waiting for opponent')
           break
 
         case GameStatus.PLAYING:
@@ -186,5 +186,6 @@ export default Vue.extend({
   .template{
     aspect-ratio: 16 9;
     margin: auto;
+    z-index: 128;
   }
 </style>
