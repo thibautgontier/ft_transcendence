@@ -11,6 +11,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { Channel, Message } from '@prisma/client';
 import { Response } from 'express';
+import { get } from 'http';
 import { ChannelService } from './channel.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
@@ -32,6 +33,14 @@ export class ChannelController {
   @Get(':id')
   async findID(@Param('id') id: number): Promise<Channel | null> {
     return await this.channelService.findID(Number(id));
+  }
+
+  @Get(`isPrivateCreated/:id1/:id2`)
+  async isPrivateCreated(
+    @Param('id1') id1: number,
+    @Param('id2') id2: number,
+  ): Promise<Channel | null> {
+    return await this.channelService.isPrivateCreated(id1, id2);
   }
 
   @Post('create')

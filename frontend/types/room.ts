@@ -46,7 +46,6 @@ export interface Ichannel {
 	Description: string,
 	Name: string,
 	OwnerID: number,
-	Password: string,
 	Type: chanStatus,
 	UpdatedAt: Date,
 	id: number,
@@ -62,7 +61,6 @@ export interface Ichannel {
 	Description = '';
 	Name = '';
 	OwnerID = 0;
-	Password = '';
 	Type = chanStatus.PUBLIC;
 	UpdatedAt = new Date();
 	id = 0;

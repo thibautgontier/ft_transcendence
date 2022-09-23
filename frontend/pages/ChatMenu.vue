@@ -182,6 +182,12 @@ export default Vue.extend({
         this.inChannel = true
         this.newChannel.name = ''
         this.createChannelDialog = false
+        if (this.newChannel.protected === true) {
+          await axios.patch(
+            `/channel/${newRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`,
+            { Password: this.newChannel.password }
+          )
+        }
         newRoom.channel.onMessage('Message', (message: ChatRoomMessage) => {
           const newMsg = new Message()
           newMsg.Content = message.Content
@@ -310,29 +316,54 @@ export default Vue.extend({
       }
     },
     async openPrivateChat(member: any) {
-      // if (la conversation existe dejà) {
-      //  this.activeChannel = channel trouvé
-      //  this.inChannel = true;
-      //  return
-      // }
-      // creer la room
-      // this.activeChannel = channel crée
-      // this.inChannel = true;
+      const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
+      if (response.data) {
+        this.activeChannel = this.rooms.find((channel: OurRoom) => channel.id == response.data.id)
+        this.inChannel = true;
+        return
+      }
+      else {
+        const newRoom = new OurRoom()
+        try{
+          newRoom.channel = await this.client.create('ChatRoom')
+          const response2 = await axios.post('channel/createPriv', {
+            user_1 : this.$store.state.currentUser.id,
+            user_2 : member.id,
+            Name : ( this.$store.state.currentUser.nickname + member.Nickname),
+            RoomId: newRoom.channel.id,
+          })
+          newRoom.channelName = ( this.$store.state.currentUser.nickname + member.Nickname );
+          newRoom.id = response2.data.id
+          this.rooms.push(newRoom);
+          this.inChannel = true;
+          this.activeChannel = newRoom
+          newRoom.channel.onMessage('Message', (message: ChatRoomMessage) => {
+          const newMsg = new Message()
+          newMsg.Content = message.Content
+          newMsg.Nickname = message.Nickname
+          newRoom.messages.push(newMsg)
+        })
+        } catch(e) {
+          console.warn('Cannot create private channel', e);
+          return;
+        }
+      }
     },
     inviteToPlay(member: any) {},
     async sendFriendRequest(friend: any) {
       await axios.patch(
-        `/socialProfile/${this.$store.state.currentUser.id}/friend/add/${friend.id}`
+        `/social/${this.$store.state.currentUser.id}/friend/add/${friend.id}`
       )
     },
     async switchBlock(member: any) {
+      console.log(this.blocked)
       if (this.blocked === false) {
         await axios.patch(
-          `/socialProfile/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
+          `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
         )
       } else {
         await axios.patch(
-          `/socialProfile/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
+          `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
         )
       }
     },

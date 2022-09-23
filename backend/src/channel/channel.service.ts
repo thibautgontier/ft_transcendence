@@ -14,16 +14,38 @@ export class ChannelService {
   constructor(private prisma: PrismaService) {}
 
   async getAll(): Promise<Channel[]> {
-    return this.prisma.channel.findMany({
+    return await this.prisma.channel.findMany({
       include: { Messages: true, Users: true, Admins: true },
     });
   }
 
   async findID(id: number): Promise<Channel | null> {
-    return this.prisma.channel.findUnique({
+    return await this.prisma.channel.findUnique({
       where: { id: id },
       include: { Messages: true, Users: true, Admins: true },
     });
+  }
+
+  async isPrivateCreated(id1: number, id2: number): Promise<Channel | null> {
+    try {
+      const channels = await this.prisma.channel.findMany({
+        where: {
+          Type: 'private',
+        },
+        include: { Users: true },
+      });
+      for (let i of channels) {
+        if (
+          i.Users.find((Users) => Users.id == id1) != undefined &&
+          i.Users.find((Users) => Users.id == id2) != undefined
+        )
+          return i;
+      }
+      return null;
+    } catch (error) {
+      console.log('ERROR:', error);
+      return null;
+    }
   }
 
   async createChannel(
@@ -32,7 +54,7 @@ export class ChannelService {
   ): Promise<Channel | null> {
     try {
       const pw = await this.prisma.channelPassword.create({
-        data: {}
+        data: {},
       });
       const channel = await this.prisma.channel.create({
         data: {
@@ -86,11 +108,11 @@ export class ChannelService {
   ): Promise<Channel | null> {
     try {
       const pw = await this.prisma.channelPassword.create({
-        data: {}
+        data: {},
       });
       const channel = await this.prisma.channel.create({
         data: {
-          Password: { connect : {id: pw.id } },
+          Password: { connect: { id: pw.id } },
           Owner: { connect: { id: Number(body.user_1) } },
           Users: {
             connect: [{ id: Number(body.user_1) }, { id: Number(body.user_2) }],
@@ -127,9 +149,16 @@ export class ChannelService {
         data: {
           Name: body.name,
           Description: body.Description,
-          // Password.Password : body.Password,
         },
       });
+      if (body.Password) {
+        const pw = await this.prisma.channelPassword.update({
+          where: { id: channel.PasswordID },
+          data: {
+            Password: body.Password,
+          },
+        });
+      }
       res.status(HttpStatus.OK).send(channel);
       return channel;
     } catch (error) {
@@ -202,7 +231,11 @@ export class ChannelService {
         data: { Users: { disconnect: { id: idRemove } } },
         include: { Users: true },
       });
-      if (channel.Users.length == 0) return this.deleteChannel(idChan, 0, res);
+      if (
+        channel.Users.length == 0 ||
+        (channel.Users.length == 1 && channel.Type == 'private')
+      )
+        return this.deleteChannel(idChan, 0, res);
       res.status(HttpStatus.OK).send(channel);
       return channel;
     } catch (error) {
@@ -224,8 +257,8 @@ export class ChannelService {
       },
     });
     const password = await this.prisma.channelPassword.findUnique({
-      where: { id: channel.PasswordID }
-    })
+      where: { id: channel.PasswordID },
+    });
     if (
       (channel.Type == 'protected' && password.Password == body.password) ||
       channel.Type == 'public'
@@ -247,7 +280,7 @@ export class ChannelService {
       where: { id: idChan },
       select: { Admins: true },
     });
-    return channel.Admins.find((User) => User.id === idUser);
+    return channel.Admins.find((User) => User.id == idUser);
   }
 
   async getMutedUsers(idChan: number, idUser: number): Promise<User> {
@@ -255,7 +288,7 @@ export class ChannelService {
       where: { id: idChan },
       select: { MutedUsers: true },
     });
-    return channel.MutedUsers.find((User) => User.id === idUser);
+    return channel.MutedUsers.find((User) => User.id == idUser);
   }
 
   async getBanUsers(idChan: number, idUser: number): Promise<User> {
@@ -263,7 +296,7 @@ export class ChannelService {
       where: { id: idChan },
       select: { BanUsers: true },
     });
-    return channel.BanUsers.find((User) => User.id === idUser);
+    return channel.BanUsers.find((User) => User.id == idUser);
   }
 
   async getUser(idChan: number, idUser: number): Promise<User> {
@@ -271,7 +304,7 @@ export class ChannelService {
       where: { id: idChan },
       select: { Users: true },
     });
-    return channel.Users.find((User) => User.id === idUser);
+    return channel.Users.find((User) => User.id == idUser);
   }
 
   async getMessage(idChan: number, idMessage: number): Promise<Message> {
@@ -279,7 +312,7 @@ export class ChannelService {
       where: { id: idChan },
       select: { Messages: true },
     });
-    return channel.Messages.find((Message) => Message.id === idMessage);
+    return channel.Messages.find((Message) => Message.id == idMessage);
   }
 
   async getSender(idMessage: number, idUser: number): Promise<number> {
@@ -361,9 +394,14 @@ export class ChannelService {
         throw Error;
       const channel = await this.prisma.channel.update({
         where: { id: idChan },
-        data: { /*Password: body.Password,*/ Type: 'protected' },
+        data: { Type: 'protected' },
       });
-      if (channel.PasswordID == null)
+      const pw = await this.prisma.channelPassword.update({
+        where: { id: channel.PasswordID },
+        data: {
+          Password: body.Password,
+        },
+      });
       res.status(HttpStatus.OK).send(channel);
       return channel;
     } catch (error) {
