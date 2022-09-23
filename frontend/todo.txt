@@ -38,6 +38,8 @@ Avec Thomas :
 
 - faire en sorte que le jeu ne bouge pas quand la console empiete sur sa height
 
+- FIX LE REFRESH SUR LE CHAT
+
 
 Avec la team :
 - friendlist

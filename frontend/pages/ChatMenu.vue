@@ -81,9 +81,6 @@ export default Vue.extend({
     await this.getChannel()
   },
   destroyed() {
-    for (const room of this.rooms as OurRoom[]) {
-      room.channel.leave()
-    }
   },
   methods: {
     leaveChannelPending(current: OurRoom): void {
@@ -352,6 +349,8 @@ export default Vue.extend({
 
 <template>
   <div>
+    <v-app dark>
+
     <!-- EXIT ARROW -->
     <!-- CONVERSATIONS -->
     <v-navigation-drawer
@@ -516,7 +515,7 @@ export default Vue.extend({
     <!-- CHANNEL -->
     <v-main>
       <!-- CHANNEL ADD DIALOG -->
-      <v-dialog v-model="addChannelDialog" max-width="400px">
+      <v-dialog v-model="addChannelDialog" data-app max-width="400px">
         <v-card>
           <v-card-text class="text-center">
             <div class="white--text mb-5 dialogTitle">Available Channels :</div>
@@ -733,6 +732,7 @@ export default Vue.extend({
         @keydown.enter.prevent="sendMessage()"
       ></v-text-field>
     </v-footer>
+    </v-app>
   </div>
 </template>
 

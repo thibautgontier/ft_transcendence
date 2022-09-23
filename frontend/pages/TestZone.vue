@@ -34,6 +34,8 @@ export default Vue.extend({
 
 <template>
 	<div>
+		<v-app dark>
+
 		<v-row justify="center">
 			<v-btn @click.stop="snackbar = true">Send Notification</v-btn>
 			<v-btn @click.stop="createClient()">Create Client</v-btn>
@@ -53,5 +55,6 @@ export default Vue.extend({
 			> > </v-btn>
 			{{ text }}
 		</v-snackbar>
+		</v-app>
 	</div>
 </template>
