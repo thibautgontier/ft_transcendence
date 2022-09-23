@@ -28,8 +28,6 @@ Avec Thomas :
 
 - ajouter un bouton join pour lister tous les channels et en rejoindre
 
-- ajouter cadenas pour les channels verrouilés
-
 - ajouter une couronne pour les admins du channel
 
 - this.setPatchRate(16.66); pour avoir le jeu en 60fps
@@ -37,6 +35,14 @@ Avec Thomas :
 - faire en sorte que le jeu ne bouge pas quand la console empiete sur sa height
 
 - FIX LE REFRESH SUR LE CHAT
+
+- RETIRER LA PONGBALL EN CAS DE JEU EN COURS OU DE CHAT
+
+- DESACTIVER LA NAVBAR EN CAS DE PARTIE EN COURS
+
+
+
+- importer tous les objets du jeu dans le front
 
 
 Avec la team :
@@ -50,6 +56,22 @@ Avec la team :
 - comment accepter les demandes de parties
 - comment demander les demandes d'ami
 
+POUR LE JEU RESPONSIVE :
+<template>
+<v-app dark>
+    <canvas class="template" id="rendering-canvas"></canvas>
+  </div>
+</v-app>
+</template>
+
+<style>
+  .template{
+    width: 75%;
+    height: 75%;
+    aspect-ratio: 16 9;
+    margin: auto;
+  }
+</style>
 
 LANCEMENT DU PROJET
 

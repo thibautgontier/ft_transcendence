@@ -18,7 +18,6 @@ export default Vue.extend({
 		<v-app dark>
 			<PongBall />
 			<NavBar />
-
 			<Transition name="fade" mode="out-in">
 				<nuxt-child />
 			</Transition>
@@ -35,9 +34,5 @@ export default Vue.extend({
 	}
 	.fade-enter, .fade-leave-to {
 		opacity: 0;
-	}
-	.testbuttons {
-		margin-top: 1%;
-		margin-bottom: 2%;
 	}
 </style>
