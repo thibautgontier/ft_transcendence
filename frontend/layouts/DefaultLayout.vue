@@ -11,10 +11,6 @@ export default Vue.extend({
 			this.$store.commit('initialiseStore');
 		},
 		methods : {
-			changeComponent (comp: any) {
-				this.$store.commit('changeActiveComponent', comp);
-				this.$store.commit('changeTmpID', 0);
-			}
 		},
 })
 </script>
@@ -22,8 +18,8 @@ export default Vue.extend({
 <template>
 	<div>
 		<v-app dark>
-			<PongBall />
-			<NavBar />
+			<PongBall v-if="$store.state.inMenu"/>
+			<NavBar v-if="$store.state.currentUser.nickname !== undefined"/>
 			<Transition name="fade" mode="out-in">
 				<nuxt-child />
 			</Transition>

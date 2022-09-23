@@ -80,6 +80,7 @@ export default Vue.extend({
   async mounted() {
     await this.createClient()
     await this.getChannel()
+    this.$store.commit('changeInMenu', false)
   },
   destroyed() {
   },

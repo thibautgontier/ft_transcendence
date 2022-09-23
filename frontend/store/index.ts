@@ -6,7 +6,7 @@ export const state = () => ({
 	currentUser: User,
 	tmpID: 0,
 	version: '',
-	
+	inMenu: true,
 })
 
 
@@ -30,6 +30,9 @@ export const mutations = {
 	},
 	changeActiveComponent(state : any,component : any) {
 		state.activeComponent = component
+	},
+	changeInMenu(state : any, value : Boolean) {
+		state.inMenu = value
 	},
 	changeNickname(state : any, newNick : any) {
 		state.currentUser.nickname = newNick;
