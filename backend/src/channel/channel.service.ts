@@ -94,6 +94,9 @@ export class ChannelService {
       const channel = await this.prisma.channel.delete({
         where: { id: idChan },
       });
+      const pw = await this.prisma.channelPassword.delete({
+        where: { id: channel.PasswordID}
+      })
       res.status(HttpStatus.OK).send(channel);
       return channel;
     } catch (error) {

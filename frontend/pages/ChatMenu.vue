@@ -266,7 +266,6 @@ export default Vue.extend({
           `channel/${this.activeChannel.id}/sendMessage/${this.$store.state.currentUser.id}`,
           { Content: this.myMessage }
         )
-        console.log(response.data)
       } catch (e) {
         console.warn('you are ban or muted:\n', e)
         this.snackbar.active = true
@@ -335,7 +334,7 @@ export default Vue.extend({
           })
           newRoom.channelName = ( this.$store.state.currentUser.nickname + member.Nickname );
           newRoom.id = response2.data.id
-		  newRoom.members = response2.data.Users
+          newRoom.members = response2.data.Users
           this.rooms.push(newRoom);
           this.inChannel = true;
           this.activeChannel = newRoom
