@@ -2,20 +2,40 @@
 import Vue from 'vue'
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
+
 Vue.use(VueCookies, { expire: '7d'});
 export default Vue.extend({
-  layout: 'DefaultLayout',
   data() {
     return {
       loginSuccess: 0,
       loginFailed: 0,
+      overlay: false,
+      twoFACode: '',
+      loginFinish2: false,
     }
   },
   mounted() {
     const user = this.$cookies.get('user');
-    this.$store.commit('changeInMenu', true)
-    if (user) {
-      this.$store.commit('getCurrentUser', user);
+    if (user && !this.$store.state.currentUser.nickname)
+    {
+      console.log('done cookying');
+        this.$store.commit('getCurrentUser', user);
+        if (user.twoFA)
+        {
+          this.overlay = true;
+        }
+        else
+        {
+          this.$store.commit('changeLoginFinish', true);
+        }
+    }
+    else if (this.$store.state.currentUser.nickname && user.twoFA && !this.$store.state.loginFinish) {
+      this.overlay = true;
+    }
+    this.loginFinish2 = this.$store.state.loginFinish;
+  },
+  watch: {
+    loginFinish2() {
       if (!this.$store.state.currentUser.nickname ) {
         this.loginFailed = 1;
         this.loginSuccess = 0;
@@ -24,11 +44,11 @@ export default Vue.extend({
         this.loginSuccess = 1;
         this.loginFailed = 0;
       }
-    }
+    },
   },
   methods: {
     redirectToLog() {
-      window.location.href = "http://localhost:3000/login/42";
+      window.location.href = "http://localhost:3000/login/42";       
     },
 		async disconnectRequest() {
       const res = await axios.get("/login/logout", {
@@ -43,19 +63,31 @@ export default Vue.extend({
         this.loginFailed = 0;
       }
 		},
+    async sendTwoFA() {
+      const res = await axios.post("/login/validate2fa", {code: this.twoFACode}, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+      });
+      if (JSON.stringify(res.data) === 'true') {
+        this.overlay = false;
+        this.$store.commit('changeLoginFinish', true);
+        this.loginFinish2 = this.$store.state.loginFinish;
+      } 
+    },
 	}
 })
 </script>
 
 <template>
-<v-app dark>
   <v-container fill-height>
+    <h1> {{this.$store.state.currentUser.nickname}} </h1>
     <v-col>
       <v-row justify="center" align="center">
         <PongLogo />
       </v-row>
       <v-row justify="center" align="center" style="margin-top: 10%">
-        <h1 v-if="!$store.state.currentUser.nickname">
+        <h1 v-if="!this.$store.state.currentUser.nickname">
           <v-btn x-large color="black" @click.stop="redirectToLog()"
             >42 Connect</v-btn
           >
@@ -67,16 +99,44 @@ export default Vue.extend({
         </h1>
       </v-row>
       <h1 v-if="loginSuccess">
-        <v-snackbar type="success" transition="scale-transition" dismissible
-          >Logged successfully!</v-snackbar
+        <v-alert type="success" transition="scale-transition" dismissible
+          >Logged successfully!</v-alert
         >
       </h1>
       <h1 v-if="loginFailed">
-        <v-snackbar type="error" transition="scale-transition" dismissible
-          >Failed to log!</v-snackbar
+        <v-alert type="error" transition="scale-transition" dismissible
+          >Failed to log!</v-alert
         >
       </h1>
     </v-col>
+    <v-overlay :value="overlay" opacity="0.85">
+      <v-row>
+        <v-col>
+          <v-row justify="center" class="mb-16">
+            <v-subheader class="twoFAMessage orange--text">
+              Please enter 2FA code
+            </v-subheader>
+          </v-row>
+          <v-row justify="center">
+            <v-otp-input
+              v-model="twoFACode"
+              style="max-width: 400px"
+              length="5"
+              type="number"
+              @finish="sendTwoFA"
+            ></v-otp-input>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-overlay>
   </v-container>
-</v-app>
 </template>
+
+
+<style>
+
+.twoFAMessage {
+    font-size: 4rem;
+}
+
+</style>

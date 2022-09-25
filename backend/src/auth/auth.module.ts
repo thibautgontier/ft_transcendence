@@ -6,7 +6,7 @@ import { PrismaController } from 'src/prisma/prisma.controller';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -14,14 +14,17 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '60s' },
     }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.sendgrid.net',
+        auth: {
+          user: 'apikey',
+          pass: process.env.EMAIL_KEY,
+        },
+      },
+    }),
   ],
   controllers: [AuthController, PrismaController],
-  providers: [
-    AuthService,
-    FtStrategy,
-    SessionSerializer,
-    PrismaService,
-    JwtStrategy,
-  ],
+  providers: [AuthService, FtStrategy, SessionSerializer, PrismaService],
 })
 export class AuthModule {}

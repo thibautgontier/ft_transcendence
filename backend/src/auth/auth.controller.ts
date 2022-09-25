@@ -1,17 +1,8 @@
 import { User } from '.prisma/client';
-import {
-  Controller,
-  Get,
-  Post,
-  Redirect,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { FtOauthGuard } from './guards/ft-oauth.guard';
-import { JwtAuthGuard } from './guards/jwt.auth.guard';
 
 @Controller('login')
 export class AuthController {
@@ -20,7 +11,6 @@ export class AuthController {
   @Get()
   async login() {
     return;
-    // return await this.authService.login();
   }
 
   @Get('42')
@@ -39,6 +29,7 @@ export class AuthController {
         id: result.id,
         avatar: result.avatar,
         accessToken: result.accessToken,
+        twoFA: result.twoFA,
       });
       res.cookie('user', obj, {
         httpOnly: false,
@@ -50,17 +41,31 @@ export class AuthController {
   }
 
   @Get('logout')
-  async logOut(@Req() req: Request) {
-    const token = req.headers.authorization.split(' ')[1];
-    const user = await this.authService.findUser(token);
-    console.log('Logging out user');
+  async logOut(@Req() req: Request, @Res() res: Response) {
+    const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+    await this.authService.logout(user);
+    res.status(200).send('successful logout');
   }
 
-  @Post('test')
-  @UseGuards(JwtAuthGuard)
-  test(@Req() req: Request) {
-    const token = req.headers.authorization.split(' ')[1];
-    console.log('in here boy,', token);
-    return;
+  @Get('2fa')
+  async setup2fa(@Req() req: Request) {
+    const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+    this.authService.setup2fa(user);
+  }
+
+  @Post('validate2fa')
+  async validate2fa(@Req() req: Request, @Res() res: Response) {
+    const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+    const validate = await this.authService.validate2faCode(req.body.code, user);
+    res.status(200).send(validate);
+  }
+
+  @Post('2faemail')
+  async change2faEmail(@Req() req: Request, @Res() res: Response) {
+    const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+    if (req.body.email) {
+      const result = await this.authService.changeEmail(user, req.body.email);
+      res.status(200).send(result);
+    }
   }
 }

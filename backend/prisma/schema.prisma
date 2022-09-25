@@ -17,11 +17,11 @@ model User {
   Nickname      String?         @unique
   CreatedAt     DateTime        @default(now())
   UpdatedAt     DateTime        @updatedAt
-  AccessToken   String?         @unique
   Avatar        String?
   Connected     Boolean         @default(false)
   Status        logStatus       @default(offline)
   TwoFA         Boolean         @default(false)
+  TwoFaCode     Int?
   GameProfile   GameProfile?
   SocialProfile SocialProfile?
   Friend        SocialProfile[] @relation("friends")

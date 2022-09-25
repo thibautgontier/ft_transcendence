@@ -18,8 +18,17 @@ export default Vue.extend({
 <template>
 	<div>
 		<v-app dark>
-			<PongBall />
-			<NavBar />
+			<PongBall v-if="!inGame" />
+			<div class="testbuttons">
+				<v-row justify="center">
+					<!-- <v-btn @click.stop="activeComponent='LoginPage'">Login Page</v-btn> -->
+					<v-btn @click.stop="activeComponent='MainMenu'">Main Menu</v-btn>
+					<v-btn @click.stop="activeComponent='GameMenu'">Game Menu</v-btn>
+					<v-btn @click.stop="activeComponent='ChatMenu'">Chat Menu</v-btn>
+					<v-btn @click.stop="activeComponent='TestZone'">Test Zone</v-btn>
+					<v-btn @click.stop="activeComponent='History'">History</v-btn>
+				</v-row>
+			</div>
 			<Transition name="fade" mode="out-in">
 				<nuxt-child />
 			</Transition>

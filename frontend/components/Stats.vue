@@ -3,39 +3,48 @@ import Vue from 'vue'
 import axios from 'axios'
 
 export default Vue.extend({
-    props: {
-		userID: Number,
+	props: {
+		victory: Number,
+        date: String,
+        score: String,
+        ennemy: String,
+        userID: Number,
     },
-    data() {
-        return {
-            level: 0,
-            win: 0,
-            loose: 0,
-            Xp: 0,
-            photo: null,
-            parameters: false,
-            newNickname: '',
-            newAvatar: null,
-        }
-    },
-  watch: {
-    userID() {
-        let use = this.$store.state.currentUser.id;
-        if (this.userID)
-            use = this.userID
-        axios.get("/game/" + use, {
-        headers: {
-          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-        }
-        } ).then(response => {this.level = response.data.Level;
-                            this.Xp = Math.round((response.data.Xp / ((this.level * 50) + 100)) * 100);
-                            this.win = response.data.NbWin;
-                            this.loose = (response.data.NbParty - response.data.NbWin)});
-        axios.get("/user/?id=" + use, {
-        headers: {
-          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-        }
-        } ).then(response => {this.photo = response.data[0].Avatar; console.log(this.photo)});
+    data: () => ({
+        level: 0,
+        win: 0,
+        loose: 0,
+        Xp: 0,
+        photo: null,
+        parameters: false,
+        newNickname: '',
+        newAvatar: null,
+        overlay: false,
+        defaultEmail: true,
+        email: '',
+        emailRules: [
+                v => !!v || 'E-mail is required',
+                v => /.+@.+/.test(v) || 'E-mail must be valid',
+        ],
+    }),
+    watch: {
+        userID() {
+            let use = this.$store.state.currentUser.id;
+            if (this.userID)
+                use = this.userID
+            axios.get("/game/" + use, {
+            headers: {
+            'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            }
+            } ).then(response => {this.level = response.data.Level;
+                this.Xp = Math.round((response.data.Xp / ((this.level * 50) + 100)) * 100);
+                this.win = response.data.NbWin;
+                this.loose = (response.data.NbParty - response.data.NbWin)});
+            axios.get("/user/?id=" + use, {
+            headers: {
+            'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            }
+            } ).then(response => {this.photo = response.data[0].Avatar; console.log(this.photo)});
     }
   },
     mounted() {
@@ -43,81 +52,76 @@ export default Vue.extend({
         if (this.userID)
             use = this.userID
         axios.get("/game/" + use, {
-        headers: {
-          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-        }
-    } ).then(response => {  console.log('encore', response.data.Level);
-                            this.level = response.data.Level;
-                            this.Xp = Math.round((response.data.Xp / ((this.level * 50) + 100)) * 100);
-                          this.win = response.data.NbWin;
-                          this.loose = (response.data.NbParty - response.data.NbWin);
-                          console.log('pour etre sur:', response.data)});
-
+            headers: {
+            'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            }
+        } ).then(response => {  console.log('encore', response.data.Level);
+        this.level = response.data.Level;
+        this.Xp = Math.round((response.data.Xp / ((this.level * 50) + 100)) * 100);
+        this.win = response.data.NbWin;
+        this.loose = (response.data.NbParty - response.data.NbWin);
+        console.log('pour etre sur:', response.data)});
         axios.get("/user/?id=" + use, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
         } ).then(response => {this.photo = response.data[0].Avatar; console.log(this.photo)});
-  },
-  methods:{
-    openParameters() {
-        this.parameters = !this.parameters;
     },
-    async confirmSetting(){
-        if (this.newNickname)
-        {
-            this.$store.commit('changeNickname', this.newNickname);
-            const res = await axios.patch("/user/updateNickname", this.newNickname, {
-            headers: {
-            'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-            }})
-        }
-        if (this.newAvatar)
-        {
-            this.$store.commit('changeAvatar', this.newAvatar);
-            const res = await axios.patch("/user/updateAvatar", this.newAvatar, {
-            headers: {
-            'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-            }})
-        }
-        this.parameters = false;
-    }
-  }
+    methods: {
+        openParameters() {
+            this.parameters = !this.parameters;
+        },
+        async activate2fa() {
+            await axios.get("/login/2fa", {
+                headers: {
+                    'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+                }
+            });
+            this.$store.commit('change2faStatus');
+            if (this.$store.state.twoFA)
+                this.overlay = true;
+            else
+                this.email = '';
+            this.defaultEmail = true;
+        },
+        async confirmSetting(){
+            if (this.newNickname)
+            {
+                this.$store.commit('changeNickname', this.newNickname);
+                const res = await axios.patch("/user/updateNickname", this.newNickname, {
+                headers: {
+                'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+                }})
+            }
+            if (this.newAvatar)
+            {
+                this.$store.commit('changeAvatar', this.newAvatar);
+                const res = await axios.patch("/user/updateAvatar", this.newAvatar, {
+                headers: {
+                'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+                }})
+            }
+            this.parameters = false;
+        },
+        async saveEmail() {
+            if (this.email)
+            {
+                const res = await axios.post("/login/2faemail", {email: this.email}, {
+                    headers: {
+                        'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+                    }
+                });
+            }
+            this.overlay = false;
+        },
+    },
 })
 </script>
 
 <template>
     <h1>
-        <v-row class="mt-10">
-        <v-card
-            v-if="parameters"
-            elevation="2"
-            class="setting"
-            style="width: 300px; height: 175px">
-            <v-text-field
-                v-model="newNickname"
-                :counter="10"
-                label="Nickname"
-                required
-          ></v-text-field>
-            <v-file-input
-                v-model="newAvatar"
-                prepend-icon="mdi-camera"
-                accept="image/png, image/jpeg, image/bmp"
-                label="Avatar"
-            ></v-file-input>
-            <v-btn
-                elevation="2"
-                outlined
-                class="mb-5 ml-1"
-                color="secondary"
-                small
-                @click.stop="confirmSetting()">
-                <v-icon dark>
-                    Accept
-                </v-icon>
-            </v-btn>
-        </v-card>
+        <v-row class="mt-10 px-auto">
+        <v-col>
         <v-card
             elevation="1"
             class="mx-auto my-6"
@@ -127,18 +131,56 @@ export default Vue.extend({
         <v-list-item three-line>
         <v-list-item-content>
             <v-row>
-                <v-btn
-                    elevation="2"
-                    icon
-                    outlined
-                    class="mt-16 ml-6"
-                    color="secondary"
-                    small
-                    @click.stop="openParameters()">
-                    <v-icon dark>
-                        mdi-wrench
-                    </v-icon>
-                </v-btn>
+                <v-menu
+                    v-model="parameters"
+                    :close-on-content-click="false"
+                    :nudge-left="345"
+                    max-height="400"
+                    max-width="400">
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            v-bind="attrs"
+                            v-on="on"
+                            elevation="2"
+                            icon
+                            outlined
+                            class="mt-16 ml-6"
+                            color="secondary"
+                            small>
+                            <v-icon dark>
+                                mdi-wrench
+                            </v-icon>
+                        </v-btn>
+                    </template>
+                        <v-card
+                            elevation="2"
+                            style="width: 300px; height: 175px">
+                            <v-text-field
+                                v-model="newNickname"
+                                :counter="10"
+                                label="Nickname"
+                                required>
+                            </v-text-field>
+                            <v-file-input
+                                v-model="newAvatar"
+                                prepend-icon="mdi-camera"
+                                accept="image/png, image/jpeg, image/bmp"
+                                label="Avatar"
+                            ></v-file-input>
+                            <v-btn
+                                elevation="2"
+                                outlined
+                                class="mb-5 ml-1"
+                                color="secondary"
+                                small
+                                @click.stop="confirmSetting()">
+                                <v-icon dark>
+                                    Accept
+                                </v-icon>
+                            </v-btn>
+                    </v-card>
+                </v-menu>
+                <v-col cols="4">
                 <div class="ml-14 mt-16">
                    <v-avatar
                         color="grey lighten-2"
@@ -146,6 +188,9 @@ export default Vue.extend({
                         <img :src="this.photo">
                     </v-avatar>
                 </div>
+                <v-btn v-if="!$store.state.twoFA" class="dfa" x-large color="black" @click.stop="activate2fa()">Activate 2FA</v-btn>
+                <v-btn v-if="$store.state.twoFA" class="dfa" x-large color="black" @click.stop="activate2fa()">Deactivate 2FA</v-btn>
+                </v-col>
                 <v-card
                     elevation="1"
                     class="mx-auto my-12"
@@ -155,7 +200,7 @@ export default Vue.extend({
                             <v-chip color="blue"
                                     outlined
                                     large> 
-                                Level
+                                Level 
                             </v-chip>
                         </v-card-title>
                         <v-card-text class="Text purple--text my-10" style="text-align:center">
@@ -211,7 +256,31 @@ export default Vue.extend({
             </v-row>
         </v-list-item-content>
         </v-list-item>
+        <v-overlay :value="overlay">
+            <v-card
+                elevation="2"
+                style="width: 400px; height: 200px">
+                <v-card-text>
+                    <v-checkbox
+                        v-model="defaultEmail"
+                        label="Use default 42 email"
+                    ></v-checkbox>
+                </v-card-text>
+                <v-form ref="form">
+                    <v-text-field
+                        v-model="email"
+                        :rules="emailRules"
+                        label="Email"
+                        :disabled="defaultEmail"
+                    ></v-text-field>
+                </v-form>
+                <v-row justify="end" class="mr-4">
+                    <v-btn small color="black" @click.stop="saveEmail()">ok</v-btn>
+                </v-row>
+            </v-card>
+        </v-overlay>
         </v-card>
+        </v-col>
         </v-row>
     </h1>
 </template>
@@ -220,16 +289,16 @@ export default Vue.extend({
 
 .Text {
     font-size: 3.75rem;
-    margin-top: 100px;
+    margin-top: 125px;
 }
 
 .v-progress-circular {
   font-size: 2rem;
 }
 
-.setting {
-    left: 180px;
-    top: 25px;
+.dfa {
+    margin-left: 110px;
+    margin-top: 10px;
 }
 
 </style>
