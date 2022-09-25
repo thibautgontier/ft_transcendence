@@ -21,7 +21,7 @@ export class OurRoom implements IRoom {
 export enum chanStatus {
 	PUBLIC = "public",
 	PROTECTED = "protected", //if mdp exist
-	PRIVATE = "private" // invisible
+	PRIVATE = "private" // only dm into two user
   }
 
   export interface Imessage {

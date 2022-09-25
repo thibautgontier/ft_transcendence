@@ -22,7 +22,7 @@ model User {
   Connected     Boolean         @default(false)
   Status        logStatus       @default(offline)
   TwoFA         Boolean         @default(false)
-  GameProfile   GameProfile?
+//   GameProfile   GameProfile?
   SocialProfile SocialProfile?
   Friend        SocialProfile[] @relation("friends")
   Blocked       SocialProfile[] @relation("blocked")
@@ -34,21 +34,19 @@ model User {
   ChannelAdmin  Channel[]       @relation(name: "admin")
   MutedUser     Channel[]       @relation(name: "mutedUser")
   BanUser       Channel[]       @relation(name: "banUser")
-  UserNotifyID  Int?            @unique
-  UserNotify    Notify?         @relation(fields: [UserNotifyID], references: [id])
   UserMessage   Message[]
 }
 
-model GameProfile {
-  id      Int     @id @default(autoincrement())
-  Level   Float   @default(0)
-  Xp      Float   @default(0)
-  NbParty Int     @default(0)
-  NbWin   Int     @default(0)
-  History Party[] @relation("history")
-  UserID  Int?    @unique
-  User    User?   @relation(fields: [UserID], references: [id], onDelete: Cascade)
-}
+// model GameProfile {
+//   id      Int     @id @default(autoincrement())
+//   Level   Float   @default(0)
+//   Xp      Float   @default(0)
+//   NbParty Int     @default(0)
+//   NbWin   Int     @default(0)
+//   History Party[] @relation("history")
+//   UserID  Int?    @unique
+//   User    User?   @relation(fields: [UserID], references: [id], onDelete: Cascade)
+// }
 
 model Party {
   id            Int           @id @default(autoincrement())
@@ -61,32 +59,15 @@ model Party {
   WinnerID      Int?
   Winner        User?         @relation(name: "winner", fields: [WinnerID], references: [id])
   Status        partyStatus   @default(starting)
-  GameHistory   GameProfile[] @relation("history")
-  PartyNotifyID Int?          @unique
-  PartyNotify   Notify?       @relation(fields: [PartyNotifyID], references: [id])
+//   GameHistory   GameProfile[] @relation("history")
 }
 
 model SocialProfile {
   id       Int       @id @default(autoincrement())
-  Channels Channel[] @relation("channels")
   Friends  User[]    @relation("friends")
   Blocked  User[]    @relation("blocked")
-  Notifys  Notify[]
   UserID   Int?      @unique
   User     User?     @relation(fields: [UserID], references: [id], onDelete: Cascade)
-}
-
-model Notify {
-  id             Int            @id @default(autoincrement())
-  CreatedAt      DateTime       @default(now())
-  Type           notifyType
-  Title          String
-  Content        String
-  User           User?
-  Channel        Channel?
-  Party          Party?
-  SocialNotifyID Int?
-  SocialNotify   SocialProfile? @relation(fields: [SocialNotifyID], references: [id])
 }
 
 model Channel {
@@ -106,9 +87,6 @@ model Channel {
   Messages        Message[]
   PasswordID      Int             @unique
   Password        ChannelPassword @relation(fields: [PasswordID], references: [id], onDelete: Cascade)
-  SocialChannel   SocialProfile[] @relation("channels")
-  ChannelNotifyID Int?            @unique
-  ChannelNotify   Notify?         @relation(fields: [ChannelNotifyID], references: [id])
 }
 
 model ChannelPassword {
