@@ -17,6 +17,7 @@ export default Vue.extend({
 				<v-btn router to="/">Home</v-btn>
 				<v-btn router to="/GameMenu">Game</v-btn>
 				<v-btn router to="/ChatMenu">Chat</v-btn>
+				<v-btn router to="/History">History</v-btn>
 			</div>
 		</v-app-bar>
 </template>
