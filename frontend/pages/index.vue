@@ -5,6 +5,7 @@ import VueCookies from 'vue-cookies'
 
 Vue.use(VueCookies, { expire: '7d'});
 export default Vue.extend({
+  layout: 'DefaultLayout',
   data() {
     return {
       loginSuccess: 0,

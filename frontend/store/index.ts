@@ -71,7 +71,7 @@ export const mutations = {
 	},
 	change2faStatus(state) {
 		if (!state.twoFA)
-			localStorage.setItem('twoFA', true);
+			localStorage.setItem('twoFA', "1");
 		else
 			localStorage.removeItem('twoFA');
 		state.twoFA = !state.twoFA;
