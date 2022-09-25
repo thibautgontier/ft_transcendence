@@ -172,7 +172,6 @@ export class SocialService {
     blockedID: number,
   ): Promise<SocialProfile | null> {
     try {
-		console.log(userID, blockedID)
       if (userID === blockedID)
         throw new Error('You cannot remove yourself as blocked');
       const profile = await this.prisma.socialProfile.update({

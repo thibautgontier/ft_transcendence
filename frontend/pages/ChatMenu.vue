@@ -178,6 +178,7 @@ export default Vue.extend({
         })
         newRoom.channelName = this.newChannel.name
         newRoom.id = response.data.id
+		newRoom.members = response.data.Users
         this.rooms.push(newRoom)
         this.inChannel = true
         this.newChannel.name = ''
@@ -196,7 +197,7 @@ export default Vue.extend({
         })
         this.activeChannel = newRoom
       } catch (e) {
-        console.error('join error', e)
+        console.error('create error', e)
         this.snackbar.active = true
         this.snackbar.errorMessage = 'Cannot create channel'
       }
@@ -334,6 +335,7 @@ export default Vue.extend({
           })
           newRoom.channelName = ( this.$store.state.currentUser.nickname + member.Nickname );
           newRoom.id = response2.data.id
+		  newRoom.members = response2.data.Users
           this.rooms.push(newRoom);
           this.inChannel = true;
           this.activeChannel = newRoom

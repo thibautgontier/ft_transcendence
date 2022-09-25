@@ -65,6 +65,9 @@ export class ChannelService {
           Name: body.Name,
           RoomId: body.RoomId,
         },
+        include: {
+          Users: true,
+        },
       });
       res.status(HttpStatus.CREATED).send(channel);
       return channel;
@@ -123,6 +126,9 @@ export class ChannelService {
           Type: 'private',
           Name: body.Name,
           RoomId: body.RoomId,
+        },
+        include: {
+          Users: true,
         },
       });
       res.status(HttpStatus.CREATED).send(channel);
