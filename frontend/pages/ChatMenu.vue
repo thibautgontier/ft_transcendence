@@ -315,6 +315,10 @@ export default Vue.extend({
         this.inChannel = true
       }
     },
+    updateMember (member: any) {
+      console.log("updating member card");
+      console.log(member);
+    },
     async openPrivateChat(member: any) {
       const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
       if (response.data) {
@@ -357,7 +361,6 @@ export default Vue.extend({
       )
     },
     async switchBlock(member: any) {
-      console.log("blocked", member.blocked)
       if (member.blocked === false) {
         await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
@@ -455,7 +458,7 @@ export default Vue.extend({
               transition="slide-x-reverse-transition"
             >
               <template #activator="{ on, attrs }">
-                <v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
+                <v-btn class="wide" text color="white" v-bind="attrs" v-on="on" @click="updateMember()">
                   <v-avatar size="32"><img :src="member.Avatar" /></v-avatar>
                   <v-list-item-content class="ml-2">
                     <v-list-item-title>{{ member.Nickname }}</v-list-item-title>
