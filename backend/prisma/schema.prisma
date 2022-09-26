@@ -22,7 +22,7 @@ model User {
   Connected     Boolean         @default(false)
   Status        logStatus       @default(offline)
   TwoFA         Boolean         @default(false)
-//   GameProfile   GameProfile?
+  GameProfile   GameProfile?
   SocialProfile SocialProfile?
   Friend        SocialProfile[] @relation("friends")
   Blocked       SocialProfile[] @relation("blocked")
@@ -37,16 +37,16 @@ model User {
   UserMessage   Message[]
 }
 
-// model GameProfile {
-//   id      Int     @id @default(autoincrement())
-//   Level   Float   @default(0)
-//   Xp      Float   @default(0)
-//   NbParty Int     @default(0)
-//   NbWin   Int     @default(0)
-//   History Party[] @relation("history")
-//   UserID  Int?    @unique
-//   User    User?   @relation(fields: [UserID], references: [id], onDelete: Cascade)
-// }
+model GameProfile {
+  id      Int     @id @default(autoincrement())
+  Level   Float   @default(0)
+  Xp      Float   @default(0)
+  NbParty Int     @default(0)
+  NbWin   Int     @default(0)
+  History Party[] @relation("history")
+  UserID  Int?    @unique
+  User    User?   @relation(fields: [UserID], references: [id], onDelete: Cascade)
+}
 
 model Party {
   id            Int           @id @default(autoincrement())
@@ -59,7 +59,7 @@ model Party {
   WinnerID      Int?
   Winner        User?         @relation(name: "winner", fields: [WinnerID], references: [id])
   Status        partyStatus   @default(starting)
-//   GameHistory   GameProfile[] @relation("history")
+  GameHistory   GameProfile[] @relation("history")
 }
 
 model SocialProfile {

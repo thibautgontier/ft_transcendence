@@ -35,6 +35,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
           Avatar: profile.photos[0].value,
           AccessToken: accessToken,
           SocialProfile: { create: {} },
+		  GameProfile: { create: {} },
         },
       });
       return cb(null, user);
