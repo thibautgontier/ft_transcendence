@@ -316,8 +316,9 @@ export default Vue.extend({
       }
     },
     async updateMember (member: any) {
-      console.log("updating member card");
-      console.log('member : ', member);
+      const response = await axios.get(`/social/${this.$store.state.currentUser.id}/isBlocked/${member.id}`)
+      member.blocked = response.data
+      // console.log('member is blocked in update member ?', member.blocked)
     },
     async openPrivateChat(member: any) {
       const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
@@ -361,14 +362,17 @@ export default Vue.extend({
       )
     },
     async switchBlock(member: any) {
-      if (member.blocked === false) {
-        await axios.patch(
+      console.log('member is blocked in switch blocked?', member.blocked)
+      if (member.blocked == false) {
+        const response = await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
         )
+        console.log("add :", response.data)
       } else {
-        await axios.patch(
+        const response = await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
         )
+        console.log("remove :", response.data)
       }
     },
     switchAdmin(member: any) {},
