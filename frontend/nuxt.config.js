@@ -50,16 +50,14 @@ export default {
   proxy: {
     '/game/': 'http://localhost:3000',
     '/channel': 'http://localhost:3000',
-	  '/socialProfile' : 'http://localhost:3000',
     '/social/': 'http://localhost:3000',
-	  '/login/': 'http://localhost:3000',
+    '/login/': 'http://localhost:3000',
     '/user': 'http://localhost:3000',
-    'game': 'http://localhost:3000',
   },
 
-    router: {
-      prefetchLinks: false,
-    },
+  router: {
+    prefetchLinks: false,
+  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
@@ -67,16 +65,16 @@ export default {
     theme: {
       dark: true,
       themes: {
-	    	dark: {
-	    		background: "#000",
-	    		primary: "#FFF",
-	    		accent: colors.grey.darken3,
-	    		secondary: "#DC880A",
-	    		info: colors.teal.lighten1,
-	    		warning: colors.amber.base,
-	    		error: colors.deepOrange.accent4,
-	    		success: colors.green.accent3,
-	    	  },
+        dark: {
+          background: '#000',
+          primary: '#FFF',
+          accent: colors.grey.darken3,
+          secondary: '#DC880A',
+          info: colors.teal.lighten1,
+          warning: colors.amber.base,
+          error: colors.deepOrange.accent4,
+          success: colors.green.accent3,
+        },
       },
     },
   },
@@ -86,5 +84,5 @@ export default {
   server: {
     port: 8080,
     host: 'localhost',
-  }
+  },
 }
