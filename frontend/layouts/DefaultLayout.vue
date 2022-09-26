@@ -1,5 +1,7 @@
 <script lang="ts">
 import Vue from 'vue'
+import { Store } from 'vuex'
+
 export default Vue.extend({
 		data () {
 		return {

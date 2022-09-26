@@ -7,8 +7,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // url      = env("DATABASE_URL")
-  url      = "postgres://user:1234@localhost:5432/transcendence?schema=public"
+  url      = env("DATABASE_URL")
+  // url      = "postgres://user:1234@localhost:5432/transcendence?schema=public"
 }
 
 model User {
@@ -17,11 +17,11 @@ model User {
   Nickname      String?         @unique
   CreatedAt     DateTime        @default(now())
   UpdatedAt     DateTime        @updatedAt
-  AccessToken   String?          @unique
   Avatar        String?
   Connected     Boolean         @default(false)
   Status        logStatus       @default(offline)
   TwoFA         Boolean         @default(false)
+  TwoFaCode     Int?
   GameProfile   GameProfile?
   SocialProfile SocialProfile?
   Friend        SocialProfile[] @relation("friends")
@@ -100,8 +100,8 @@ model Message {
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @updatedAt
   Content   String
-  UserID	Int
-  User      User	@relation(fields: [UserID], references: [id])
+  UserID    Int
+  User      User     @relation(fields: [UserID], references: [id])
   ChannelID Int
   Channel   Channel  @relation(fields: [ChannelID], references: [id], onDelete: Cascade)
 }

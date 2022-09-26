@@ -21,7 +21,7 @@ export class UserUpdateDto {
     required: false,
   })
   refreshToken?: string;
-
+  
   @ApiProperty({
     required: false,
   })

@@ -1,5 +1,5 @@
 <template>
-	<div class="pong absolute mx-auto">
+	<div v-if="$store.state.inMenu" class="pong absolute mx-auto">
 		<svg
 		width="200"
 		height="200"
@@ -36,6 +36,7 @@
 		animation: pong 30s infinite linear;
 		height: fit-content;
 		width: fit-content;
+		z-index: 128;
 	}
 
 	@keyframes pong {
