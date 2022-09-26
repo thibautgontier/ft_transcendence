@@ -315,9 +315,9 @@ export default Vue.extend({
         this.inChannel = true
       }
     },
-    updateMember (member: any) {
+    async updateMember (member: any) {
       console.log("updating member card");
-      console.log(member);
+      console.log('member : ', member);
     },
     async openPrivateChat(member: any) {
       const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
@@ -458,7 +458,7 @@ export default Vue.extend({
               transition="slide-x-reverse-transition"
             >
               <template #activator="{ on, attrs }">
-                <v-btn class="wide" text color="white" v-bind="attrs" v-on="on" @click="updateMember()">
+                <v-btn class="wide" text color="white" v-bind="attrs" v-on="on" @click="updateMember(member)">
                   <v-avatar size="32"><img :src="member.Avatar" /></v-avatar>
                   <v-list-item-content class="ml-2">
                     <v-list-item-title>{{ member.Nickname }}</v-list-item-title>
