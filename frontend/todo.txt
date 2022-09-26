@@ -40,6 +40,8 @@ Avec Thomas :
 
 - DESACTIVER LA NAVBAR EN CAS DE PARTIE EN COURS
 
+- Server error de temps en temps sur le chat ! (peut etre lié au mode dev et aux ressources limitées du wsl)
+
 
 
 - importer tous les objets du jeu dans le front

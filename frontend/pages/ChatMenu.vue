@@ -357,8 +357,8 @@ export default Vue.extend({
       )
     },
     async switchBlock(member: any) {
-      console.log(this.blocked)
-      if (this.blocked === false) {
+      console.log("blocked", member.blocked)
+      if (member.blocked === false) {
         await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
         )
@@ -749,7 +749,7 @@ export default Vue.extend({
         <!-- CHANNEL MESSAGES -->
         <v-container v-if="inChannel">
           <v-list-item-content>
-            <v-list-item-title>{{
+            <v-list-item-title>@{{
               activeChannel.channelName
             }}</v-list-item-title>
           </v-list-item-content>
