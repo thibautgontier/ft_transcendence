@@ -23,12 +23,13 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
   ): Promise<any> {
     const existingUser = await this.prisma.user.findUnique({
       where: {
-        Nickname: profile.username,
+        IntraName: profile.username,
       },
     });
     if (!existingUser) {
       const user = await this.prisma.user.create({
         data: {
+          IntraName: profile.username,
           Nickname: profile.username,
           Email: profile.emails[0].value,
           Avatar: profile.photos[0].value,

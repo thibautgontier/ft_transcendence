@@ -94,7 +94,7 @@ export default Vue.extend({
             if (this.newNickname)
             {
                 this.$store.commit('changeNickname', this.newNickname);
-                const res = await axios.patch("/user/updateNickname", this.newNickname, {
+                const res = await axios.patch("/user/updateNickname", { newNickname: this.newNickname }, {
                 headers: {
                 'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
                 }})

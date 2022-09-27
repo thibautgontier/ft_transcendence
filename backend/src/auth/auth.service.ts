@@ -76,7 +76,7 @@ export class AuthService {
   }
 
   generateTokenFromUser(user: User) {
-    const payload = { username: user.Nickname, sub: user.id };
+    const payload = { username: user.IntraName, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
     };
@@ -88,13 +88,12 @@ export class AuthService {
       const username = JSON.parse(tokenUser);
       const user = await this.prisma.user.findUnique({
         where: {
-          Nickname: username.username,
+          IntraName: username.username,
         },
       });
       if (!user) throw Error;
       return user;
     } catch (e) {
-      console.log('boy: ', e);
       return null;
     }
   }
