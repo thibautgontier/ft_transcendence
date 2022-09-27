@@ -1,25 +1,17 @@
 <script lang="ts">
 import Vue from 'vue'
-export default Vue.extend({
-	methods: {
-		check() {
-			console.log(this.$store.state.currentUser.nickname);
-		}
-	}
-})
+export default Vue.extend({})
 </script>
 
 <template>
 		<!-- Penser a changer la height pour avoir quelquechose de responsive -->
-		<v-app-bar v-if="$store.state.currentUser.nickname" app color="#121212" height="90px" class="nav">
-			<div class="testbuttons mx-auto">
-				<v-btn@click="check()">check</v-btn>
-				<v-btn router to="/">Home</v-btn>
-				<v-btn router to="/GameMenu">Game</v-btn>
-				<v-btn router to="/ChatMenu">Chat</v-btn>
-				<v-btn router to="/History">History</v-btn>
-			</div>
-		</v-app-bar>
+			<v-app-bar v-if="$store.state.loginFinish != false" app color="#121212" height="90px" class="nav">			<div class="testbuttons mx-auto">
+					<v-btn router to="/">Home</v-btn>
+					<v-btn router to="/GameMenu">Game</v-btn>
+					<v-btn router to="/ChatMenu">Chat</v-btn>
+					<v-btn router to="/History">History</v-btn>
+				</div>
+			</v-app-bar>
 </template>
 
 <style scoped>

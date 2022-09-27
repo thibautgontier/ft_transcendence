@@ -77,12 +77,18 @@ export default Vue.extend({
                     'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
                 }
             });
-            this.$store.commit('change2faStatus');
-            if (this.$store.state.twoFA)
-                this.overlay = true;
-            else
-                this.email = '';
+            this.$store.commit('change2faStatus', true);
+            this.overlay = true;
             this.defaultEmail = true;
+        },
+        async deactivate2fa() {
+            await axios.get("/login/2fa", {
+                headers: {
+                    'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+                }
+            });
+            this.$store.commit('change2faStatus', false);
+            this.email = '';
         },
         async confirmSetting(){
             if (this.newNickname)
@@ -188,8 +194,8 @@ export default Vue.extend({
                         <img :src="this.photo">
                     </v-avatar>
                 </div>
-                <v-btn v-if="!$store.state.twoFA" class="dfa" x-large color="black" @click.stop="activate2fa()">Activate 2FA</v-btn>
-                <v-btn v-if="$store.state.twoFA" class="dfa" x-large color="black" @click.stop="activate2fa()">Deactivate 2FA</v-btn>
+                <v-btn v-if="$store.state.twoFA === false" class="dfa" x-large color="black" @click.stop="activate2fa()">Activate 2FA</v-btn>
+                <v-btn v-else class="dfa" x-large color="black" @click.stop="deactivate2fa()">Deactivate 2FA</v-btn>
                 </v-col>
                 <v-card
                     elevation="1"

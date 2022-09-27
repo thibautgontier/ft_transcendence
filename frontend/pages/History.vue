@@ -5,6 +5,7 @@ import axios from 'axios'
 let id = 0
 
 export default Vue.extend({
+  layout: 'DefaultLayout',
   props: {
 		ID: Number,
   },

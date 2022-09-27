@@ -32,7 +32,7 @@ export const mutations = {
 		}
 		if(localStorage.getItem('loginFinish')) {
 			state.loginFinish = localStorage.getItem('loginFinish');
-		if(localStorage.getItem('twoFA')) {
+		if(localStorage.getItem('twoFA') === 'true') {
 			state.twoFA = true;
 		}
 }
@@ -69,12 +69,9 @@ export const mutations = {
 		localStorage.removeItem('loginFinish');
 		localStorage.removeItem('currentUser');
 	},
-	change2faStatus(state) {
-		if (!state.twoFA)
-			localStorage.setItem('twoFA', "1");
-		else
-			localStorage.removeItem('twoFA');
-		state.twoFA = !state.twoFA;
+	change2faStatus(state, value) {
+		state.twoFA = value;
+		localStorage.setItem('twoFA', JSON.stringify(value));
 	},
 	changeLoginFinish(state, newLoginValue) {
 		state.loginFinish = newLoginValue;

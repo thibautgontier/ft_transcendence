@@ -17,12 +17,15 @@ export default Vue.extend({
   },
   mounted() {
     const user = this.$cookies.get('user');
-    if (user && !this.$store.state.currentUser.nickname)
+    if (!user) {
+      if (this.$store.state.currentUser.nickname) this.disconnectRequest();
+    }
+    else if (user && !this.$store.state.currentUser.nickname)
     {
-      console.log('done cookying');
-        this.$store.commit('getCurrentUser', user);
+      this.$store.commit('getCurrentUser', user);
         if (user.twoFA)
         {
+          this.$store.commit('change2faStatus', true);
           this.overlay = true;
         }
         else
@@ -58,10 +61,12 @@ export default Vue.extend({
         }
       });
       if (res) {
+        this.$store.commit('changeLoginFinish', false);
         this.$store.commit('deleteUser');
         this.$cookies.remove('user');
         this.loginSuccess = 0;
         this.loginFailed = 0;
+        this.$store.commit('change2faStatus', false);
       }
 		},
     async sendTwoFA() {
@@ -82,7 +87,6 @@ export default Vue.extend({
 
 <template>
   <v-container fill-height>
-    <h1> {{this.$store.state.currentUser.nickname}} </h1>
     <v-col>
       <v-row justify="center" align="center">
         <PongLogo />

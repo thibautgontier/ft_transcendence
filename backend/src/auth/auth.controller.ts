@@ -43,7 +43,7 @@ export class AuthController {
   @Get('logout')
   async logOut(@Req() req: Request, @Res() res: Response) {
     const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
-    await this.authService.logout(user);
+    if (user) await this.authService.logout(user);
     res.status(200).send('successful logout');
   }
 
