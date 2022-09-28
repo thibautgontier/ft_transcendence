@@ -26,6 +26,9 @@ export default Vue.extend({
                 v => !!v || 'E-mail is required',
                 v => /.+@.+/.test(v) || 'E-mail must be valid',
         ],
+        settingsSuccess: 0,
+        settingsFail: 0,
+        snackbarMessage: '',
     }),
     watch: {
         userID() {
@@ -55,17 +58,16 @@ export default Vue.extend({
             headers: {
             'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
             }
-        } ).then(response => {  console.log('encore', response.data.Level);
+        } ).then(response => {
         this.level = response.data.Level;
         this.Xp = Math.round((response.data.Xp / ((this.level * 50) + 100)) * 100);
         this.win = response.data.NbWin;
-        this.loose = (response.data.NbParty - response.data.NbWin);
-        console.log('pour etre sur:', response.data)});
+        this.loose = (response.data.NbParty - response.data.NbWin);});
         axios.get("/user/?id=" + use, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
-        } ).then(response => {this.photo = response.data[0].Avatar; console.log(this.photo)});
+        } ).then(response => {this.photo = response.data[0].Avatar});
     },
     methods: {
         openParameters() {
@@ -91,6 +93,8 @@ export default Vue.extend({
             this.email = '';
         },
         async confirmSetting(){
+            this.settingsSuccess = 0;
+            this.settingsFail = 0;
             if (this.newNickname)
             {
                 this.$store.commit('changeNickname', this.newNickname);
@@ -98,6 +102,14 @@ export default Vue.extend({
                 headers: {
                 'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
                 }})
+                if (res.data.message === this.newNickname) {
+                    this.settingsSuccess = 1;
+                    this.snackbarMessage = 'Nickname successfully updated.'
+                }
+                else if (res.data.message === "nickname already taken") {
+                    this.settingsFail = 1;
+                    this.snackbarMessage = 'Nickname already taken, please choose another one.'
+                }
             }
             if (this.newAvatar)
             {
@@ -286,6 +298,12 @@ export default Vue.extend({
             </v-card>
         </v-overlay>
         </v-card>
+        <v-snackbar v-model="settingsSuccess" timeout="3000" color="green" min-height="75">
+            <div class="snackText">{{ snackbarMessage }}</div>
+        </v-snackbar>
+        <v-snackbar v-model="settingsFail" timeout="3000" color="red" min-height="75">
+            <div class="snackText">{{ snackbarMessage }}</div>
+        </v-snackbar>
         </v-col>
         </v-row>
     </h1>
@@ -305,6 +323,11 @@ export default Vue.extend({
 .dfa {
     margin-left: 110px;
     margin-top: 10px;
+}
+
+.snackText {
+    text-align: center;
+    font-size: 1.5rem;
 }
 
 </style>

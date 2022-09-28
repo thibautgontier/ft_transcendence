@@ -194,13 +194,10 @@ export class UserService {
           Nickname: nickname,
         },
       });
-      res.status(HttpStatus.OK).send(newUser);
+      res.status(HttpStatus.OK).send({ message: nickname });
       return newUser;
     } catch (e) {
-      res.status(HttpStatus.BAD_REQUEST).send({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Update failed',
-      });
+      res.status(200).send({ message: "nickname already taken" });
       return null;
     }
   }
