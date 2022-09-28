@@ -14,10 +14,14 @@ export default Vue.extend({
     }
   },
   beforeCreate() {
+    console.log("before check")
     if (!this.$store.state.currentUser.nickname)
       this.$router.push('/');
   },
   mounted() {
+      if (!this.$store.state.currentUser.nickname)
+        return
+      console.log("in mounted")
       const userID = this.ID;
       let path = "/game/";
       
