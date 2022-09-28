@@ -78,7 +78,7 @@ export default Vue.extend({
     },
   },
   beforeCreate() {
-    if (this.$store.state.loginFinish !== true)
+    if (!this.$store.state.currentUser.nickname)
       this.$router.push('/');
   },
   async mounted() {

@@ -22,7 +22,7 @@ export default Vue.extend({
     }
   },
   beforeCreate() {
-    if (this.$store.state.loginFinish !== true)
+    if (!this.$store.state.currentUser.nickname)
       this.$router.push('/');
   },
   async mounted() {
@@ -169,7 +169,7 @@ export default Vue.extend({
     resizeCanvas() {
       const scale = Math.min(
         window.innerWidth / GameDimensions.width,
-        window.innerHeight / GameDimensions.height
+        window.innerHeight / GameDimensions.width
       )
       if (this.ctx == null) return
       this.ctx.canvas.width = GameDimensions.width * scale
@@ -188,8 +188,8 @@ export default Vue.extend({
 
 <style>
   .template{
-    aspect-ratio: 16 9;
     margin: auto;
+    aspect-ratio: 16 9;
     z-index: 128;
   }
 </style>
