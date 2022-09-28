@@ -9,6 +9,7 @@ import {
   ChatRoomMessage,
   Channel,
 } from '../types/room'
+import { User } from '../types/User'
 
 export default Vue.extend({
   layout: 'DefaultLayout',
@@ -94,7 +95,6 @@ export default Vue.extend({
         `/user/otherChannel/${this.$store.state.currentUser.id}`
       )
       this.availableChannels = response.data
-      console.log(this.availableChannels)
     },
     async joinChannel(channel: any) {
       try {
@@ -116,9 +116,9 @@ export default Vue.extend({
       }
       const room = new OurRoom()
       try {
-        room.channel = await this.client.joinById(channel.RoomId)
+        room.channel = await this.client.joinById(channel.RoomId, this.$store.state.currentUser)
       } catch (e) {
-        room.channel = await this.client.create('ChatRoom')
+        room.channel = await this.client.create('ChatRoom', this.$store.state.currentUser)
         await axios.patch(
           `/channel/update/${channel.id}/${this.$store.state.currentUser.id}`,
           { RoomId: room.channel.id }
@@ -131,7 +131,14 @@ export default Vue.extend({
         num1.Nickname = channel.Messages[index].User.Nickname
       })
       const response = await axios.get(`channel/${channel.id}`)
-      room.members = response.data.Users
+      for (const user of response.data.Users)
+        {
+          let newUser = new User();
+          newUser.avatar = user.Avatar
+          newUser.nickname = user.Nickname
+          newUser.id = user.id
+          room.members.push(newUser)
+        }
       this.rooms.push(room)
       room.channel.onMessage('Message', (message: ChatRoomMessage) => {
         const newMsg = new Message()
@@ -139,11 +146,19 @@ export default Vue.extend({
         newMsg.Nickname = message.Nickname
         room.messages.push(newMsg)
       })
+      room.channel.onMessage('Joining', (message: User) => {
+        if (room.members.find((User: User) => User.id == message.id) == undefined) {
+          let member = new User();
+          member = message;
+          room.members.push(member)
+        }
+      })
+      room.channel.onMessage('Leaving', (message: User) => {
+        room.members.splice(room.members.indexOf(message), 1)
+      })
       this.addChannelDialog = false
-      if (this.rooms.length > 0) {
-        this.activeChannel = this.rooms[0]
-        this.inChannel = true
-      }
+      this.activeChannel = room
+      this.inChannel = true
     },
     editChannelPending(current: OurRoom): void {
       this.editChannelDialog = !this.editChannelDialog
@@ -151,6 +166,7 @@ export default Vue.extend({
     },
     async leaveChannelConfirmed() {
       this.leaveChannelDialog = false
+      this.dialogRoom.channel.send('Leaving', this.$store.state.currentUser)
       this.dialogRoom.channel.leave()
       const index = this.rooms.indexOf(this.dialogRoom)
       this.rooms.splice(index, 1)
@@ -171,7 +187,7 @@ export default Vue.extend({
         return
       const newRoom = new OurRoom()
       try {
-        newRoom.channel = await this.client.create('ChatRoom')
+        newRoom.channel = await this.client.create('ChatRoom', this.$store.state.currentUser)
         const response = await axios.post('/channel/create', {
           owner: `${this.$store.state.currentUser.id}`,
           Name: this.newChannel.name,
@@ -179,7 +195,14 @@ export default Vue.extend({
         })
         newRoom.channelName = this.newChannel.name
         newRoom.id = response.data.id
-		newRoom.members = response.data.Users
+        for (const user of response.data.Users)
+        {
+          let newUser = new User();
+          newUser.avatar = user.Avatar
+          newUser.nickname = user.Nickname
+          newUser.id = user.id
+          newRoom.members.push(newUser)
+        }
         this.rooms.push(newRoom)
         this.inChannel = true
         this.newChannel.name = ''
@@ -190,13 +213,23 @@ export default Vue.extend({
             { Password: this.newChannel.password }
           )
         }
+        this.activeChannel = newRoom
         newRoom.channel.onMessage('Message', (message: ChatRoomMessage) => {
           const newMsg = new Message()
           newMsg.Content = message.Content
           newMsg.Nickname = message.Nickname
           newRoom.messages.push(newMsg)
         })
-        this.activeChannel = newRoom
+        newRoom.channel.onMessage('Joining', (message: User) => {
+          if (this.activeChannel.members.find((id: number) => id == message.id) == undefined) {
+            let member = new User();
+            member = message;
+            this.activeChannel.members.push(member)
+          }
+        })
+        newRoom.channel.onMessage('Leaving', (message: User) => {
+          newRoom.members.splice(newRoom.members.indexOf(message), 1)
+        })
       } catch (e) {
         console.error('create error', e)
         this.snackbar.active = true
@@ -286,9 +319,9 @@ export default Vue.extend({
       for (const channel of response.data.ChannelUser) {
         const room = new OurRoom()
         try {
-          room.channel = await this.client.joinById(channel.RoomId)
+          room.channel = await this.client.joinById(channel.RoomId, this.$store.state.currentUser)
         } catch (e) {
-          room.channel = await this.client.create('ChatRoom')
+          room.channel = await this.client.create('ChatRoom', this.$store.state.currentUser)
           await axios.patch(
             `/channel/update/${channel.id}/${this.$store.state.currentUser.id}`,
             { RoomId: room.channel.id }
@@ -300,13 +333,30 @@ export default Vue.extend({
         room.messages.forEach((num1, index) => {
           num1.Nickname = channel.Messages[index].User.Nickname
         })
-        room.members = channel.Users
-        this.rooms.push(room)
+        for (const user of channel.Users)
+        {
+          let newUser = new User();
+          newUser.avatar = user.Avatar
+          newUser.nickname = user.Nickname
+          newUser.id = user.id
+          room.members.push(newUser)
+        }
+        this.rooms.push(room);
         room.channel.onMessage('Message', (message: ChatRoomMessage) => {
           const newMsg = new Message()
           newMsg.Content = message.Content
           newMsg.Nickname = message.Nickname
           room.messages.push(newMsg)
+        })
+        room.channel.onMessage('Joining', (message: User) => {
+          if (room.members.find((User: User) => User.id == message.id) == undefined) {
+            let member = new User();
+            member = message;
+            room.members.push(member)
+          }
+        })
+        room.channel.onMessage('Leaving', (message: User) => {
+          room.members.splice(room.members.indexOf(message), 1)
         })
         this.addChannelDialog = false
         channel.active = false
@@ -319,7 +369,6 @@ export default Vue.extend({
     async updateMember (member: any) {
       const response = await axios.get(`/social/${this.$store.state.currentUser.id}/isBlocked/${member.id}`)
       member.blocked = response.data
-      // console.log('member is blocked in update member ?', member.blocked)
     },
     async openPrivateChat(member: any) {
       const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
@@ -331,7 +380,7 @@ export default Vue.extend({
       else {
         const newRoom = new OurRoom()
         try{
-          newRoom.channel = await this.client.create('ChatRoom')
+          newRoom.channel = await this.client.create('ChatRoom', this.$store.state.currentUser)
           const response2 = await axios.post('channel/createPriv', {
             user_1 : this.$store.state.currentUser.id,
             user_2 : member.id,
@@ -340,21 +389,38 @@ export default Vue.extend({
           })
           newRoom.channelName = ( this.$store.state.currentUser.nickname + member.Nickname );
           newRoom.id = response2.data.id
-          newRoom.members = response2.data.Users
+          for (const user of response2.data.Users)
+          {
+            let newUser = new User();
+            newUser.avatar = user.Avatar
+            newUser.nickname = user.Nickname
+            newUser.id = user.id
+            newRoom.members.push(newUser)
+          }
           this.rooms.push(newRoom);
           this.inChannel = true;
           this.activeChannel = newRoom
           newRoom.channel.onMessage('Message', (message: ChatRoomMessage) => {
-          const newMsg = new Message()
-          newMsg.Content = message.Content
-          newMsg.Nickname = message.Nickname
-          newRoom.messages.push(newMsg)
-        })
-        } catch(e) {
-          console.warn('Cannot create private channel', e);
-          return;
+            const newMsg = new Message()
+            newMsg.Content = message.Content
+            newMsg.Nickname = message.Nickname
+            newRoom.messages.push(newMsg)
+          })
+          newRoom.channel.onMessage('Joining', (message: User) => {
+            if (newRoom.members.find((User: User) => User.id == message.id) == undefined) {
+              let member = new User();
+              member = message;
+              newRoom.members.push(member)
+            }
+          })
+          newRoom.channel.onMessage('Leaving', (message: User) => {
+            newRoom.members.splice(newRoom.members.indexOf(message), 1)
+          })
+          } catch(e) {
+            console.warn('Cannot create private channel', e);
+            return;
+          }
         }
-      }
     },
     inviteToPlay(member: any) {},
     async sendFriendRequest(friend: any) {
@@ -363,17 +429,14 @@ export default Vue.extend({
       )
     },
     async switchBlock(member: any) {
-      console.log('member is blocked in switch blocked?', member.blocked)
       if (member.blocked == false) {
         const response = await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
         )
-        console.log("add :", response.data)
       } else {
         const response = await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
         )
-        console.log("remove :", response.data)
       }
     },
     switchAdmin(member: any) {},
@@ -464,16 +527,16 @@ export default Vue.extend({
             >
               <template #activator="{ on, attrs }">
                 <v-btn class="wide" text color="white" v-bind="attrs" v-on="on" @click="updateMember(member)">
-                  <v-avatar size="32"><img :src="member.Avatar" /></v-avatar>
+                  <v-avatar size="32"><img :src="member.avatar" /></v-avatar>
                   <v-list-item-content class="ml-2">
-                    <v-list-item-title>{{ member.Nickname }}</v-list-item-title>
+                    <v-list-item-title>{{ member.nickname }}</v-list-item-title>
                   </v-list-item-content>
                   <v-list-item-content>
                     <v-list-item-title>{{
-                      onlineStatus(member.Status)
+                      onlineStatus(member.status)
                     }}</v-list-item-title>
                     <v-list-item-subtitle>{{
-                      member.Status
+                      member.status
                     }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-btn>
@@ -483,18 +546,18 @@ export default Vue.extend({
               <v-card>
                 <v-list>
                   <v-list-item>
-                    <v-avatar size="64"><img :src="member.Avatar" /></v-avatar>
+                    <v-avatar size="64"><img :src="member.avatar" /></v-avatar>
                     <v-list-item-content class="ml-2">
                       <v-list-item-title>{{
-                        onlineStatus(member.Status)
+                        onlineStatus(member.status)
                       }}</v-list-item-title>
                       <v-list-item-subtitle>{{
-                        member.Status
+                        member.status
                       }}</v-list-item-subtitle>
                     </v-list-item-content>
                     <v-list-item-content>
                       <v-list-item-title>{{
-                        member.Nickname
+                        member.nickname
                       }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
@@ -504,21 +567,21 @@ export default Vue.extend({
 
                 <v-list>
                   <v-list-item
-                    v-if="member.Nickname !== $store.state.currentUser.nickname"
+                    v-if="member.nickname !== $store.state.currentUser.nickname"
                   >
                     <v-btn @click.stop="openPrivateChat(member)"
                       >Private chat</v-btn
                     >
                   </v-list-item>
                   <v-list-item
-                    v-if="member.Nickname !== $store.state.currentUser.nickname"
+                    v-if="member.nickname !== $store.state.currentUser.nickname"
                   >
                     <v-btn @click.stop="inviteToPlay(member)"
                       >Invite to a match</v-btn
                     >
                   </v-list-item>
                   <v-list-item
-                    v-if="member.Nickname !== $store.state.currentUser.nickname"
+                    v-if="member.nickname !== $store.state.currentUser.nickname"
                   >
                     <v-btn @click.stop="sendFriendRequest(member)"
                       >Send friend request</v-btn
@@ -527,7 +590,7 @@ export default Vue.extend({
                   <v-list-item
                     v-if="
                       admin &&
-                      member.Nickname != $store.state.currentUser.nickname
+                      member.nickname != $store.state.currentUser.nickname
                     "
                   >
                     <v-btn @click.stop="banFromChannel(member)"
@@ -535,7 +598,7 @@ export default Vue.extend({
                     >
                   </v-list-item>
                   <v-list-item
-                    v-if="member.Nickname !== $store.state.currentUser.nickname"
+                    v-if="member.nickname !== $store.state.currentUser.nickname"
                   >
                     <v-list-item-title>Blocked</v-list-item-title>
                     <v-checkbox
