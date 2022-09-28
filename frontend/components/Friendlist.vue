@@ -13,6 +13,8 @@ export default Vue.extend({
     }
   },
   mounted() {
+    if (!this.$store.state.currentUser.nickname)
+      return
       axios.get("/social/" + this.$store.state.currentUser.id + "/friend", {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,

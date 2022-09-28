@@ -18,6 +18,8 @@ export default Vue.extend({
       this.$router.push('/');
   },
   mounted() {
+      if (!this.$store.state.currentUser.nickname)
+        return
       const userID = this.ID;
       let path = "/game/";
       

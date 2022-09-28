@@ -51,6 +51,8 @@ export default Vue.extend({
     }
   },
     mounted() {
+        if (!this.$store.state.currentUser.nickname)
+          return
         let use = this.$store.state.currentUser.id;
         if (this.userID)
             use = this.userID
