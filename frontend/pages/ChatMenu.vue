@@ -77,6 +77,10 @@ export default Vue.extend({
       }
     },
   },
+  beforeCreate() {
+    if (this.$store.state.loginFinish !== true)
+      this.$router.push('/');
+  },
   async mounted() {
     await this.createClient()
     await this.getChannel()

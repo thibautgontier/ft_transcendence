@@ -21,6 +21,10 @@ export default Vue.extend({
       room: GameState,
     }
   },
+  beforeCreate() {
+    if (this.$store.state.loginFinish !== true)
+      this.$router.push('/');
+  },
   async mounted() {
     this.$store.commit('changeInMenu', false)
     this.canvas = document.getElementById(

@@ -2,8 +2,6 @@
 import Vue from 'vue'
 import axios from 'axios'
 
-let id = 0
-
 export default Vue.extend({
   layout: 'DefaultLayout',
   props: {
@@ -14,6 +12,10 @@ export default Vue.extend({
       matchNumber: 0,
       matchInfosTest: null,
     }
+  },
+  beforeCreate() {
+    if (this.$store.state.loginFinish !== true)
+      this.$router.push('/');
   },
   mounted() {
       const userID = this.ID;
