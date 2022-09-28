@@ -28,8 +28,6 @@ export class UserService {
     return this.prisma.user.findMany({
       where: {
         id: Number(query.id),
-        // Token: query.token,
-        // Status: query.status,
         TwoFA: this.toBool(query.twoFA),
       },
       include: {
@@ -179,8 +177,6 @@ export class UserService {
       data: {
         Email: body.email,
         Nickname: body.nickname,
-        // Token: body.token,
-        // RefreshToken: body.refreshToken,
         Avatar: body.avatar,
         Status: body.status,
         TwoFA: body.twoFA,
