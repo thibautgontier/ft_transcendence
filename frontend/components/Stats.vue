@@ -94,20 +94,31 @@ export default Vue.extend({
             if (this.newNickname)
             {
                 this.$store.commit('changeNickname', this.newNickname);
-                const res = await axios.patch("/user/updateNickname", this.newNickname, {
+                const res = await axios.patch("/user/updateNickname",  {newNickname: this.newNickname }, {
                 headers: {
                 'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
                 }})
             }
             if (this.newAvatar)
             {
-                this.$store.commit('changeAvatar', this.newAvatar);
-                const res = await axios.patch("/user/updateAvatar", this.newAvatar, {
+                console.log('testing: ', this.newAvatar);
+                this.photo = this.newAvatar.name;
+                this.$store.commit('changeAvatar', this.newAvatar.name);
+                const res = await axios.patch("/user/updateAvatar", {newAvatar: this.photo}, {
                 headers: {
-                'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-                }})
+                    'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+                }});
+
+                const formData = new FormData();
+                formData.append('avatar', this.newAvatar);
+                console.log('form: ', formData);
+                await axios.post("/user/uploadImage/", formData, {
+                headers: {
+                    'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+                    'content-type': 'multipart/form-data',
+                }});
+                this.parameters = false;
             }
-            this.parameters = false;
         },
         async saveEmail() {
             if (this.email)

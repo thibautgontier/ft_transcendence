@@ -94,24 +94,24 @@ export class UserController {
   @Patch('updateNickname')
   async updateUserNickname(
     @Req() req: Request,
-    @Body() body: string,
+    @Body() body: any,
     @Res() res: Response,
   ): Promise<User | null> {
     const user = await this.authService.findUser(
       req.headers.authorization.split(' ')[1],
     );
-    return await this.userService.updateUserNickname(user, body, res);
+    return await this.userService.updateUserNickname(user, body.newNickname, res);
   }
 
   @Patch('updateAvatar')
   async updateUserAvatar(
     @Req() req: Request,
-    @Body() body: string,
+    @Body() body: any,
     @Res() res: Response,
   ): Promise<User | null> {
     const user = await this.authService.findUser(
       req.headers.authorization.split(' ')[1],
     );
-    return await this.userService.updateUserAvatar(user, body, res);
+    return await this.userService.updateUserAvatar(user, body.newAvatar, res);
   }
 }

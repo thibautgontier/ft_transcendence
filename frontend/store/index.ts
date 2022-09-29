@@ -45,9 +45,15 @@ export const mutations = {
 	},
 	changeNickname(state : any, newNick : any) {
 		state.currentUser.nickname = newNick;
+		let newUser = JSON.parse(localStorage.getItem('currentUser'));
+		newUser.nickname = newNick;
+		localStorage.setItem('currentUser', JSON.stringify(newUser));
 	},
 	changeAvatar(state : any, newAvatar : any) {
-		state.currentUser.nickname = newAvatar;
+		state.currentUser.avatar = newAvatar;
+		let newUser = JSON.parse(localStorage.getItem('currentUser'));
+		newUser.avatar = newAvatar;
+		localStorage.setItem('currentUser', JSON.stringify(newUser));
 	},
 	changeTmpID(state : any, newID : any) {
 		state.tmpID = newID;
