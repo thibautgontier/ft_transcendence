@@ -123,10 +123,8 @@ export default Vue.extend({
                     'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
                 }});
 
-                const formData = new FormData();
-                formData.append('avatar', this.newAvatar);
-                console.log('form: ', formData);
-                await axios.post("/user/uploadImage/", formData, {
+                console.log('form: ', this.newAvatar);
+                await axios.post("/user/uploadImage/", this.newAvatar, {
                 headers: {
                     'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
                     'content-type': 'multipart/form-data',
