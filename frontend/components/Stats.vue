@@ -127,7 +127,6 @@ export default Vue.extend({
                 await axios.post("/user/uploadImage/", this.newAvatar, {
                 headers: {
                     'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-                    'content-type': 'multipart/form-data',
                 }});
                 this.parameters = false;
             }
