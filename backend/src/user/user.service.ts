@@ -28,8 +28,6 @@ export class UserService {
     return this.prisma.user.findMany({
       where: {
         id: Number(query.id),
-        // Token: query.token,
-        // Status: query.status,
         TwoFA: this.toBool(query.twoFA),
       },
       include: {
@@ -179,8 +177,6 @@ export class UserService {
       data: {
         Email: body.email,
         Nickname: body.nickname,
-        // Token: body.token,
-        // RefreshToken: body.refreshToken,
         Avatar: body.avatar,
         Status: body.status,
         TwoFA: body.twoFA,
@@ -198,13 +194,10 @@ export class UserService {
           Nickname: nickname,
         },
       });
-      res.status(HttpStatus.OK).send(newUser);
+      res.status(HttpStatus.OK).send({ message: nickname });
       return newUser;
     } catch (e) {
-      res.status(HttpStatus.BAD_REQUEST).send({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Update failed',
-      });
+      res.status(200).send({ message: "nickname already taken" });
       return null;
     }
   }

@@ -2,8 +2,6 @@
 import Vue from 'vue'
 import axios from 'axios'
 
-let id = 0
-
 export default Vue.extend({
   layout: 'DefaultLayout',
   props: {
@@ -15,7 +13,13 @@ export default Vue.extend({
       matchInfosTest: null,
     }
   },
+  beforeCreate() {
+    if (!this.$store.state.currentUser.nickname)
+      this.$router.push('/');
+  },
   mounted() {
+      if (!this.$store.state.currentUser.nickname)
+        return
       const userID = this.ID;
       let path = "/game/";
       

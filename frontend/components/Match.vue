@@ -16,6 +16,8 @@ export default Vue.extend({
         }
     },
     mounted() {
+    if (!this.$store.state.currentUser.nickname)
+        return
       axios.get("/user?id=" + this.ennemyID, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,

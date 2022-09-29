@@ -13,6 +13,7 @@ export default Vue.extend({
       overlay: false,
       twoFACode: '',
       loginFinish2: false,
+      twoFaFail: 0,
     }
   },
   mounted() {
@@ -70,6 +71,7 @@ export default Vue.extend({
       }
 		},
     async sendTwoFA() {
+      this.twoFaFail = 0;
       const res = await axios.post("/login/validate2fa", {code: this.twoFACode}, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
@@ -79,7 +81,8 @@ export default Vue.extend({
         this.overlay = false;
         this.$store.commit('changeLoginFinish', true);
         this.loginFinish2 = this.$store.state.loginFinish;
-      } 
+      }
+      else this.twoFaFail = 1;
     },
 	}
 })
@@ -88,10 +91,10 @@ export default Vue.extend({
 <template>
   <v-container fill-height>
     <v-col>
-      <v-row justify="center" align="center">
+      <v-row justify="center">
         <PongLogo />
       </v-row>
-      <v-row justify="center" align="center" style="margin-top: 10%">
+      <v-row justify="center" style="margin-top: 10%">
         <h1 v-if="!this.$store.state.currentUser.nickname">
           <v-btn x-large color="black" @click.stop="redirectToLog()"
             >42 Connect</v-btn
@@ -103,23 +106,20 @@ export default Vue.extend({
           >
         </h1>
       </v-row>
-      <h1 v-if="loginSuccess">
-        <v-alert type="success" transition="scale-transition" dismissible
-          >Logged successfully!</v-alert
-        >
-      </h1>
-      <h1 v-if="loginFailed">
-        <v-alert type="error" transition="scale-transition" dismissible
-          >Failed to log!</v-alert
-        >
-      </h1>
+
+        <v-snackbar v-model="loginSuccess" timeout="3000" color="green" min-height="60">
+            <div class="snackText">Logged successfully!</div>
+        </v-snackbar>
+        <v-snackbar v-model="loginFailed" timeout="3000" color="green" min-height="60">
+            <div class="snackText">Logged failed!</div>
+        </v-snackbar>
     </v-col>
-    <v-overlay :value="overlay" opacity="0.85">
+    <v-overlay :value="overlay" opacity="1">
       <v-row>
         <v-col>
           <v-row justify="center" class="mb-16">
             <v-subheader class="twoFAMessage orange--text">
-              Please enter 2FA code
+              Please enter the code <br>that was sent to your email
             </v-subheader>
           </v-row>
           <v-row justify="center">
@@ -133,6 +133,9 @@ export default Vue.extend({
           </v-row>
         </v-col>
       </v-row>
+        <v-snackbar v-model="twoFaFail" timeout="2000" color="red" min-height="75">
+            <div class="snackText">Incorrect code. Try again</div>
+        </v-snackbar>
     </v-overlay>
   </v-container>
 </template>
@@ -142,6 +145,18 @@ export default Vue.extend({
 
 .twoFAMessage {
     font-size: 4rem;
+    margin-bottom: 75px;
+    text-align: center;
+}
+
+.snackText {
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.alert {
+  left: 500px;
+  margin-top: 100px;
 }
 
 </style>

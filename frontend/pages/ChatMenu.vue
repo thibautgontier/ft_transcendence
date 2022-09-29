@@ -77,7 +77,13 @@ export default Vue.extend({
       }
     },
   },
+  beforeCreate() {
+    if (!this.$store.state.currentUser.nickname)
+      this.$router.push('/');
+  },
   async mounted() {
+    if (!this.$store.state.currentUser.nickname)
+      return
     await this.createClient()
     await this.getChannel()
     this.$store.commit('changeInMenu', false)
