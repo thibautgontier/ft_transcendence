@@ -39,7 +39,8 @@ export default Vue.extend({
       ],
       showPassword: false,
       isBlocked: false,
-    }
+      isAdmin: false,
+  }
   },
   head(): {} {
     const title = 'Transcendence - Chat'
@@ -152,7 +153,7 @@ export default Vue.extend({
       const response = await axios.get(`channel/${channel.id}`)
       for (const user of response.data.Users)
         {
-          let newUser = new User();
+          const newUser = new User();
           newUser.avatar = user.Avatar
           newUser.nickname = user.Nickname
           newUser.id = user.id
@@ -201,7 +202,7 @@ export default Vue.extend({
         newRoom.id = response.data.id
         for (const user of response.data.Users)
         {
-          let newUser = new User();
+          const newUser = new User();
           newUser.avatar = user.Avatar
           newUser.nickname = user.Nickname
           newUser.id = user.id
@@ -324,7 +325,7 @@ export default Vue.extend({
         })
         for (const user of channel.Users)
         {
-          let newUser = new User();
+          const newUser = new User();
           newUser.avatar = user.Avatar
           newUser.nickname = user.Nickname
           newUser.id = user.id
@@ -341,15 +342,16 @@ export default Vue.extend({
       }
     },
     async updateMember (member: any) {
-      const response = await axios.get(`/social/${this.$store.state.currentUser.id}/isBlocked/${member.id}`)
-      this.isBlocked = response.data
+      const responseBlocked = await axios.get(`/social/${this.$store.state.currentUser.id}/isBlocked/${member.id}`)
+      this.isBlocked = responseBlocked.data
+      // const responseAdmin = await axios.get(`/social/${this.$store.state.currentUser.id}/isAdmin/${member.id}`)
+      // this.isAdmin = responseAdmin.data
     },
     async openPrivateChat(member: any) {
       const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
       if (response.data) {
         this.activeChannel = this.rooms.find((channel: OurRoom) => channel.id == response.data.id)
         this.inChannel = true;
-        return
       }
       else {
         const newRoom = new OurRoom()
@@ -377,7 +379,6 @@ export default Vue.extend({
           this.initChannel(newRoom);
           } catch(e) {
             console.warn('Cannot create private channel', e);
-            return;
           }
         }
     },
@@ -388,19 +389,31 @@ export default Vue.extend({
       )
     },
     async switchBlock(member: any) {
-      if (this.isBlocked == false) {
+      if (this.isBlocked === false) {
         const response = await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
         )
-        // this.isBlocked = true;
+        this.isBlocked = true;
       } else {
         const response = await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
         )
-        // this.isBlocked = false;
+        this.isBlocked = false;
       }
     },
-    switchAdmin(member: any) {},
+    switchAdmin(member: any) {
+        if (this.isAdmin === false) {
+        // const response = await axios.patch(
+        //   `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
+        // )
+        this.isAdmin = true;
+      } else {
+        // const response = await axios.patch(
+        //   `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
+        // )
+        this.isAdmin = false;
+      }
+    },
     async banFromChannel(member: any) {
       await axios.patch(
         `/channel/${this.activeChannel.id}/banUser/${this.$store.state.currentUser.id}/${member.id}}`
@@ -485,6 +498,7 @@ export default Vue.extend({
               left
               offset-x
               transition="slide-x-reverse-transition"
+              class="memberCard"
             >
               <template #activator="{ on, attrs }">
                 <v-btn class="wide" text color="white" v-bind="attrs" v-on="on" @click="updateMember(member)">
@@ -563,7 +577,8 @@ export default Vue.extend({
                   >
                     <v-list-item-title>Blocked</v-list-item-title>
                     <v-checkbox
-                      v-bind="isBlocked"
+                      :v-bind="isBlocked"
+                      :input-value="isBlocked"
                       dense
                       @change="switchBlock(member)"
                     ></v-checkbox>
@@ -571,7 +586,8 @@ export default Vue.extend({
                   <v-list-item v-if="admin">
                     <v-list-item-title>Admin</v-list-item-title>
                     <v-checkbox
-                      v-model="member.admin"
+                      :v-bind="isAdmin"
+                      :input-value="isAdmin"
                       dense
                       @change="switchAdmin(member)"
                     ></v-checkbox>
@@ -835,5 +851,8 @@ export default Vue.extend({
 .dialogTitle {
   padding-top: 10%;
   font-size: 1rem;
+}
+.memberCard {
+  z-index: 129;
 }
 </style>
