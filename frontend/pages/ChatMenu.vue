@@ -38,6 +38,7 @@ export default Vue.extend({
           'between 3 and 12 characters',
       ],
       showPassword: false,
+      isBlocked: false,
     }
   },
   head(): {} {
@@ -84,7 +85,25 @@ export default Vue.extend({
     this.$store.commit('changeInMenu', false)
   },
   destroyed() {},
-  methods: {
+    methods: {
+    async initChannel(room: OurRoom) {
+            room.channel.onMessage('Message', (message: ChatRoomMessage) => {
+          const newMsg = new Message()
+          newMsg.Content = message.Content
+          newMsg.Nickname = message.Nickname
+          room.messages.push(newMsg)
+        })
+        room.channel.onMessage('Joining', (message: User) => {
+          if (room.members.find((User: User) => User.id == message.id) == undefined) {
+            let member = new User();
+            member = message;
+            room.members.push(member)
+          }
+        })
+        room.channel.onMessage('Leaving', (message: User) => {
+          room.members.splice(room.members.indexOf(message), 1)
+        })
+    },
     leaveChannelPending(current: OurRoom): void {
       this.leaveChannelDialog = !this.leaveChannelDialog
       this.dialogRoom = current
@@ -140,22 +159,7 @@ export default Vue.extend({
           room.members.push(newUser)
         }
       this.rooms.push(room)
-      room.channel.onMessage('Message', (message: ChatRoomMessage) => {
-        const newMsg = new Message()
-        newMsg.Content = message.Content
-        newMsg.Nickname = message.Nickname
-        room.messages.push(newMsg)
-      })
-      room.channel.onMessage('Joining', (message: User) => {
-        if (room.members.find((User: User) => User.id == message.id) == undefined) {
-          let member = new User();
-          member = message;
-          room.members.push(member)
-        }
-      })
-      room.channel.onMessage('Leaving', (message: User) => {
-        room.members.splice(room.members.indexOf(message), 1)
-      })
+      this.initChannel(room);
       this.addChannelDialog = false
       this.activeChannel = room
       this.inChannel = true
@@ -214,22 +218,7 @@ export default Vue.extend({
           )
         }
         this.activeChannel = newRoom
-        newRoom.channel.onMessage('Message', (message: ChatRoomMessage) => {
-          const newMsg = new Message()
-          newMsg.Content = message.Content
-          newMsg.Nickname = message.Nickname
-          newRoom.messages.push(newMsg)
-        })
-        newRoom.channel.onMessage('Joining', (message: User) => {
-          if (this.activeChannel.members.find((id: number) => id == message.id) == undefined) {
-            let member = new User();
-            member = message;
-            this.activeChannel.members.push(member)
-          }
-        })
-        newRoom.channel.onMessage('Leaving', (message: User) => {
-          newRoom.members.splice(newRoom.members.indexOf(message), 1)
-        })
+        this.initChannel(newRoom);
       } catch (e) {
         console.error('create error', e)
         this.snackbar.active = true
@@ -342,22 +331,7 @@ export default Vue.extend({
           room.members.push(newUser)
         }
         this.rooms.push(room);
-        room.channel.onMessage('Message', (message: ChatRoomMessage) => {
-          const newMsg = new Message()
-          newMsg.Content = message.Content
-          newMsg.Nickname = message.Nickname
-          room.messages.push(newMsg)
-        })
-        room.channel.onMessage('Joining', (message: User) => {
-          if (room.members.find((User: User) => User.id == message.id) == undefined) {
-            let member = new User();
-            member = message;
-            room.members.push(member)
-          }
-        })
-        room.channel.onMessage('Leaving', (message: User) => {
-          room.members.splice(room.members.indexOf(message), 1)
-        })
+        this.initChannel(room);
         this.addChannelDialog = false
         channel.active = false
       }
@@ -368,7 +342,7 @@ export default Vue.extend({
     },
     async updateMember (member: any) {
       const response = await axios.get(`/social/${this.$store.state.currentUser.id}/isBlocked/${member.id}`)
-      member.blocked = response.data
+      this.isBlocked = response.data
     },
     async openPrivateChat(member: any) {
       const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
@@ -399,23 +373,8 @@ export default Vue.extend({
           }
           this.rooms.push(newRoom);
           this.inChannel = true;
-          this.activeChannel = newRoom
-          newRoom.channel.onMessage('Message', (message: ChatRoomMessage) => {
-            const newMsg = new Message()
-            newMsg.Content = message.Content
-            newMsg.Nickname = message.Nickname
-            newRoom.messages.push(newMsg)
-          })
-          newRoom.channel.onMessage('Joining', (message: User) => {
-            if (newRoom.members.find((User: User) => User.id == message.id) == undefined) {
-              let member = new User();
-              member = message;
-              newRoom.members.push(member)
-            }
-          })
-          newRoom.channel.onMessage('Leaving', (message: User) => {
-            newRoom.members.splice(newRoom.members.indexOf(message), 1)
-          })
+          this.activeChannel = newRoom;
+          this.initChannel(newRoom);
           } catch(e) {
             console.warn('Cannot create private channel', e);
             return;
@@ -429,14 +388,16 @@ export default Vue.extend({
       )
     },
     async switchBlock(member: any) {
-      if (member.blocked == false) {
+      if (this.isBlocked == false) {
         const response = await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
         )
+        // this.isBlocked = true;
       } else {
         const response = await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
         )
+        // this.isBlocked = false;
       }
     },
     switchAdmin(member: any) {},
@@ -602,7 +563,7 @@ export default Vue.extend({
                   >
                     <v-list-item-title>Blocked</v-list-item-title>
                     <v-checkbox
-                      v-model="member.blocked"
+                      v-bind="isBlocked"
                       dense
                       @change="switchBlock(member)"
                     ></v-checkbox>
