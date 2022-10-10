@@ -401,17 +401,23 @@ export default Vue.extend({
         this.isBlocked = false;
       }
     },
-    switchAdmin(member: any) {
+    async switchAdmin(member: any) {
+      try{
         if (this.isAdmin === false) {
-        // const response = await axios.patch(
-        //   `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
-        // )
-        this.isAdmin = true;
-      } else {
-        // const response = await axios.patch(
-        //   `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
-        // )
-        this.isAdmin = false;
+          const response = await axios.patch(
+            `/channel/${this.activeChannel.id}/addAdmin/${member.id}/${this.$store.state.currentUser.id}`
+          )
+          this.isAdmin = true;
+        } else {
+          const response = await axios.patch(
+            `/channel/${this.activeChannel.id}/removeAdmin/${member.id}/${this.$store.state.currentUser.id}`
+          )
+          this.isAdmin = false;
+        }
+      } catch(e) {
+        console.warn('Cannot add or remove admin:', e);
+        this.snackbar.active = true
+        this.snackbar.errorMessage = 'Cannot add or remove admin'
       }
     },
     async banFromChannel(member: any) {
