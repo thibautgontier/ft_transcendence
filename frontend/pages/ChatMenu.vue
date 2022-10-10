@@ -430,8 +430,11 @@ export default Vue.extend({
       <!-- CONVERSATIONS -->
       <v-navigation-drawer
         app
-        :permanent="$vuetify.breakpoint.mdAndUp"
-        :expand-on-hover="$vuetify.breakpoint.smAndDown"
+        permanent
+        class="top"
+        width="256px"
+        mini-variant-width="64px"
+        expand-on-hover
       >
         <v-list-item>
           <v-list-item-icon>
@@ -477,8 +480,11 @@ export default Vue.extend({
         v-if="activeChannel"
         app
         right
-        :permanent="$vuetify.breakpoint.mdAndUp"
-        :expand-on-hover="$vuetify.breakpoint.smAndDown"
+        permanent
+        class="top"
+        width="256px"
+        mini-variant-width="64px"
+        expand-on-hover
       >
         <v-list-item link>
           <v-list-item-icon>
@@ -498,7 +504,7 @@ export default Vue.extend({
               left
               offset-x
               transition="slide-x-reverse-transition"
-              class="memberCard"
+              class="top"
             >
               <template #activator="{ on, attrs }">
                 <v-btn class="wide" text color="white" v-bind="attrs" v-on="on" @click="updateMember(member)">
@@ -510,9 +516,6 @@ export default Vue.extend({
                     <v-list-item-title>{{
                       onlineStatus(member.status)
                     }}</v-list-item-title>
-                    <v-list-item-subtitle>{{
-                      member.status
-                    }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-btn>
               </template>
@@ -526,9 +529,6 @@ export default Vue.extend({
                       <v-list-item-title>{{
                         onlineStatus(member.status)
                       }}</v-list-item-title>
-                      <v-list-item-subtitle>{{
-                        member.status
-                      }}</v-list-item-subtitle>
                     </v-list-item-content>
                     <v-list-item-content>
                       <v-list-item-title>{{
@@ -852,7 +852,7 @@ export default Vue.extend({
   padding-top: 10%;
   font-size: 1rem;
 }
-.memberCard {
+.top {
   z-index: 129;
 }
 </style>
