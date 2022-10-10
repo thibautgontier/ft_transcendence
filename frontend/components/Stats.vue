@@ -115,9 +115,9 @@ export default Vue.extend({
             }
             if (this.newAvatar)
             {
-                this.photo = 'user/avatars/' + this.newAvatar.name;
+                const newAvatar = 'user/avatars/' + this.newAvatar.name;
                 this.$store.commit('changeAvatar', this.photo);
-                const res = await axios.patch("/user/updateAvatar", {newAvatar: this.photo}, {
+                const res = await axios.patch("/user/updateAvatar", {newAvatar: newAvatar}, {
                 headers: {
                     'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
                 }});
@@ -128,6 +128,7 @@ export default Vue.extend({
                 headers: {
                     'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
                 }});
+                this.photo = newAvatar;
                 this.parameters = false;
             }
         },
