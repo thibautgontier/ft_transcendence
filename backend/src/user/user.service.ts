@@ -204,7 +204,7 @@ export class UserService {
 
   async updateUserAvatar(user: User, avatar: any, res: Response) {
     try {
-      const newPath = 'user\\' + avatar.path;
+      const newPath = 'user/' + avatar.path;
       const newUser = await this.prisma.user.update({
         where: {
           id: user.id,
