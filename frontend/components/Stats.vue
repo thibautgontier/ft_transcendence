@@ -69,7 +69,7 @@ export default Vue.extend({
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
-        } ).then(response => {this.photo = response.data[0].Avatar});
+        } ).then(response => {this.photo = response.data[0].Avatar; console.log('peut etre? ', this.photo);});
     },
     methods: {
         openParameters() {
@@ -115,16 +115,16 @@ export default Vue.extend({
             }
             if (this.newAvatar)
             {
-                console.log('testing: ', this.newAvatar);
-                this.photo = this.newAvatar.name;
-                this.$store.commit('changeAvatar', this.newAvatar.name);
+                this.photo = 'user/avatars/' + this.newAvatar.name;
+                this.$store.commit('changeAvatar', this.photo);
                 const res = await axios.patch("/user/updateAvatar", {newAvatar: this.photo}, {
                 headers: {
                     'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
                 }});
 
-                console.log('form: ', this.newAvatar);
-                await axios.post("/user/uploadImage/", this.newAvatar, {
+                const formData = new FormData();
+                formData.append('avatar', this.newAvatar, this.newAvatar.name);
+                await axios.post("/user/uploadAvatar/", formData, {
                 headers: {
                     'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
                 }});

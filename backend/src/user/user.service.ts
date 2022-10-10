@@ -202,14 +202,15 @@ export class UserService {
     }
   }
 
-  async updateUserAvatar(user: User, avatar: string, res: Response) {
+  async updateUserAvatar(user: User, avatar: any, res: Response) {
     try {
+      const newPath = 'user\\' + avatar.path;
       const newUser = await this.prisma.user.update({
         where: {
           id: user.id,
         },
         data: {
-          Avatar: avatar,
+          Avatar: newPath,
         },
       });
       res.status(HttpStatus.OK).send(newUser);
@@ -221,5 +222,20 @@ export class UserService {
       });
       return null;
     }
+  }
+
+  static customFileName(req: any, file: any, cb: any) {
+    let fileExtension = "";
+    if(file.mimetype.indexOf("jpeg") > -1){
+        fileExtension = "jpg"
+    }else if(file.mimetype.indexOf("png") > -1){
+        fileExtension = "png";
+    }
+    const originalName = file.originalname.split(".")[0];
+    cb(null, originalName + "."+fileExtension);
+  }
+ 
+  static destinationPath(req: any, file: any, cb: any) {
+    cb(null, './avatars/')
   }
 }

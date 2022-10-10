@@ -22,6 +22,10 @@ import { FtOauthGuard } from 'src/auth/guards/ft-oauth.guard';
 import { Student } from 'src/auth/user.decorator';
 import { Profile } from 'passport';
 import { AuthService } from 'src/auth/auth.service';
+import { UseInterceptors, UploadedFile } from  '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from  'multer';
+import { extname } from  'path';
 
 @ApiTags('user')
 @Controller('user')
@@ -113,5 +117,29 @@ export class UserController {
       req.headers.authorization.split(' ')[1],
     );
     return await this.userService.updateUserAvatar(user, body.newAvatar, res);
+  }
+
+  @Post('uploadAvatar')
+  @UseInterceptors(FileInterceptor('avatar', { 
+    storage: diskStorage({
+      destination: UserService.destinationPath,
+      filename: UserService.customFileName,
+    }),
+  }))
+  async uploadAvatar(
+    @UploadedFile() file: any,
+    @Req() req: Request,
+    @Body() body: any,
+    @Res() res: Response,
+    ): Promise<User | null> {
+      const user = await this.authService.findUser(
+        req.headers.authorization.split(' ')[1],
+      );
+    return await this.userService.updateUserAvatar(user, file, res);
+  }
+
+  @Get('avatars/:fileId')
+  async serveAvatar(@Param('fileId') fileId: any, @Res() res: any): Promise<any> {
+    return (res.sendFile(fileId, { root: 'avatars'}));
   }
 }

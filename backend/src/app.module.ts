@@ -9,6 +9,8 @@ import { ChannelModule } from './channel/channel.module';
 import { SocialModule } from './socialProfile/social.module';
 import { GameModule } from './gameProfile/game.module';
 import { PartyModule } from './party/party.module';
+import { AppController } from './app.controller';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -25,4 +27,12 @@ import { PartyModule } from './party/party.module';
   providers: [PrismaService],
   controllers: [PrismaController],
 })
+
+@Module({
+  imports: [MulterModule.register({
+    dest: './files',
+  })],
+  controllers: [AppController],
+})
+
 export class AppModule {}
