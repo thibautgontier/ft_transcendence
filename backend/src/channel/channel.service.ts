@@ -48,6 +48,21 @@ export class ChannelService {
     }
   }
 
+  async isAdmin(idChan: number, idUser: number): Promise<boolean> {
+    try{
+      const chan = await this.prisma.channel.findUnique({
+        where: {id: idChan},
+        select : {Admins: true}
+      })
+      if (chan.Admins.find((User) => User.id == idUser) != undefined)
+        return true;
+      else
+        return false;
+    } catch (e) {
+      return false
+    }
+  }
+
   async createChannel(
     res: Response,
     body: ChannelCreateDto,

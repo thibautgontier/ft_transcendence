@@ -40,7 +40,15 @@ export class ChannelController {
     @Param('id1') id1: number,
     @Param('id2') id2: number,
   ): Promise<Channel | null> {
-    return await this.channelService.isPrivateCreated(id1, id2);
+    return await this.channelService.isPrivateCreated(Number(id1), Number(id2));
+  }
+
+  @Get(':idChannel/isAdmin/:idUser')
+  async isAdmin(
+    @Param('idChannel') idChan: number,
+    @Param('idUser') idUser: number,
+  ): Promise<boolean> {
+    return await this.channelService.isAdmin(Number(idChan), Number(idUser))
   }
 
   @Post('create')

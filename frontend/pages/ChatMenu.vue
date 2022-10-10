@@ -344,8 +344,8 @@ export default Vue.extend({
     async updateMember (member: any) {
       const responseBlocked = await axios.get(`/social/${this.$store.state.currentUser.id}/isBlocked/${member.id}`)
       this.isBlocked = responseBlocked.data
-      // const responseAdmin = await axios.get(`/social/${this.$store.state.currentUser.id}/isAdmin/${member.id}`)
-      // this.isAdmin = responseAdmin.data
+      const responseAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${member.id}`)
+      this.isAdmin = responseAdmin.data
     },
     async openPrivateChat(member: any) {
       const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
