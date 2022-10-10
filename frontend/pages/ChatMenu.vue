@@ -430,6 +430,8 @@ export default Vue.extend({
       <!-- CONVERSATIONS -->
       <v-navigation-drawer
         app
+        permanent
+        :expand-on-hover="$vuetify.breakpoint.smAndDown"
       >
         <v-list-item>
           <v-list-item-icon>
@@ -475,6 +477,8 @@ export default Vue.extend({
         v-if="activeChannel"
         right
         app
+        permanent
+        :expand-on-hover="$vuetify.breakpoint.smAndDown"
       >
         <v-list-item link>
           <v-list-item-icon>
@@ -520,6 +524,9 @@ export default Vue.extend({
                       <v-list-item-title>{{
                         member.nickname
                       }}</v-list-item-title>
+                      <v-list-item-subtitle>{{
+                        member.status
+                      }}</v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list>
