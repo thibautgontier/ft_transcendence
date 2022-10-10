@@ -87,7 +87,7 @@ export default Vue.extend({
   },
   destroyed() {},
     methods: {
-    initChannel(room: OurRoom) {
+    async initChannel(room: OurRoom) {
             room.channel.onMessage('Message', (message: ChatRoomMessage) => {
           const newMsg = new Message()
           newMsg.Content = message.Content
@@ -95,7 +95,7 @@ export default Vue.extend({
           room.messages.push(newMsg)
         })
         room.channel.onMessage('Joining', (message: User) => {
-          if (room.members.find((User: User) => User.id === message.id) === undefined) {
+          if (room.members.find((User: User) => User.id == message.id) == undefined) {
             let member = new User();
             member = message;
             room.members.push(member)
@@ -436,11 +436,6 @@ export default Vue.extend({
       <!-- CONVERSATIONS -->
       <v-navigation-drawer
         app
-        permanent
-        class="top"
-        width="256px"
-        mini-variant-width="64px"
-        expand-on-hover
       >
         <v-list-item>
           <v-list-item-icon>
@@ -484,13 +479,8 @@ export default Vue.extend({
       <!-- MEMBERS -->
       <v-navigation-drawer
         v-if="activeChannel"
-        app
         right
-        permanent
-        class="top"
-        width="256px"
-        mini-variant-width="64px"
-        expand-on-hover
+        app
       >
         <v-list-item link>
           <v-list-item-icon>
@@ -510,18 +500,16 @@ export default Vue.extend({
               left
               offset-x
               transition="slide-x-reverse-transition"
-              class="top"
+              class="memberCard"
             >
               <template #activator="{ on, attrs }">
                 <v-btn class="wide" text color="white" v-bind="attrs" v-on="on" @click="updateMember(member)">
                   <v-avatar size="32"><img :src="member.avatar" /></v-avatar>
                   <v-list-item-content class="ml-2">
                     <v-list-item-title>{{ member.nickname }}</v-list-item-title>
-                  </v-list-item-content>
-                  <v-list-item-content>
-                    <v-list-item-title>{{
+                    <v-list-item-subtitle>{{
                       onlineStatus(member.status)
-                    }}</v-list-item-title>
+                    }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-btn>
               </template>
@@ -535,8 +523,6 @@ export default Vue.extend({
                       <v-list-item-title>{{
                         onlineStatus(member.status)
                       }}</v-list-item-title>
-                    </v-list-item-content>
-                    <v-list-item-content>
                       <v-list-item-title>{{
                         member.nickname
                       }}</v-list-item-title>
@@ -858,7 +844,7 @@ export default Vue.extend({
   padding-top: 10%;
   font-size: 1rem;
 }
-.top {
+.memberCard {
   z-index: 129;
 }
 </style>
