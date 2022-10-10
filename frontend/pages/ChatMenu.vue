@@ -87,7 +87,7 @@ export default Vue.extend({
   },
   destroyed() {},
     methods: {
-    async initChannel(room: OurRoom) {
+    initChannel(room: OurRoom) {
             room.channel.onMessage('Message', (message: ChatRoomMessage) => {
           const newMsg = new Message()
           newMsg.Content = message.Content
@@ -95,7 +95,7 @@ export default Vue.extend({
           room.messages.push(newMsg)
         })
         room.channel.onMessage('Joining', (message: User) => {
-          if (room.members.find((User: User) => User.id == message.id) == undefined) {
+          if (room.members.find((User: User) => User.id === message.id) === undefined) {
             let member = new User();
             member = message;
             room.members.push(member)
@@ -367,7 +367,7 @@ export default Vue.extend({
           newRoom.id = response2.data.id
           for (const user of response2.data.Users)
           {
-            let newUser = new User();
+            const newUser = new User();
             newUser.avatar = user.Avatar
             newUser.nickname = user.Nickname
             newUser.id = user.id
@@ -430,7 +430,7 @@ export default Vue.extend({
       <!-- CONVERSATIONS -->
       <v-navigation-drawer
         app
-        permanent
+        :permanent="$vuetify.breakpoint.mdAndUp"
         :expand-on-hover="$vuetify.breakpoint.smAndDown"
       >
         <v-list-item>
@@ -475,9 +475,9 @@ export default Vue.extend({
       <!-- MEMBERS -->
       <v-navigation-drawer
         v-if="activeChannel"
-        right
         app
-        permanent
+        right
+        :permanent="$vuetify.breakpoint.mdAndUp"
         :expand-on-hover="$vuetify.breakpoint.smAndDown"
       >
         <v-list-item link>
