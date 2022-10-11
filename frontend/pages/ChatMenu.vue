@@ -17,7 +17,7 @@ export default Vue.extend({
     return {
       newChannel: { name: '', protected: false, password: '' },
       editChannel: { name: '', protected: false, password: '' },
-      sanction: { reason: '', type: '', permanent: true, duration: 0},
+      sanction: { reason: '', type: '', permanent: true, duration: -1},
       snackbar: { active: false, errorMessage: '' },
       sanctions: [
         { type: 'mute', name: 'luigi', reason: 'spam', duration: 1},
@@ -167,6 +167,10 @@ export default Vue.extend({
     banUserPending(current: User): void {
       this.banUserDialog = !this.banUserDialog
       this.dialogUser = current
+    },
+    sanctionIsPermanent() {
+      if (this.sanction.permanent === true)
+        this.sanction.duration = -1
     },
     async banUserConfirmed() {
       this.banUserDialog = false
@@ -949,7 +953,7 @@ export default Vue.extend({
             ></v-text-field>
             <v-list-item>
               <v-list-item-title>Permanent</v-list-item-title>
-              <v-checkbox v-model="sanction.permanent"></v-checkbox>
+              <v-checkbox v-model="sanction.permanent" @click="sanctionIsPermanent()"></v-checkbox>
             </v-list-item>
             <v-card-text v-if="sanction.permanent === false" class="text-center">
               <div class="white--text dialogTitle">Duration :</div>
@@ -998,7 +1002,7 @@ export default Vue.extend({
             ></v-text-field>
             <v-list-item>
               <v-list-item-title>Permanent</v-list-item-title>
-              <v-checkbox v-model="sanction.permanent"></v-checkbox>
+              <v-checkbox v-model="sanction.permanent" @click="sanctionIsPermanent()"></v-checkbox>
             </v-list-item>
             <v-card-text v-if="sanction.permanent === false" class="text-center">
               <div class="white--text dialogTitle">Duration :</div>
