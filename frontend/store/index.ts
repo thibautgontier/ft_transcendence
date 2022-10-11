@@ -10,7 +10,7 @@ export const state = () => ({
 	version: '',
 	inMenu: true,
 	loginFinish: false,
-	gameOption: { ballSpeed: 0, paddleSpeed: 0, pointsToWin: 0},
+	gameOption: { ballSpeed: 0, paddleSpeed: 0, pointsToWin: 0, color: ''},
 })
 
 
@@ -88,5 +88,6 @@ export const mutations = {
 		state.gameOption.ballSpeed = newOption.ballSpeed;
 		state.gameOption.paddleSpeed = newOption.paddleSpeed;
 		state.gameOption.pointsToWin = newOption.pointsToWin;
+		state.gameOption.color = newOption.color;
 	}
 }

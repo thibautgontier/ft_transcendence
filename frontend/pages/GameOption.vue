@@ -7,6 +7,7 @@ export default Vue.extend({
   data() {
     return {
         ballSpeed: 50,
+        color: '#000000',
         paddleSpeed: 30,
         pointsToWin: 30,
         start: 0,
@@ -16,7 +17,7 @@ export default Vue.extend({
   },
   methods: {
     startGame() {
-      const gameOption = { ballSpeed: this.ballSpeed / 100, paddleSpeed: this.paddleSpeed / 100, pointsToWin: this.pointsToWin / 10};
+      const gameOption = { ballSpeed: this.ballSpeed / 100, paddleSpeed: this.paddleSpeed / 100, pointsToWin: this.pointsToWin / 10, color: this.color};
       this.$store.commit('changeGameOption', gameOption);
       this.start = 1;
       this.$router.push('/GameMenu');
@@ -26,6 +27,9 @@ export default Vue.extend({
       this.paddleSpeed = 30;
       this.pointsToWin = 30;
     },
+    changeColor(color: string) {
+      this.color = color;
+    }
   },
 })
 </script>
@@ -99,6 +103,20 @@ export default Vue.extend({
                     {{pointsToWin / 10}}
                   </v-progress-circular>
                 </v-row>
+                <v-subheader class="pl-0 text-h5">
+                  Background Color:
+                </v-subheader>
+                <v-row class="mt-5">
+                  <v-btn x-large="true" color="#000000" class="colorBtn" @click.stop="changeColor('#000000')">Black</v-btn>
+                  <v-btn x-large="true" color="#FF0000" class="colorBtn" @click.stop="changeColor('#FF0000')"></v-btn>
+                  <v-btn x-large="true" color="#FF8400" class="colorBtn" @click.stop="changeColor('#FF8400')"></v-btn>
+                  <v-btn x-large="true" color="#FFE100" class="colorBtn" @click.stop="changeColor('#FFE100')"></v-btn>
+                  <v-btn x-large="true" color="#00B315" class="colorBtn" @click.stop="changeColor('#00B315')"></v-btn>
+                  <v-btn x-large="true" color="#0067F1" class="colorBtn" @click.stop="changeColor('#0067F1')"></v-btn>
+                  <v-btn x-large="true" color="#B000FD" class="colorBtn" @click.stop="changeColor('#B000FD')"></v-btn>
+                  <v-btn x-large="true" color="#FF00A1" class="colorBtn" @click.stop="changeColor('#FF00A1')"></v-btn>
+                  <v-btn height="100" width="100" fab :color="this.color" class="preview">Preview</v-btn>
+                </v-row>
                 <v-row class="justify-space-between">
                   <v-tooltip bottom>
                     <template #activator="{ on, attrs }">
@@ -112,3 +130,15 @@ export default Vue.extend({
         </v-row>
 	</v-container>
 </template>
+
+<style>
+  .colorBtn{
+    margin-left: 12px;
+    margin-right: 12px;
+    margin-top: 25px;
+    border: thick solid white;
+  }
+  .preview{
+    margin-left: 133px;
+  }
+</style>
