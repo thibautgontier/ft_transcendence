@@ -889,7 +889,7 @@ export default Vue.extend({
               v-if="sanction.permanent === false"
               v-model="sanction.duration"
               color="orange"
-              label="Duration"
+              label="Days"
               hint="Ban Duration in days"
               min="1"
               max="365"
