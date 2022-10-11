@@ -10,6 +10,7 @@ export const state = () => ({
 	version: '',
 	inMenu: true,
 	loginFinish: false,
+	gameOption: { ballSpeed: 0, paddleSpeed: 0, pointsToWin: 0},
 })
 
 
@@ -83,4 +84,9 @@ export const mutations = {
 		state.loginFinish = newLoginValue;
 		localStorage.setItem('loginFinish', newLoginValue);
 	},
+	changeGameOption(state, newOption) {
+		state.gameOption.ballSpeed = newOption.ballSpeed;
+		state.gameOption.paddleSpeed = newOption.paddleSpeed;
+		state.gameOption.pointsToWin = newOption.pointsToWin;
+	}
 }
