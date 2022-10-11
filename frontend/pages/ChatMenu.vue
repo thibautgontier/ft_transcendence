@@ -17,6 +17,7 @@ export default Vue.extend({
     return {
       newChannel: { name: '', protected: false, password: '' },
       editChannel: { name: '', protected: false, password: '' },
+      sanction: { reason: '', permanent: true, duration: 0},
       snackbar: { active: false, errorMessage: '' },
       activeChannel: OurRoom,
       admin: true,
@@ -25,9 +26,12 @@ export default Vue.extend({
       editChannelDialog: false,
       leaveChannelDialog: false,
       channelPasswordDialog: false,
+      banUserDialog : false,
+      muteUserDialog : false,
       inChannel: false,
       client: Colyseus.Client,
       dialogRoom: OurRoom,
+      dialogMember: User,
       myMessage: '',
       receivedMessage: '',
       rooms: [] as OurRoom[],
@@ -71,6 +75,20 @@ export default Vue.extend({
         this.showPassword = false
       }
     },
+    muteUserDialog(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.sanction.reason = ''
+        this.sanction.permanent = true
+        this.sanction.duration = 0
+      }
+    },
+    banUserDialog(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.sanction.reason = ''
+        this.sanction.permanent = true
+        this.sanction.duration = 0
+      }
+    },
     channelChange(newValue, oldValue) {
       if (newValue !== oldValue) {
         this.editChannel.name = ''
@@ -92,15 +110,15 @@ export default Vue.extend({
     }
   },
     methods: {
-    async eventChannel(room: OurRoom) {
-            room.channel.onMessage('Message', (message: ChatRoomMessage) => {
+    eventChannel(room: OurRoom) {
+          room.channel.onMessage('Message', (message: ChatRoomMessage) => {
           const newMsg = new Message()
           newMsg.Content = message.Content
           newMsg.Nickname = message.Nickname
           room.messages.push(newMsg)
         })
         room.channel.onMessage('Joining', (message: User) => {
-          if (room.members.find((User: User) => User.id == message.id) == undefined) {
+          if (room.members.find((User: User) => User.id === message.id) === undefined) {
             let member = new User();
             member = message;
             room.members.push(member)
@@ -129,6 +147,26 @@ export default Vue.extend({
         `/user/otherChannel/${this.$store.state.currentUser.id}`
       )
       this.availableChannels = response.data
+    },
+    banUserPending(current: User): void {
+      this.banUserDialog = !this.banUserDialog
+      this.dialogUser = current
+    },
+    async banUserConfirmed() {
+      this.leaveChannelDialog = false
+      console.log("User = ", this.dialogUser)
+      console.log("Sanction = ", this.sanction)
+      // await axios.patch()
+    },
+    muteUserPending(current: User): void {
+      this.muteUserDialog = !this.muteUserDialog
+      this.dialogUser = current
+    },
+    async muteUserConfirmed() {
+      this.leaveChannelDialog = false
+      console.log("User = ", this.dialogUser)
+      console.log("Sanction = ", this.sanction)
+      // await axios.patch()
     },
     async joinChannel(channel: any) {
       try {
@@ -328,6 +366,7 @@ export default Vue.extend({
       const response = await axios.get(
         `/user/channel/${this.$store.state.currentUser.id}`
       )
+      if (response.data.ChannelUser === undefined) return;
       for (const channel of response.data.ChannelUser) {
         const room = new OurRoom()
         try {
@@ -508,7 +547,7 @@ export default Vue.extend({
         permanent
         :expand-on-hover="$vuetify.breakpoint.smAndDown"
       >
-        <v-list-item link>
+        <v-list-item>
           <v-list-item-icon>
             <v-icon>mdi-account-group</v-icon>
           </v-list-item-icon>
@@ -584,13 +623,17 @@ export default Vue.extend({
                     >
                   </v-list-item>
                   <v-list-item
-                    v-if="
-                      admin &&
-                      member.nickname != $store.state.currentUser.nickname
-                    "
+                    v-if=" admin && member.nickname !== $store.state.currentUser.nickname"
                   >
-                    <v-btn @click.stop="banFromChannel(member)"
-                      >Remove from channel</v-btn
+                    <v-btn @click.stop="banUserPending(member)"
+                      >Ban</v-btn
+                    >
+                  </v-list-item>
+                  <v-list-item
+                    v-if="admin && member.nickname !== $store.state.currentUser.nickname"
+                  >
+                    <v-btn @click.stop="muteUserPending(member)"
+                      >Mute</v-btn
                     >
                   </v-list-item>
                   <v-list-item
@@ -815,6 +858,104 @@ export default Vue.extend({
             </v-card-actions>
           </v-card>
         </v-dialog>
+        <!-- BAN USER DIALOG -->
+        <v-dialog v-model="banUserDialog" max-width="400px">
+          <v-card>
+            <v-card-text class="text-center">
+              <div class="white--text dialogTitle">BAN USER</div>
+            </v-card-text>
+            <v-card-text class="text-center">
+              <div class="white--text dialogTitle">Reason :</div>
+            </v-card-text>
+            <v-text-field
+              v-model="sanction.reason"
+              dense
+              solo
+              required
+              type="text"
+              placeholder="reason for the ban"
+              clearable
+              clear-icon="mdi-close-circle"
+              @keydown.enter.prevent="banUserConfirmed()"
+            ></v-text-field>
+            <v-list-item>
+              <v-list-item-title>Permanent</v-list-item-title>
+              <v-checkbox v-model="sanction.permanent"></v-checkbox>
+            </v-list-item>
+            <v-card-text v-if="sanction.permanent === false" class="text-center">
+              <div class="white--text dialogTitle">Duration :</div>
+            </v-card-text>
+            <v-slider
+              v-if="sanction.permanent === false"
+              v-model="sanction.duration"
+              color="orange"
+              label="Duration"
+              hint="Ban Duration in days"
+              min="1"
+              max="365"
+              thumb-label
+              class="semiWide"
+            ></v-slider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text color="grey" @click="banUserDialog = false">
+                CANCEL
+              </v-btn>
+              <v-btn text color="red" @click="banUserConfirmed()">
+                BAN
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <!-- MUTE USER DIALOG -->
+        <v-dialog v-model="muteUserDialog" max-width="400px">
+          <v-card>
+            <v-card-text class="text-center">
+              <div class="white--text dialogTitle">MUTE USER</div>
+            </v-card-text>
+            <v-card-text class="text-center">
+              <div class="white--text dialogTitle">Reason :</div>
+            </v-card-text>
+            <v-text-field
+              v-model="sanction.reason"
+              dense
+              solo
+              required
+              type="text"
+              placeholder="reason for the mute"
+              clearable
+              clear-icon="mdi-close-circle"
+              @keydown.enter.prevent="muteUserConfirmed()"
+            ></v-text-field>
+            <v-list-item>
+              <v-list-item-title>Permanent</v-list-item-title>
+              <v-checkbox v-model="sanction.permanent"></v-checkbox>
+            </v-list-item>
+            <v-card-text v-if="sanction.permanent === false" class="text-center">
+              <div class="white--text dialogTitle">Duration :</div>
+            </v-card-text>
+            <v-slider
+              v-if="sanction.permanent === false"
+              v-model="sanction.duration"
+              color="orange"
+              label="Days"
+              hint="Mute Duration in days"
+              min="1"
+              max="365"
+              thumb-label
+              class="semiWide"
+            ></v-slider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text color="grey" @click="banUserDialog = false">
+                CANCEL
+              </v-btn>
+              <v-btn text color="red" @click="muteUserConfirmed()">
+                Mute
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
         <!-- CHANNEL MESSAGES -->
         <v-container v-if="inChannel">
           <v-list-item-content>
@@ -865,6 +1006,10 @@ export default Vue.extend({
 <style>
 .wide {
   width: 100%;
+}
+.semiWide {
+  margin-left: 5%;
+  width: 90%;
 }
 .auto {
   width: auto;
