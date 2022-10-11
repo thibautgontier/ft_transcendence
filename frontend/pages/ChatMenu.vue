@@ -125,6 +125,14 @@ export default Vue.extend({
           }
         })
         room.channel.onMessage('Leaving', (message: User) => {
+          if (message.id === this.$store.state.currentUser.id)
+          {
+            const index = this.rooms.indexOf(room)
+            this.rooms.splice(index, 1)
+            this.activeChannel = this.rooms[0];
+            if (this.rooms.length == 0)
+              this.inChannel = false
+          }
           for(let i = 0; i < room.members.length; i++)
           {
             if (room.members[i].id === message.id) {
@@ -156,7 +164,24 @@ export default Vue.extend({
       this.leaveChannelDialog = false
       console.log("User = ", this.dialogUser)
       console.log("Sanction = ", this.sanction)
-      // await axios.patch()
+      try {
+        await axios.patch(
+          `/channel/banUser`, {
+  			idUser : this.dialogUser.id,
+        idAdmin : this.$store.state.currentUser.id,
+        reason : this.sanction.reason,
+        duration : this.sanction.duration,
+        idChan : this.activeChannel.id
+	    	}
+      )
+      this.activeChannel.channel.send('Leaving', this.dialogUser)
+      const index = this.activeChannel.members.indexOf(this.dialogUser)
+      this.activeChannel.members.splice(index, 1)
+      } catch (e)
+      {
+        this.snackbar.active = true
+        this.snackbar.errorMessage = 'Cannot Ban User'
+      }
     },
     muteUserPending(current: User): void {
       this.muteUserDialog = !this.muteUserDialog
@@ -480,11 +505,6 @@ export default Vue.extend({
         this.snackbar.active = true
         this.snackbar.errorMessage = 'Cannot add or remove admin'
       }
-    },
-    async banFromChannel(member: any) {
-      await axios.patch(
-        `/channel/${this.activeChannel.id}/banUser/${this.$store.state.currentUser.id}/${member.id}}`
-      )
     },
   },
 })

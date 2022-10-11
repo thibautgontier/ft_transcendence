@@ -3,6 +3,7 @@ import { Channel, Message, User } from '@prisma/client';
 import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
+import { BanUserDto } from './dto/channel-banUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
 import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
 import { ChannelSendMsgDto } from './dto/channel-sendMessage.dto';
@@ -611,27 +612,32 @@ export class ChannelService {
   }
 
   async banUser(
-    idChan: number,
-    idAdmin: number,
-    idUser: number,
+    body: BanUserDto,
     res: Response,
   ): Promise<Channel | null> {
     try {
       if (
-        (await this.getOwner(idChan)) === idUser ||
-        (await this.getAdminChan(idChan, idUser)) !== undefined ||
-        (await this.getAdminChan(idChan, idAdmin)) === undefined ||
-        (await this.getUser(idChan, idUser)) === undefined ||
-        (await this.getBanUsers(idChan, idUser)) !== undefined
+        (await this.getOwner(body.idChan)) === body.idUser ||
+        (await this.getAdminChan(body.idChan, body.idUser)) !== undefined ||
+        (await this.getAdminChan(body.idChan, body.idAdmin)) === undefined ||
+        (await this.getUser(body.idChan, body.idUser)) === undefined ||
+        (await this.getBanUsers(body.idChan, body.idUser)) !== undefined
       )
         throw Error;
       const channel = await this.prisma.channel.update({
-        where: { id: idChan },
+        where: { id: body.idChan },
         data: {
-          Users: { disconnect: { id: idUser } },
-          BanUsers: { connect: { id: idUser } },
+          Users: { disconnect: { id: body.idUser } },
+          BanUsers: { connect: { id: body.idUser } },
         },
       });
+      await this.prisma.banModel.create({
+      data: {
+        User: { connect: { id: body.idUser } },
+        Channel: { connect: { id: body.idChan } },
+        Reason: body.reason,
+      },
+    });
       res.status(HttpStatus.OK).send(channel);
       return channel;
     } catch (error) {

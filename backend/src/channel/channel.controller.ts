@@ -14,6 +14,7 @@ import { Response } from 'express';
 import { get } from 'http';
 import { ChannelService } from './channel.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
+import { BanUserDto } from './dto/channel-banUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
 import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
 import { ChannelSendMsgDto } from './dto/channel-sendMessage.dto';
@@ -256,17 +257,13 @@ export class ChannelController {
     );
   }
 
-  @Patch(':channelid/banUser/:idAdmin/:idUser')
+  @Patch('banUser/')
   async banUser(
-    @Param('channelid') idChan: number,
-    @Param('idAdmin') idAdmin: number,
-    @Param('idUser') idUser: number,
+	@Body() body: BanUserDto,
     @Res() res: Response,
   ): Promise<Channel | null> {
     return await this.channelService.banUser(
-      Number(idChan),
-      Number(idAdmin),
-      Number(idUser),
+      body,
       res,
     );
   }

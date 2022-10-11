@@ -35,6 +35,7 @@ model User {
   MutedUser     Channel[]       @relation(name: "mutedUser")
   BanUser       Channel[]       @relation(name: "banUser")
   UserMessage   Message[]
+  BanModel        BanModel[]
 }
 
 model GameProfile {
@@ -84,9 +85,21 @@ model Channel {
   Admins          User[]          @relation("admin")
   MutedUsers      User[]          @relation("mutedUser")
   BanUsers        User[]          @relation("banUser")
+  BanModel        BanModel[]
   Messages        Message[]
   PasswordID      Int             @unique
   Password        ChannelPassword @relation(fields: [PasswordID], references: [id], onDelete: Cascade)
+}
+
+model BanModel{
+  id              Int             @id @default(autoincrement())
+  CreatedAt       DateTime        @default(now())
+  ExpiresAt       DateTime?
+  Reason          String
+  UserID          Int
+  User            User            @relation(fields: [UserID], references: [id], onDelete: Cascade)
+  ChannelID       Int
+  Channel         Channel         @relation(fields: [ChannelID], references: [id], onDelete: Cascade)
 }
 
 model ChannelPassword {
