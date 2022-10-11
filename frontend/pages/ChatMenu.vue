@@ -17,7 +17,7 @@ export default Vue.extend({
     return {
       newChannel: { name: '', protected: false, password: '' },
       editChannel: { name: '', protected: false, password: '' },
-      sanction: { reason: '', permanent: true, duration: 0},
+      sanction: { reason: '', type: '', permanent: true, duration: 0},
       snackbar: { active: false, errorMessage: '' },
       activeChannel: OurRoom,
       admin: true,
@@ -161,7 +161,8 @@ export default Vue.extend({
       this.dialogUser = current
     },
     async banUserConfirmed() {
-      this.leaveChannelDialog = false
+      this.banUserDialog = false
+      this.sanction.type = 'ban'
       console.log("User = ", this.dialogUser)
       console.log("Sanction = ", this.sanction)
       try {
@@ -188,7 +189,8 @@ export default Vue.extend({
       this.dialogUser = current
     },
     async muteUserConfirmed() {
-      this.leaveChannelDialog = false
+      this.muteUserDialog = false
+      this.sanction.type = 'mute'
       console.log("User = ", this.dialogUser)
       console.log("Sanction = ", this.sanction)
       // await axios.patch()
@@ -967,7 +969,7 @@ export default Vue.extend({
             ></v-slider>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn text color="grey" @click="banUserDialog = false">
+              <v-btn text color="grey" @click="muteUserDialog = false">
                 CANCEL
               </v-btn>
               <v-btn text color="red" @click="muteUserConfirmed()">
