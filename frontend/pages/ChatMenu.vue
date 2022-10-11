@@ -19,6 +19,11 @@ export default Vue.extend({
       editChannel: { name: '', protected: false, password: '' },
       sanction: { reason: '', type: '', permanent: true, duration: 0},
       snackbar: { active: false, errorMessage: '' },
+      sanctions: [
+        { type: 'mute', name: 'luigi', reason: 'spam', duration: 1},
+        { type: 'mute', name: 'toto', reason: 'dit de la merde', duration: 2},
+        { type: 'ban', name: 'ben', reason: 'rebellion', duration: -1},
+      ],
       activeChannel: OurRoom,
       admin: true,
       addChannelDialog: false,
@@ -44,6 +49,7 @@ export default Vue.extend({
       showPassword: false,
       isBlocked: false,
       isAdmin: false,
+      mode: 'settings'
   }
   },
   head(): {} {
@@ -73,6 +79,7 @@ export default Vue.extend({
         this.editChannel.password = ''
         this.editChannel.protected = false
         this.showPassword = false
+        this.mode = 'settings'
       }
     },
     muteUserDialog(newValue, oldValue) {
@@ -833,52 +840,91 @@ export default Vue.extend({
         <!-- CHANNEL CONTROL PANEL DIALOG -->
         <v-dialog v-model="editChannelDialog" max-width="400px">
           <v-card>
-            <v-card-text class="text-center">
-              <div class="white--text dialogTitle">CHANNEL CONTROL PANEL</div>
-            </v-card-text>
-            <v-card-text class="text-center">
-              <div class="white--text dialogTitle">Channel name :</div>
-            </v-card-text>
-            <v-text-field
-              v-model="editChannel.name"
-              dense
-              solo
-              required
-              type="text"
-              placeholder="must be between 3 and 12 characters"
-              clearable
-              clear-icon="mdi-close-circle"
-              :rules="inputRules"
-              @keydown.enter.prevent="editChannelConfirmed()"
-            ></v-text-field>
-            <v-list-item>
-              <v-list-item-title>Protected channel</v-list-item-title>
-              <v-checkbox v-model="editChannel.protected"></v-checkbox>
-            </v-list-item>
-            <v-card-text v-if="editChannel.protected" class="text-center">
-              <div class="white--text dialogTitle">Password :</div>
-            </v-card-text>
-            <v-text-field
-              v-if="editChannel.protected"
-              v-model="editChannel.password"
-              dense
-              solo
-              placeholder="must be between 3 and 12 characters"
-              clear-icon="mdi-close-circle"
-              :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-              :type="!showPassword ? 'password' : 'text'"
-              :rules="inputRules"
-              @click:append="showPassword = !showPassword"
-            ></v-text-field>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn text color="grey" @click="editChannelDialog = false">
-                CANCEL
-              </v-btn>
-              <v-btn text color="green" @click="editChannelConfirmed()">
-                SAVE AND QUIT
-              </v-btn>
+            <div v-if="mode === 'settings'">
+              <v-card-text class="text-center">
+                <div class="white--text dialogTitle">CHANNEL CONTROL PANEL</div>
+              </v-card-text>
+              <v-card-text class="text-center">
+                <div class="white--text dialogTitle">Channel name :</div>
+              </v-card-text>
+              <v-text-field
+                v-model="editChannel.name"
+                dense
+                solo
+                required
+                type="text"
+                placeholder="must be between 3 and 12 characters"
+                clearable
+                clear-icon="mdi-close-circle"
+                :rules="inputRules"
+                @keydown.enter.prevent="editChannelConfirmed()"
+              ></v-text-field>
+              <v-list-item>
+                <v-list-item-title>Protected channel</v-list-item-title>
+                <v-checkbox v-model="editChannel.protected"></v-checkbox>
+              </v-list-item>
+              <v-card-text v-if="editChannel.protected" class="text-center">
+                <div class="white--text dialogTitle">Password :</div>
+              </v-card-text>
+              <v-text-field
+                v-if="editChannel.protected"
+                v-model="editChannel.password"
+                dense
+                solo
+                placeholder="must be between 3 and 12 characters"
+                clear-icon="mdi-close-circle"
+                :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="!showPassword ? 'password' : 'text'"
+                :rules="inputRules"
+                @click:append="showPassword = !showPassword"
+              ></v-text-field>
+              <v-card-actions>
+                <v-btn text color="orange" @click="mode = 'bans'">
+                  SANCTIONS
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn text color="grey" @click="editChannelDialog = false">
+                  CANCEL
+                </v-btn>
+                <v-btn text color="green" @click="editChannelConfirmed()">
+                  SAVE AND QUIT
+                </v-btn>
             </v-card-actions>
+          </div>
+          <div v-else>
+              <v-card-text class="text-center">
+                <div class="white--text dialogTitle">CHANNEL CONTROL PANEL</div>
+              </v-card-text>
+              <v-card-text class="text-center">
+                <div class="white--text dialogTitle">Channel Sanctions :</div>
+              </v-card-text>
+              <v-container >
+                <v-list v-for="(punished, index) in sanctions" :key="index">
+                  <div class="sanction">
+                    <v-list-item>
+                      <v-list-item-title>{{punished.name}}</v-list-item-title>
+                      <v-list-item-subtitle>{{punished.type}}</v-list-item-subtitle>
+                      <v-list-item-subtitle v-if="punished.duration === -1">permanent</v-list-item-subtitle>
+                      <v-list-item-subtitle v-else-if="punished.duration === 1">{{punished.duration}} day left</v-list-item-subtitle>
+                      <v-list-item-subtitle v-else>{{punished.duration}} days left</v-list-item-subtitle>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-list-item-subtitle>reason: "{{punished.reason}}"</v-list-item-subtitle>
+                      <v-btn>PARDON</v-btn>
+                    </v-list-item>
+                  </div>
+                </v-list>
+              </v-container>
+              <v-card-actions>
+                <v-btn text color="orange" @click="mode = 'settings'">
+                  SETTINGS
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn text color="grey" @click="editChannelDialog = false">
+                  CLOSE
+                </v-btn>
+            </v-card-actions>
+          </div>
           </v-card>
         </v-dialog>
         <!-- BAN USER DIALOG -->
@@ -1033,6 +1079,11 @@ export default Vue.extend({
 .semiWide {
   margin-left: 5%;
   width: 90%;
+}
+.sanction {
+  border: solid;
+  border-width: thin;
+  border-color: grey;
 }
 .auto {
   width: auto;
