@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class BanUserDto {
+export class BanOrMuteUserDto {
 	@ApiProperty({
 		required: true,
 	})
@@ -17,12 +17,17 @@ export class BanUserDto {
 	reason: string;
 
 	@ApiProperty({
-		required: false,
+		required: true,
 	})
 	duration: string;
 
 	@ApiProperty({
-		required: false,
+		required: true,
 	})
 	idChan: number;
+
+	@ApiProperty({
+		required: true,
+	})
+	Sanction: string;
 }

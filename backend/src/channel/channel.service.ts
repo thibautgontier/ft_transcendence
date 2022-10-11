@@ -3,7 +3,7 @@ import { Channel, Message, User } from '@prisma/client';
 import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
-import { BanUserDto } from './dto/channel-banUser.dto';
+import { BanOrMuteUserDto } from './dto/channel-banUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
 import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
 import { ChannelSendMsgDto } from './dto/channel-sendMessage.dto';
@@ -50,17 +50,16 @@ export class ChannelService {
   }
 
   async isAdmin(idChan: number, idUser: number): Promise<boolean> {
-    try{
+    try {
       const chan = await this.prisma.channel.findUnique({
-        where: {id: idChan},
-        select : {Admins: true}
-      })
+        where: { id: idChan },
+        select: { Admins: true },
+      });
       if (chan.Admins.find((User) => User.id == idUser) != undefined)
         return true;
-      else
-        return false;
+      else return false;
     } catch (e) {
-      return false
+      return false;
     }
   }
 
@@ -111,8 +110,8 @@ export class ChannelService {
         where: { id: idChan },
       });
       const pw = await this.prisma.channelPassword.delete({
-        where: { id: channel.PasswordID}
-      })
+        where: { id: channel.PasswordID },
+      });
       res.status(HttpStatus.OK).send(channel);
       return channel;
     } catch (error) {
@@ -552,23 +551,29 @@ export class ChannelService {
   }
 
   async muteUser(
-    idChan: number,
-    idAdmin: number,
-    idUser: number,
+    body: BanOrMuteUserDto,
     res: Response,
   ): Promise<Channel | null> {
     try {
       if (
-        (await this.getAdminChan(idChan, idAdmin)) === undefined ||
-        (await this.getOwner(idChan)) === idUser ||
-        (await this.getAdminChan(idChan, idUser)) !== undefined ||
-        (await this.getMutedUsers(idChan, idUser)) !== undefined
+        (await this.getAdminChan(body.idChan, body.idAdmin)) === undefined ||
+        (await this.getOwner(body.idChan)) === body.idUser ||
+        (await this.getAdminChan(body.idChan, body.idUser)) !== undefined ||
+        (await this.getMutedUsers(body.idChan, body.idUser)) !== undefined
       )
         throw Error;
       const chan = await this.prisma.channel.update({
-        where: { id: idChan },
+        where: { id: body.idChan },
         data: {
-          MutedUsers: { connect: { id: idUser } },
+          MutedUsers: { connect: { id: body.idUser } },
+        },
+      });
+      await this.prisma.banModel.create({
+        data: {
+          User: { connect: { id: body.idUser } },
+          Channel: { connect: { id: body.idChan } },
+          Sanction: 'mute',
+          Reason: body.reason,
         },
       });
       res.status(HttpStatus.OK).send(chan);
@@ -612,7 +617,7 @@ export class ChannelService {
   }
 
   async banUser(
-    body: BanUserDto,
+    body: BanOrMuteUserDto,
     res: Response,
   ): Promise<Channel | null> {
     try {
@@ -632,12 +637,13 @@ export class ChannelService {
         },
       });
       await this.prisma.banModel.create({
-      data: {
-        User: { connect: { id: body.idUser } },
-        Channel: { connect: { id: body.idChan } },
-        Reason: body.reason,
-      },
-    });
+        data: {
+          User: { connect: { id: body.idUser } },
+          Channel: { connect: { id: body.idChan } },
+          Sanction: 'ban',
+          Reason: body.reason,
+        },
+      });
       res.status(HttpStatus.OK).send(channel);
       return channel;
     } catch (error) {

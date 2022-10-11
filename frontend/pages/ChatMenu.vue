@@ -167,7 +167,8 @@ export default Vue.extend({
         idAdmin : this.$store.state.currentUser.id,
         reason : this.sanction.reason,
         duration : this.sanction.duration,
-        idChan : this.activeChannel.id
+        idChan : this.activeChannel.id,
+        Sanction: this.sanction.type
 	    	}
       )
       this.activeChannel.channel.send('Leaving', this.dialogUser)
@@ -184,14 +185,28 @@ export default Vue.extend({
       this.muteUserDialog = !this.muteUserDialog
       this.dialogUser = current
     },
-    muteUserConfirmed() {
+    async muteUserConfirmed() {
       this.muteUserDialog = false
       this.sanction.type = 'mute'
       if (this.sanction.permanent === true)
         this.sanction.duration = -1
       console.log("User = ", this.dialogUser)
       console.log("Sanction = ", this.sanction)
-      // await axios.patch()
+      try {
+        await axios.patch(
+          `/channel/banUser`, {
+        idUser : this.dialogUser.id,
+        idAdmin : this.$store.state.currentUser.id,
+        reason : this.sanction.reason,
+        duration : this.sanction.duration,
+        idChan : this.activeChannel.id,
+        Sanction: this.sanction.type
+	    	}
+      )
+      } catch(e) {
+        this.snackbar.active = true
+        this.snackbar.errorMessage = 'Cannot Mute User'
+      }
     },
     async joinChannel(channel: any) {
       try {
@@ -378,7 +393,7 @@ export default Vue.extend({
       } catch (e) {
         console.warn('you are ban or muted:\n', e)
         this.snackbar.active = true
-        this.snackbar.errorMessage = 'Cannot send message'
+        this.snackbar.errorMessage = 'You have been muted'
         return
       }
       this.activeChannel.channel.send(

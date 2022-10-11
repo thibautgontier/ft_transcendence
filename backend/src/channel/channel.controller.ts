@@ -14,7 +14,7 @@ import { Response } from 'express';
 import { get } from 'http';
 import { ChannelService } from './channel.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
-import { BanUserDto } from './dto/channel-banUser.dto';
+import { BanOrMuteUserDto } from './dto/channel-banUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
 import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
 import { ChannelSendMsgDto } from './dto/channel-sendMessage.dto';
@@ -49,7 +49,7 @@ export class ChannelController {
     @Param('idChannel') idChan: number,
     @Param('idUser') idUser: number,
   ): Promise<boolean> {
-    return await this.channelService.isAdmin(Number(idChan), Number(idUser))
+    return await this.channelService.isAdmin(Number(idChan), Number(idUser));
   }
 
   @Post('create')
@@ -227,21 +227,6 @@ export class ChannelController {
     );
   }
 
-  @Patch(':channelid/muteUser/:idAdmin/:idUser')
-  async muteUser(
-    @Param('channelid') idChan: number,
-    @Param('idAdmin') idAdmin: number,
-    @Param('idUser') idUser: number,
-    @Res() res: Response,
-  ): Promise<Channel | null> {
-    return await this.channelService.muteUser(
-      Number(idChan),
-      Number(idAdmin),
-      Number(idUser),
-      res,
-    );
-  }
-
   @Patch(':channelid/unmuteUser/:idAdmin/:idUser')
   async unmuteUser(
     @Param('channelid') idChan: number,
@@ -259,13 +244,14 @@ export class ChannelController {
 
   @Patch('banUser/')
   async banUser(
-	@Body() body: BanUserDto,
+    @Body() body: BanOrMuteUserDto,
     @Res() res: Response,
   ): Promise<Channel | null> {
-    return await this.channelService.banUser(
-      body,
-      res,
-    );
+    if ((body.Sanction = 'ban')) {
+      return await this.channelService.banUser(body, res);
+    } else {
+      return await this.channelService.muteUser(body, res);
+    }
   }
 
   @Patch(':channelid/unbanUser/:idAdmin/:idUser')

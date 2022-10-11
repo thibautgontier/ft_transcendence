@@ -95,6 +95,7 @@ model BanModel{
   id              Int             @id @default(autoincrement())
   CreatedAt       DateTime        @default(now())
   ExpiresAt       DateTime?
+  Sanction        Sanction
   Reason          String
   UserID          Int
   User            User            @relation(fields: [UserID], references: [id], onDelete: Cascade)
@@ -126,6 +127,11 @@ enum logStatus {
   AFK
   invisible
   inGame
+}
+
+enum Sanction {
+  ban
+  mute
 }
 
 enum partyStatus {
