@@ -136,6 +136,7 @@ export default Vue.extend({
           {
             const index = this.rooms.indexOf(room)
             this.rooms.splice(index, 1)
+            room.channel.leave()
             this.activeChannel = this.rooms[0];
             if (this.rooms.length == 0)
               this.inChannel = false
