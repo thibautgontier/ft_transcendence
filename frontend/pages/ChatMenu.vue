@@ -85,9 +85,14 @@ export default Vue.extend({
     await this.getChannel()
     this.$store.commit('changeInMenu', false)
   },
-  destroyed() {},
+  destroyed() {
+    for(const channel of this.rooms)
+    {
+      channel.channel.leave()
+    }
+  },
     methods: {
-    async initChannel(room: OurRoom) {
+    async eventChannel(room: OurRoom) {
             room.channel.onMessage('Message', (message: ChatRoomMessage) => {
           const newMsg = new Message()
           newMsg.Content = message.Content
@@ -102,7 +107,16 @@ export default Vue.extend({
           }
         })
         room.channel.onMessage('Leaving', (message: User) => {
-          room.members.splice(room.members.indexOf(message), 1)
+          for(let i = 0; i < room.members.length; i++)
+          {
+            if (room.members[i].id === message.id) {
+              room.members.splice(i, 1)
+              break;
+            }
+          }
+        })
+        room.channel.onMessage('ChanMAJ', (message: string) => {
+          room.channelName = message
         })
     },
     leaveChannelPending(current: OurRoom): void {
@@ -160,7 +174,7 @@ export default Vue.extend({
           room.members.push(newUser)
         }
       this.rooms.push(room)
-      this.initChannel(room);
+      this.eventChannel(room);
       this.addChannelDialog = false
       this.activeChannel = room
       this.inChannel = true
@@ -219,7 +233,7 @@ export default Vue.extend({
           )
         }
         this.activeChannel = newRoom
-        this.initChannel(newRoom);
+        this.eventChannel(newRoom);
       } catch (e) {
         console.error('create error', e)
         this.snackbar.active = true
@@ -240,12 +254,15 @@ export default Vue.extend({
             this.editChannel.password.length > 12))
       )
         return
-      if (this.editChannel.name !== '') {
+      try{
+        if (this.editChannel.name !== '') {
         // changement de nom
         await axios.patch(
           `/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
           { name: this.editChannel.name }
         )
+        this.dialogRoom.channelName = this.editChannel.name;
+        this.dialogRoom.channel.send('ChanMAJ', this.dialogRoom.channelName);
       }
       if (this.dialogRoom.Type === chanStatus.PUBLIC) {
         if (this.editChannel.protected === true) {
@@ -267,6 +284,11 @@ export default Vue.extend({
           `/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
           { Password: this.editChannel.password }
         )
+      }
+      } catch(e) {
+        console.warn('Cannot edit Channel! :', e);
+        this.snackbar.active = true
+        this.snackbar.errorMessage = 'Cannot edit channel, it seems that you don\'t have the right'
       }
       this.editChannelDialog = false
     },
@@ -332,7 +354,7 @@ export default Vue.extend({
           room.members.push(newUser)
         }
         this.rooms.push(room);
-        this.initChannel(room);
+        this.eventChannel(room);
         this.addChannelDialog = false
         channel.active = false
       }
@@ -376,16 +398,16 @@ export default Vue.extend({
           this.rooms.push(newRoom);
           this.inChannel = true;
           this.activeChannel = newRoom;
-          this.initChannel(newRoom);
+          this.eventChannel(newRoom);
           } catch(e) {
             console.warn('Cannot create private channel', e);
           }
         }
     },
-    inviteToPlay(member: any) {},
-    async sendFriendRequest(friend: any) {
+    inviteToPlay(member: User) {},
+    async sendFriendRequest(member: User) {
       await axios.patch(
-        `/social/${this.$store.state.currentUser.id}/friend/add/${friend.id}`
+        `/social/${this.$store.state.currentUser.id}/friend/add/${member.id}`
       )
     },
     async switchBlock(member: any) {

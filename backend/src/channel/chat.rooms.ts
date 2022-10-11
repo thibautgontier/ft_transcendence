@@ -1,5 +1,5 @@
 import { Client, Room } from 'colyseus';
-import { Schema, type } from '@colyseus/schema';
+import * as Colyseus from 'colyseus.js';
 
 export interface IChatRoomMessage {
   Content: string;
@@ -16,6 +16,7 @@ export interface IUser {
   avatar: string;
   id: number;
   nickname: string;
+  twoFA: boolean;
 }
 
 export class User implements IUser {
@@ -23,22 +24,56 @@ export class User implements IUser {
   avatar = '';
   id = 0;
   nickname = '';
+  twoFA = false;
 }
 
-export class ChatState extends Schema {
-  @type('string')
-  public name = '';
+export interface IRoom {
+  channel: Colyseus.Room;
+  channelName: string;
+  messages: Message[];
+  id: number;
+  Type: chanStatus;
+  members: User[];
 }
 
-export class ChatRoom extends Room<ChatState> {
+export class OurRoom implements IRoom {
+  channel = new Colyseus.Room('');
+  channelName = '';
+  messages: Message[] = [];
+  id = 0;
+  Type = chanStatus.PUBLIC;
+  members: User[] = [];
+}
+
+export interface Imessage {
+  id: number;
+  CreatedAt: Date;
+  UpdatedAt: Date;
+  Content: string;
+  Nickname: string;
+}
+
+export class Message implements Imessage {
+  id = 0;
+  CreatedAt = new Date();
+  UpdatedAt = new Date();
+  Content = '';
+  Nickname = '';
+}
+
+export enum chanStatus {
+  PUBLIC = 'public',
+  PROTECTED = 'protected', //if mdp exist
+  PRIVATE = 'private', // only dm into two user
+}
+
+export class ChatRoom extends Room {
   constructor() {
     super();
   }
 
   async onCreate(options: any) {
     console.info('Chat room created: ');
-
-    // this.setState(new ChatState());
 
     this.onMessage('Message', (client, message: string) => {
       let msg = new ChatRoomMessage();
@@ -53,7 +88,11 @@ export class ChatRoom extends Room<ChatState> {
     });
 
     this.onMessage('Leaving', (client, message: User) => {
-      this.broadcast('Leaving', message, { except: client});
+      this.broadcast('Leaving', message, { except: client });
+    });
+
+    this.onMessage('ChanMAJ', (client, message: string) => {
+      this.broadcast('ChanMAJ', message, { except: client });
     });
 
     this.onMessage('*', (client, type, message) => {
@@ -66,7 +105,7 @@ export class ChatRoom extends Room<ChatState> {
       `Client sessionId: ${client.sessionId} roomId: ${this.roomId} joined the chat`,
       options.nickname,
     );
-    this.broadcast('Joining', options, { except: client } );
+    this.broadcast('Joining', options, { except: client });
   }
 
   async onLeave(client: Client, options: any) {

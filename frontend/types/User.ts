@@ -3,6 +3,7 @@ export interface Iuser {
 	nickname: string,
 	id: number,
 	accessToken: string,
+	twoFA: boolean
 }
 
 export class User implements Iuser {
@@ -10,4 +11,5 @@ export class User implements Iuser {
 	nickname = '';
 	id = 0;
 	accessToken = '';
+	twoFA = false;
 }

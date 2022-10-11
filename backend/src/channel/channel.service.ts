@@ -384,8 +384,7 @@ export class ChannelService {
     try {
       if (
         (await this.getOwner(idChan)) === idRemove ||
-        (await this.getAdminChan(idChan, idAdmin)) !== undefined ||
-        (await this.getUser(idChan, idRemove)) === undefined ||
+        (await this.getOwner(idChan)) !== idAdmin ||
         (await this.getAdminChan(idChan, idRemove)) === undefined
       )
         throw Error;
