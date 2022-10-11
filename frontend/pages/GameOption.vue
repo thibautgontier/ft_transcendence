@@ -19,6 +19,7 @@ export default Vue.extend({
       const gameOption = { ballSpeed: this.ballSpeed / 100, paddleSpeed: this.paddleSpeed / 100, pointsToWin: this.pointsToWin / 10};
       this.$store.commit('changeGameOption', gameOption);
       this.start = 1;
+      this.$router.push('/GameMenu');
     },
     resetToDefault() {
       this.ballSpeed = 50;

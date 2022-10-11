@@ -12,12 +12,14 @@ export class PongRoom extends Room<GameState> {
   private physics!: Physics;
   private lpId!: string;
   private rpId!: string;
+  private pointsToWin!: number;
 
   onCreate(options: any) {
     console.info('PongRoom created', options);
     this.setState(new GameState());
 
-    this.physics = new Physics(this.state.ball, this.state.leftPaddle, this.state.rightPaddle);
+    this.physics = new Physics(this.state.ball, this.state.leftPaddle, this.state.rightPaddle, options);
+    this.pointsToWin = options.pointsToWin;
 	  // FIXME: strong typing of message is not enforced
 	this.onMessage('PaddleMoveMessage', (client: Client, message : PaddleMoveMessage) => {
 		if (client.id === this.rpId)
@@ -42,7 +44,7 @@ export class PongRoom extends Room<GameState> {
       this.physics.setAngle(Math.PI);
     }
 
-    if (this.state.scoreboard.left >= 3 || this.state.scoreboard.right >= 3) {
+    if (this.state.scoreboard.left >= this.pointsToWin || this.state.scoreboard.right >= this.pointsToWin) {
       this.state.gameStatus = GameStatus.FINISHED;
       return;
     }

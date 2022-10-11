@@ -35,12 +35,12 @@ export class Physics {
     ball: Ball,
     leftPaddle: Paddle,
     rightPaddle: Paddle,
-    options?: PhysicsOptions,
+    options?: any,
   ) {
     const {
-      ballSpeed = 0.5,
+      ballSpeed = options.ballSpeed,
       ballAngle = 0,
-      paddleSpeed = 0.3,
+      paddleSpeed = options.paddleSpeed,
     } = options || {};
 
     this.ball = ball;
