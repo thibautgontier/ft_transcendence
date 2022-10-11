@@ -17,7 +17,7 @@ export default Vue.extend({
     return {
       newChannel: { name: '', protected: false, password: '' },
       editChannel: { name: '', protected: false, password: '' },
-      sanction: { reason: '', type: '', permanent: true, duration: -1},
+      sanction: { reason: '', type: '', permanent: true, duration: 0},
       snackbar: { active: false, errorMessage: '' },
       sanctions: [
         { type: 'mute', name: 'luigi', reason: 'spam', duration: 1},
@@ -82,20 +82,6 @@ export default Vue.extend({
         this.mode = 'settings'
       }
     },
-    muteUserDialog(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        this.sanction.reason = ''
-        this.sanction.permanent = true
-        this.sanction.duration = 0
-      }
-    },
-    banUserDialog(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        this.sanction.reason = ''
-        this.sanction.permanent = true
-        this.sanction.duration = 0
-      }
-    },
     channelChange(newValue, oldValue) {
       if (newValue !== oldValue) {
         this.editChannel.name = ''
@@ -138,7 +124,7 @@ export default Vue.extend({
             this.rooms.splice(index, 1)
             room.channel.leave()
             this.activeChannel = this.rooms[0];
-            if (this.rooms.length == 0)
+            if (this.rooms.length === 0)
               this.inChannel = false
           }
           for(let i = 0; i < room.members.length; i++)
@@ -169,14 +155,15 @@ export default Vue.extend({
       this.dialogUser = current
     },
     async banUserConfirmed() {
-      this.banUserDialog = false
       this.sanction.type = 'ban'
+      if (this.sanction.permanent === true)
+        this.sanction.duration = -1
       console.log("User = ", this.dialogUser)
       console.log("Sanction = ", this.sanction)
       try {
         await axios.patch(
           `/channel/banUser`, {
-  			idUser : this.dialogUser.id,
+            idUser : this.dialogUser.id,
         idAdmin : this.$store.state.currentUser.id,
         reason : this.sanction.reason,
         duration : this.sanction.duration,
@@ -191,14 +178,17 @@ export default Vue.extend({
         this.snackbar.active = true
         this.snackbar.errorMessage = 'Cannot Ban User'
       }
+      this.banUserDialog = false
     },
     muteUserPending(current: User): void {
       this.muteUserDialog = !this.muteUserDialog
       this.dialogUser = current
     },
-    async muteUserConfirmed() {
+    muteUserConfirmed() {
       this.muteUserDialog = false
       this.sanction.type = 'mute'
+      if (this.sanction.permanent === true)
+        this.sanction.duration = -1
       console.log("User = ", this.dialogUser)
       console.log("Sanction = ", this.sanction)
       // await axios.patch()
@@ -442,6 +432,10 @@ export default Vue.extend({
       this.isBlocked = responseBlocked.data
       const responseAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${member.id}`)
       this.isAdmin = responseAdmin.data
+      this.sanction.reason = ''
+      this.sanction.permanent = true
+      this.sanction.duration = 0
+      this.sanction.type = ''
     },
     async openPrivateChat(member: any) {
       const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
@@ -660,7 +654,6 @@ export default Vue.extend({
                     >
                   </v-list-item>
                   <v-list-item
-                    v-if="admin && member.nickname !== $store.state.currentUser.nickname"
                   >
                     <v-btn @click.stop="muteUserPending(member)"
                       >Mute</v-btn
