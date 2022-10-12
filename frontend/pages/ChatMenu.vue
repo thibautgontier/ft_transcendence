@@ -714,26 +714,26 @@ export default Vue.extend({
                     >Remove Admin</v-btn>
                   </v-list-item>
                   <v-list-item
-                    v-if=" amAdmin && member.nickname !== $store.state.currentUser.nickname"
+                    v-if=" amAdmin && member.id !== $store.state.currentUser.id"
                   >
                     <v-btn @click.stop="banUserPending(member)"
                       >Ban</v-btn
                     >
                   </v-list-item>
                   <v-list-item
-                    v-if=" amAdmin && member.nickname !== $store.state.currentUser.nickname"
+                    v-if=" amAdmin && member.id !== $store.state.currentUser.id"
                   >
                     <v-btn @click.stop="muteUserPending(member)"
                       >Mute</v-btn
                     >
                   </v-list-item>
-                  <v-list-item v-if="isBlocked === false">
+                  <v-list-item v-if="isBlocked === false && member.id !== $store.state.currentUser.id">
                     <v-btn
                       dense
                       @click.stop="blockUser(member)"
                     >Block</v-btn>
                   </v-list-item>
-                  <v-list-item v-else>
+                  <v-list-item v-else-if="isBlocked === true && member.id !== $store.state.currentUser.id">
                     <v-btn
                       dense
                       @click.stop="unblockUser(member)"
