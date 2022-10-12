@@ -444,10 +444,12 @@ export default Vue.extend({
     async updateMember (member: any) {
       const responseBlocked = await axios.get(`/social/${this.$store.state.currentUser.id}/isBlocked/${member.id}`)
       this.isBlocked = responseBlocked.data
-      const responseAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${member.id}`)
-      this.isAdmin = responseAdmin.data
-      const responseOwner = await axios.get(`/channel/${this.activeChannel.id}/isOwner/${this.$store.state.currentUser.id}`)
-      this.amOwner = responseOwner.data
+      const responseIsAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${member.id}`)
+      this.isAdmin = responseIsAdmin.data
+      const responseAmAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${this.$store.state.currentUser.id}`)
+      this.isAdmin = responseAmAdmin.data
+      const responseAmOwner = await axios.get(`/channel/${this.activeChannel.id}/isOwner/${this.$store.state.currentUser.id}`)
+      this.amOwner = responseAmOwner.data
       this.sanction.reason = ''
       this.sanction.permanent = true
       this.sanction.duration = 0
