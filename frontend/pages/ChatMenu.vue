@@ -950,7 +950,8 @@ export default Vue.extend({
                       <v-list-item-title>{{punished.User.Nickname}}</v-list-item-title>
                       <v-list-item-subtitle>{{punished.Type}}</v-list-item-subtitle>
                       <v-list-item-subtitle v-if="punished.Duration === -1">permanent</v-list-item-subtitle>
-                      <v-list-item-subtitle v-else-if="punished.Duration === 1 || punished.Duration === 0">{{punished.Duration}} minutes left</v-list-item-subtitle>
+                      <v-list-item-subtitle v-else-if="punished.Duration === 1">{{punished.Duration}} minutes left</v-list-item-subtitle>
+                      <v-list-item-subtitle v-else-if="punished.Duration === 0">{{punished.Duration}} less than a minute left</v-list-item-subtitle>
                       <v-list-item-subtitle v-else>{{punished.Duration}} minutes left</v-list-item-subtitle>
                     </v-list-item>
                     <v-list-item>
