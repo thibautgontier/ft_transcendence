@@ -15,9 +15,9 @@ export default Vue.extend({
 			<v-app-bar v-if="$store.state.loginFinish != false" app color="#121212" height="90px" class="nav">			<div class="testbuttons mx-auto">
 					<v-btn router to="/">Home</v-btn>
 					<v-btn router to="/GameMenu">Game</v-btn>
-					<v-btn router to="/GameOption">Option</v-btn>
 					<v-btn router to="/ChatMenu">Chat</v-btn>
 					<v-btn @click.stop="loadProfile()">History</v-btn>
+					<v-btn router to="/GameOption">Game Options</v-btn>
 				</div>
 			</v-app-bar>
 </template>

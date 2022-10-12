@@ -103,7 +103,7 @@ export class AuthService {
   /*------------------------------------------------------------------------------------------------------------*/
 
   async sendConfirmationEmail(user: User, code: number) {
-    const email = 'tgontier@student.42.fr';
+    const email = user.Email;
     const name = user.Nickname;
     await this.mailerService.sendMail({
       to: email,

@@ -33,7 +33,7 @@ export default Vue.extend({
     this.ctx = this.canvas.getContext('2d')
     const client = new Client('ws://localhost:3000')
     try {
-      this.room = await client.joinOrCreate('PongRoom', {}, GameState)
+      this.room = await client.joinOrCreate('PongRoom', this.$store.state.gameOption, GameState)
       console.log(this.room.sessionId, 'joined', this.room.name)
     } catch (e) {
       console.log('JOIN ERROR', e)
@@ -132,7 +132,7 @@ export default Vue.extend({
     render(state: GameState) {
       if (this.ctx == null) return
       // Clear screen
-      this.ctx.fillStyle = '#000'
+      this.ctx.fillStyle = this.$store.state.gameOption.color;
       this.ctx.fillRect(0, 0, GameDimensions.width, GameDimensions.height)
 
       // Rendering styles
