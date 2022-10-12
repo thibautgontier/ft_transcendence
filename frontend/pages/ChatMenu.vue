@@ -267,6 +267,7 @@ export default Vue.extend({
       }
       room.channelName = channel.Name
       room.id = channel.id
+      room.Type = channel.Type
       for (let i = 0; i < channel.Messages.length; i++) {
         if (this.blocked.find(element => element === channel.Messages[i].UserID) === undefined){
           room.messages.push(channel.Messages[i])
