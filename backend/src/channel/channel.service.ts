@@ -44,7 +44,6 @@ export class ChannelService {
       }
       return null;
     } catch (error) {
-      console.log('ERROR:', error);
       return null;
     }
   }
@@ -141,6 +140,17 @@ export class ChannelService {
     body: ChannelCreatePrivDto,
   ): Promise<Channel | null> {
     try {
+      const user2 = await this.prisma.socialProfile.findUnique({
+        where: {id : body.user_2},
+        include: {Blocked: true},
+      });
+      const user1 = await this.prisma.socialProfile.findUnique({
+        where: {id : body.user_1},
+        include: {Blocked: true},
+      });
+      if(user1.Blocked.find((User) => User.id == body.user_2) != undefined || 
+      user2.Blocked.find((User) => User.id == body.user_1) != undefined)
+      throw Error;
       const pw = await this.prisma.channelPassword.create({
         data: {},
       });
@@ -722,7 +732,6 @@ export class ChannelService {
       else this.unmuteUser(ban.ChannelID, ban.UserID);
       return ban;
     } catch (e) {
-      console.log('Cannot remove banModel');
       return null;
     }
   }

@@ -73,16 +73,6 @@ export class Channel implements Ichannel {
   inputPassword = ''
 }
 
-export interface IChatRoomMessage {
-  Content: string
-  Nickname: string
-}
-
-export class ChatRoomMessage implements IChatRoomMessage {
-  Content = ''
-  Nickname = ''
-}
-
 export interface ISanction {
   id: number;
   Type: string;

@@ -6,7 +6,6 @@ import {
   OurRoom,
   Message,
   chanStatus,
-  ChatRoomMessage,
   Channel,
   Sanction
 } from '../types/room'
@@ -21,6 +20,7 @@ export default Vue.extend({
       sanction: { reason: '', type: '', permanent: true, duration: 0},
       snackbar: { active: false, errorMessage: '' },
       sanctions: [] as Sanction[],
+      blocked: [] as number[],
       activeChannel: OurRoom,
       addChannelDialog: false,
       createChannelDialog: false,
@@ -91,6 +91,7 @@ export default Vue.extend({
   },
   async mounted() {
     await this.createClient()
+    await this.getBlockedUsers()
     await this.getChannel()
     this.$store.commit('changeInMenu', false)
   },
@@ -102,11 +103,14 @@ export default Vue.extend({
   },
     methods: {
     eventChannel(room: OurRoom) {
-          room.channel.onMessage('Message', (message: ChatRoomMessage) => {
+          room.channel.onMessage('Message', (message: any) => {
           const newMsg = new Message()
           newMsg.Content = message.Content
           newMsg.Nickname = message.Nickname
-          room.messages.push(newMsg)
+          if (this.blocked.find(element => element == message.idSender) == undefined)
+          {
+            room.messages.push(newMsg)
+          }
         })
         room.channel.onMessage('Joining', (message: User) => {
           if (room.members.find((User: User) => User.id === message.id) === undefined) {
@@ -158,6 +162,13 @@ export default Vue.extend({
         this.activeChannel = newRoom;
       }
 		})
+    },
+    async getBlockedUsers() {
+      const response = await axios.get(`/social/${this.$store.state.currentUser.id}/blocked`)
+      for (let i = 0; i < response.data.length; i++)
+      {
+        this.blocked.push(response.data[i].id)
+      }
     },
     leaveChannelPending(current: OurRoom): void {
       this.leaveChannelDialog = !this.leaveChannelDialog
@@ -254,10 +265,12 @@ export default Vue.extend({
       }
       room.channelName = channel.Name
       room.id = channel.id
-      room.messages = channel.Messages
-      room.messages.forEach((num1, index) => {
-        num1.Nickname = channel.Messages[index].User.Nickname
-      })
+      for (let i = 0; i < channel.Messages.length; i++) {
+        if (this.blocked.find(element => element == channel.Messages[i].UserID) == undefined){
+          room.messages.push(channel.Messages[i])
+          room.messages[room.messages.length - 1].Nickname = channel.Messages[i].User.Nickname
+        }
+      }
       const response = await axios.get(`channel/${channel.id}`)
       for (const user of response.data.Users)
         {
@@ -445,10 +458,12 @@ export default Vue.extend({
         room.channelName = channel.Name
         room.id = channel.id
         room.Type = channel.Type
-        room.messages = channel.Messages
-        room.messages.forEach((num1, index) => {
-          num1.Nickname = channel.Messages[index].User.Nickname
-        })
+        for (let i = 0; i < channel.Messages.length; i++) {
+          if (this.blocked.find(element => element == channel.Messages[i].UserID) == undefined){
+            room.messages.push(channel.Messages[i])
+            room.messages[room.messages.length - 1].Nickname = channel.Messages[i].User.Nickname
+          }
+        }
         for (const user of channel.Users)
         {
           const newUser = new User();
@@ -480,7 +495,6 @@ export default Vue.extend({
       this.sanction.permanent = true
       this.sanction.duration = 0
       this.sanction.type = ''
-      console.log(this.activeChannel)
     },
     async openPrivateChat(member: User) {
       const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
@@ -515,7 +529,10 @@ export default Vue.extend({
 		      this.activeChannel.channel.send('PrivateCreating', {session: newRoom.channel.id, id: member.id, idChan: newRoom.id})
           this.activeChannel = newRoom;
           } catch(e) {
+            newRoom.channel.leave()
             console.warn('Cannot create private channel', e);
+            this.snackbar.active = true
+            this.snackbar.errorMessage = 'the user has blocked you or you have blocked him'
           }
         }
     },
@@ -525,30 +542,20 @@ export default Vue.extend({
         `/social/${this.$store.state.currentUser.id}/friend/add/${member.id}`
       )
     },
-    async switchBlock(member: any) {
-      if (this.isBlocked === false) {
+    async blockUser(member: User) {
         await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
         )
         this.isBlocked = true;
-      } else {
+        this.blocked.push(member.id);
+    },
+    async unblockUser(member: User) {
         await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
         )
         this.isBlocked = false;
-      }
-    },
-    async blockUser(member: any) {
-        await axios.patch(
-          `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
-        )
-        this.isBlocked = true;
-    },
-    async unblockUser(member: any) {
-        await axios.patch(
-          `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
-        )
-        this.isBlocked = false;
+        const index = this.blocked.indexOf(member.id)
+        this.blocked.splice(index, 1)
     },
     async makeAdmin(member: any) {
       try{

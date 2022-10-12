@@ -1,16 +1,6 @@
 import { Client, Room } from 'colyseus';
 import * as Colyseus from 'colyseus.js';
 
-export interface IChatRoomMessage {
-  Content: string;
-  Nickname: string;
-}
-
-export class ChatRoomMessage implements IChatRoomMessage {
-  Content = '';
-  Nickname = '';
-}
-
 export interface IUser {
   accessToken: string;
   avatar: string;
@@ -75,8 +65,7 @@ export class ChatRoom extends Room {
   async onCreate(options: any) {
     console.info('Chat room created: ');
 
-    this.onMessage('Message', (client, msg ) => {
-      
+    this.onMessage('Message', (client, msg) => {
       this.broadcast('Message', msg);
       console.log('client :', client.sessionId, 'sent', msg.Content);
     });
@@ -85,9 +74,9 @@ export class ChatRoom extends Room {
       this.broadcast('Leaving', message, { except: client });
     });
 
-	this.onMessage('PrivateCreating', (client, Content) => {
-		this.broadcast('PrivateCreating', Content);
-	  });
+    this.onMessage('PrivateCreating', (client, Content) => {
+      this.broadcast('PrivateCreating', Content);
+    });
 
     this.onMessage('ChanMAJ', (client, message: string) => {
       this.broadcast('ChanMAJ', message, { except: client });
