@@ -45,6 +45,7 @@ export default Vue.extend({
       showPassword: false,
       isBlocked: false,
       isAdmin: false,
+      isFriend: false,
       amAdmin: false,
       amOwner: false,
       mode: 'settings'
@@ -107,7 +108,7 @@ export default Vue.extend({
           const newMsg = new Message()
           newMsg.Content = message.Content
           newMsg.Nickname = message.Nickname
-          if (this.blocked.find(element => element == message.idSender) == undefined)
+          if (this.blocked.find(element => element === message.idSender) === undefined)
           {
             room.messages.push(newMsg)
           }
@@ -141,27 +142,27 @@ export default Vue.extend({
           room.channelName = message
         })
 		    room.channel.onMessage('PrivateCreating', async (message: any) => {
-			  if (message.id == this.$store.state.currentUser.id)
+			  if (message.id === this.$store.state.currentUser.id)
         {
-        let newRoom = new OurRoom();
-        newRoom.channel = await this.client.joinById(message.session, this.$store.state.currentUser)
-        const response = await axios.get(`/channel/${message.idChan}`)
-        newRoom.channelName = response.data.Name
-        newRoom.id = message.idChan
-        for (const user of response.data.Users)
-          {
-            const newUser = new User();
-            newUser.avatar = user.Avatar
-            newUser.nickname = user.Nickname
-            newUser.id = user.id
-            newRoom.members.push(newUser)
+          const newRoom = new OurRoom();
+          newRoom.channel = await this.client.joinById(message.session, this.$store.state.currentUser)
+          const response = await axios.get(`/channel/${message.idChan}`)
+          newRoom.channelName = response.data.Name
+          newRoom.id = message.idChan
+          for (const user of response.data.Users)
+            {
+              const newUser = new User();
+              newUser.avatar = user.Avatar
+              newUser.nickname = user.Nickname
+              newUser.id = user.id
+              newRoom.members.push(newUser)
+            }
+          this.rooms.push(newRoom);
+          this.eventChannel(newRoom)
+          this.inChannel = true;
+          this.activeChannel = newRoom;
           }
-        this.rooms.push(newRoom);
-        this.eventChannel(newRoom)
-        this.inChannel = true;
-        this.activeChannel = newRoom;
-      }
-		})
+      })
     },
     async getBlockedUsers() {
       const response = await axios.get(`/social/${this.$store.state.currentUser.id}/blocked`)
@@ -250,7 +251,7 @@ export default Vue.extend({
       } catch (e) {
         console.warn('cannot join chan', e)
         this.snackbar.active = true
-        this.snackbar.errorMessage = 'Cannot join channel'
+        this.snackbar.errorMessage = 'Incorrect password'
         return
       }
       const room = new OurRoom()
@@ -266,7 +267,7 @@ export default Vue.extend({
       room.channelName = channel.Name
       room.id = channel.id
       for (let i = 0; i < channel.Messages.length; i++) {
-        if (this.blocked.find(element => element == channel.Messages[i].UserID) == undefined){
+        if (this.blocked.find(element => element === channel.Messages[i].UserID) === undefined){
           room.messages.push(channel.Messages[i])
           room.messages[room.messages.length - 1].Nickname = channel.Messages[i].User.Nickname
         }
@@ -459,7 +460,7 @@ export default Vue.extend({
         room.id = channel.id
         room.Type = channel.Type
         for (let i = 0; i < channel.Messages.length; i++) {
-          if (this.blocked.find(element => element == channel.Messages[i].UserID) == undefined){
+          if (this.blocked.find(element => element === channel.Messages[i].UserID) === undefined){
             room.messages.push(channel.Messages[i])
             room.messages[room.messages.length - 1].Nickname = channel.Messages[i].User.Nickname
           }
@@ -487,6 +488,8 @@ export default Vue.extend({
       this.isBlocked = responseBlocked.data
       const responseIsAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${member.id}`)
       this.isAdmin = responseIsAdmin.data
+      // const responseIsFriend = await axios.get(`/social/${this.$store.state.currentUser.id}/isFriend/${member.id}`)
+      // this.isFriend = responseIsFriend
       const responseAmAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${this.$store.state.currentUser.id}`)
       this.amAdmin = responseAmAdmin.data
       const responseAmOwner = await axios.get(`/channel/${this.activeChannel.id}/isOwner/${this.$store.state.currentUser.id}`)
@@ -537,7 +540,7 @@ export default Vue.extend({
         }
     },
     inviteToPlay(member: User) {},
-    async sendFriendRequest(member: User) {
+    async addFriend(member: User) {
       await axios.patch(
         `/social/${this.$store.state.currentUser.id}/friend/add/${member.id}`
       )
@@ -579,11 +582,11 @@ export default Vue.extend({
     },
     async updateSanction() {
       const response = await axios.get(`/channel/Sanction/${this.dialogRoom.id}`)
-      for (let sanction of response.data)
+      for (const sanction of response.data)
       {
         if (sanction.Duration > 0)
         {
-          let created = Date.parse(sanction.CreatedAt)
+          const created = Date.parse(sanction.CreatedAt)
           sanction.Duration = Math.floor(((sanction.Duration * 60000) - (Date.now() - created)) / 60000)
         }
       }
@@ -734,10 +737,10 @@ export default Vue.extend({
                     >
                   </v-list-item>
                   <v-list-item
-                    v-if="member.nickname !== $store.state.currentUser.nickname"
+                    v-if="member.nickname !== $store.state.currentUser.nickname && isFriend === false"
                   >
-                    <v-btn @click.stop="sendFriendRequest(member)"
-                      >Send friend request</v-btn
+                    <v-btn @click.stop="addFriend(member)"
+                      >Add to friends</v-btn
                     >
                   </v-list-item>
                   <v-list-item v-if="isAdmin === false && amAdmin === true && activeChannel.Type !== 'private'">
