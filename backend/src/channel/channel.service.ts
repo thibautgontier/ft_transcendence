@@ -63,6 +63,19 @@ export class ChannelService {
     }
   }
 
+  async isOwner(idChan: number, idUser: number): Promise<boolean> {
+    try {
+      const chan = await this.prisma.channel.findUnique({
+        where: { id: idChan },
+      });
+      if (chan.OwnerID === idUser)
+        return true;
+      else return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   async createChannel(
     res: Response,
     body: ChannelCreateDto,
@@ -670,10 +683,6 @@ export class ChannelService {
 
   async getSanction(idChan: number, res: Response): Promise<BanModel[] | null> {
     try {
-      await this.prisma.banModel.updateMany({
-        where: { ChannelID: idChan },
-        data: {},
-      });
       const sanction = await this.prisma.banModel.findMany({
         where: { ChannelID: idChan },
         include: { User: true },

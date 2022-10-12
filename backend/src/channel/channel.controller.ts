@@ -53,6 +53,14 @@ export class ChannelController {
     return await this.channelService.isAdmin(Number(idChan), Number(idUser));
   }
 
+  @Get(':idChannel/isOwner/:idUser')
+  async isOwner(
+    @Param('idChannel') idChan: number,
+    @Param('idUser') idUser: number,
+  ): Promise<boolean> {
+    return await this.channelService.isOwner(Number(idChan), Number(idUser));
+  }
+
   @Post('create')
   async createChannel(
     @Res() res: Response,

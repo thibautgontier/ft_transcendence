@@ -520,6 +520,14 @@ export default Vue.extend({
     },
     async updateSanction() {
       const response = await axios.get(`/channel/Sanction/${this.dialogRoom.id}`)
+      for (let sanction of response.data)
+      {
+        if (sanction.Duration > 0)
+        {
+          let created = Date.parse(sanction.CreatedAt)
+          sanction.Duration = Math.floor(((sanction.Duration * 60000) - (Date.now() - created)) / 60000)
+        }
+      }
       this.sanctions = response.data
     },
     async pardonUser(sanction: Sanction) {
