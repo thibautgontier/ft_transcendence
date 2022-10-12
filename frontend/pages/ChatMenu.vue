@@ -446,8 +446,8 @@ export default Vue.extend({
       this.isBlocked = responseBlocked.data
       const responseAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${member.id}`)
       this.isAdmin = responseAdmin.data
-      // const responseOwner = await axios.get(`/channel/${this.activeChannel.id}/isOwner/${this.$store.state.currentUser.id}`)
-      // this.amOwner = responseOwner.data
+      const responseOwner = await axios.get(`/channel/${this.activeChannel.id}/isOwner/${this.$store.state.currentUser.id}`)
+      this.amOwner = responseOwner.data
       this.sanction.reason = ''
       this.sanction.permanent = true
       this.sanction.duration = 0
@@ -707,7 +707,7 @@ export default Vue.extend({
                       @click.stop="makeAdmin(member)"
                     >Make Admin</v-btn>
                   </v-list-item>
-                  <v-list-item v-if="isAdmin === true && amOwner === true">
+                  <v-list-item v-if="isAdmin === true && amOwner === true && member.id !== $store.state.currentUser.id">
                     <v-btn
                       dense
                       @click.stop="removeAdmin(member)"
