@@ -453,7 +453,7 @@ export default Vue.extend({
       this.sanction.duration = 0
       this.sanction.type = ''
     },
-    async openPrivateChat(member: any) {
+    async openPrivateChat(member: User) {
       const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
       if (response.data) {
         this.activeChannel = this.rooms.find((channel: OurRoom) => channel.id === response.data.id)
@@ -466,10 +466,10 @@ export default Vue.extend({
           const response2 = await axios.post('channel/createPriv', {
             user_1 : this.$store.state.currentUser.id,
             user_2 : member.id,
-            Name : ( this.$store.state.currentUser.nickname + member.Nickname),
+            Name : ( this.$store.state.currentUser.nickname + member.nickname),
             RoomId: newRoom.channel.id,
           })
-          newRoom.channelName = ( this.$store.state.currentUser.nickname + member.Nickname );
+          newRoom.channelName = ( this.$store.state.currentUser.nickname + member.nickname );
           newRoom.id = response2.data.id
           for (const user of response2.data.Users)
           {
