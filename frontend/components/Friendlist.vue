@@ -19,13 +19,19 @@ export default Vue.extend({
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
-    } ).then(response => (this.friendTest = response.data));
+    } ).then(response => {(this.friendTest = response.data)});
   },
   methods: {
     loadProfile(id: any) {
-      this.changeComponent = true;
-      this.$store.commit('changeTmpID', id);
-      this.$store.commit('changeActiveComponent', 'History');
+      this.$store.commit('changeHistoryId', id);
+      this.$router.push('/History');
+    },
+    deleteFriend(id: any) {
+      axios.patch("/social/" + this.$store.state.currentUser.id + "/friend/remove/" + id, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+      } ).then(response => {(this.friendTest = response.data.Friends); console.log('test: ', response.data.Friends)});
     },
 	}
 })
@@ -43,31 +49,47 @@ export default Vue.extend({
     </v-toolbar>
     <v-list subheader>
       <v-subheader>Online</v-subheader>
-      <v-list-item
-        v-for="friend in friendTest.filter((friend) => (friend.Status != 'offline' && friend.Status != 'invisible'))"
-        :key="friend.id">
-        <v-list-item-avatar>
-          <v-img :src="friend.Avatar"></v-img>
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title v-text="friend.Nickname"></v-list-item-title>
-        </v-list-item-content>
-        <v-btn
-          elevation="2"
-          icon
-          outlined
-          color="secondary"
-          small
-          @click.stop="loadProfile(friend.id)">
-          <v-icon dark>
-            mdi-account-circle
-          </v-icon>
-        </v-btn>
-        <v-badge v-if="friend.Status == 'online'" inline color="green"></v-badge>
-        <v-badge v-if="friend.Status == 'AFK'" inline color="orange"></v-badge>
-        <v-badge v-if="friend.Status == 'inGame'" inline color="blue"></v-badge>
-        <v-badge v-if="friend.Status == 'doNotDistrub'" inline color="red"></v-badge>
-      </v-list-item>
+          <v-list-item
+            v-for="friend in friendTest.filter((friend) => (friend.Status != 'offline' && friend.Status != 'invisible'))"
+            :key="friend.id">
+            <v-menu
+              absolute
+              offset-y
+              style="max-width: 600px">
+            <template v-slot:activator="{ on, attrs }">
+            <v-card v-bind="attrs" v-on="on" style="width: 650px; height: 50px">
+              <v-row>
+                <v-list-item-avatar class="mt-4 ml-5">
+                  <v-img :src="friend.Avatar"></v-img>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title v-text="friend.Nickname"></v-list-item-title>
+                </v-list-item-content>
+                <v-badge class="mt-6 mr-6" v-if="friend.Status == 'online'" inline color="green"></v-badge>
+                <v-badge class="mt-6 mr-6" v-if="friend.Status == 'AFK'" inline color="orange"></v-badge>
+                <v-badge class="mt-6 mr-6" v-if="friend.Status == 'inGame'" inline color="blue"></v-badge>
+                <v-badge class="mt-6 mr-6" v-if="friend.Status == 'doNotDistrub'" inline color="red"></v-badge>
+              </v-row>
+            </v-card>
+            </template>
+            <v-list>
+              <v-row>
+                <v-btn
+                  @click.stop="loadProfile(friend.id)"
+                  elevation="2">
+                  Profile
+                </v-btn>
+              </v-row>
+              <v-row>
+                <v-btn 
+                  elevation="2"
+                  @click.stop="deleteFriend(friend.id)">
+                  Delete
+                </v-btn>
+              </v-row>
+            </v-list>
+            </v-menu>
+          </v-list-item>
     </v-list>
     <v-divider></v-divider>
     <v-list subheader>
@@ -75,24 +97,40 @@ export default Vue.extend({
       <v-list-item
         v-for="friend in friendTest.filter((friend) => (friend.Status == 'offline' || friend.Status == 'invisible'))"
         :key="friend.id">
-        <v-list-item-avatar>
-          <v-img :src="$store.state.currentUser.Avatar"></v-img>
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title v-text="friend.Nickname"></v-list-item-title>
-        </v-list-item-content>
-        <v-btn
-          elevation="2"
-          icon
-          outlined
-          color="secondary"
-          small
-          @click.stop="loadProfile(friend.id)">
-          <v-icon dark>
-            mdi-account-circle
-          </v-icon>
-        </v-btn>
-      </v-list-item>
+        <v-menu
+          absolute
+          offset-y
+          style="max-width: 600px">
+        <template v-slot:activator="{ on, attrs }">
+          <v-card v-bind="attrs" v-on="on" style="width: 650px; height: 50px">
+            <v-row>
+              <v-list-item-avatar>
+                <v-img :src="$store.state.currentUser.Avatar"></v-img>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title v-text="friend.Nickname"></v-list-item-title>
+              </v-list-item-content>
+            </v-row>
+          </v-card>
+           </template>
+            <v-list>
+              <v-row>
+                <v-btn
+                  @click.stop="loadProfile(friend.id)" 
+                  elevation="2">
+                  Profile
+                </v-btn>
+              </v-row>
+              <v-row>
+                <v-btn 
+                  elevation="2"
+                  @click.stop="deleteFriend(friend.id)">
+                  Delete
+                </v-btn>
+              </v-row>
+            </v-list>
+          </v-menu>
+        </v-list-item>
     </v-list>
   </v-card>
 </template>

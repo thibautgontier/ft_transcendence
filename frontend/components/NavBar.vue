@@ -1,6 +1,13 @@
 <script lang="ts">
 import Vue from 'vue'
-export default Vue.extend({})
+export default Vue.extend({
+	methods: {
+    	loadProfile() {
+      		this.$store.commit('changeHistoryId', this.$store.state.currentUser.id);
+      		this.$router.push('/History');
+    	},
+	}
+})
 </script>
 
 <template>
@@ -8,8 +15,9 @@ export default Vue.extend({})
 			<v-app-bar v-if="$store.state.loginFinish != false" app color="#121212" height="90px" class="nav">			<div class="testbuttons mx-auto">
 					<v-btn router to="/">Home</v-btn>
 					<v-btn router to="/GameMenu">Game</v-btn>
+					<v-btn router to="/GameOption">Option</v-btn>
 					<v-btn router to="/ChatMenu">Chat</v-btn>
-					<v-btn router to="/History">History</v-btn>
+					<v-btn @click.stop="loadProfile()">History</v-btn>
 				</div>
 			</v-app-bar>
 </template>

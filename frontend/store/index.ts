@@ -11,6 +11,7 @@ export const state = () => ({
 	inMenu: true,
 	loginFinish: false,
 	gameOption: { ballSpeed: 0, paddleSpeed: 0, pointsToWin: 0},
+	historyId: 0,
 })
 
 
@@ -88,5 +89,8 @@ export const mutations = {
 		state.gameOption.ballSpeed = newOption.ballSpeed;
 		state.gameOption.paddleSpeed = newOption.paddleSpeed;
 		state.gameOption.pointsToWin = newOption.pointsToWin;
+	},
+	changeHistoryId(state, id) {
+		state.historyId = id;
 	}
 }

@@ -4,13 +4,11 @@ import axios from 'axios'
 
 export default Vue.extend({
   layout: 'DefaultLayout',
-  props: {
-		ID: Number,
-  },
   data() {
     return {
       matchNumber: 0,
       matchInfosTest: null,
+      ID: 0,
     }
   },
   beforeCreate() {
@@ -20,19 +18,16 @@ export default Vue.extend({
   mounted() {
       if (!this.$store.state.currentUser.nickname)
         return
-      const userID = this.ID;
+      this.ID = this.$store.state.historyId;
       let path = "/game/";
       
-      if (userID)
-        path += userID + "/history";
-      else
-        path += this.$store.state.currentUser.id + "/history"
+      path += this.ID + "/history";
       axios.get(path, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
     } ).then(response => (this.matchInfosTest = response.data));
-  }
+  },
 })
 </script>
 
