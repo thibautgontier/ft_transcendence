@@ -149,7 +149,7 @@ export default Vue.extend({
           const response = await axios.get(`/channel/${message.idChan}`)
           newRoom.channelName = response.data.Name
           newRoom.id = message.idChan
-          newRoom.Type = message.Type
+          newRoom.Type = response.data.Type
           for (const user of response.data.Users)
             {
               const newUser = new User();
