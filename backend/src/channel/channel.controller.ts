@@ -9,9 +9,10 @@ import {
   Res,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Channel, Message } from '@prisma/client';
+import { BanModel, Channel, Message } from '@prisma/client';
 import { Response } from 'express';
 import { get } from 'http';
+import { number } from 'joi';
 import { ChannelService } from './channel.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
 import { BanOrMuteUserDto } from './dto/channel-banUser.dto';
@@ -227,45 +228,37 @@ export class ChannelController {
     );
   }
 
-  @Patch(':channelid/unmuteUser/:idAdmin/:idUser')
-  async unmuteUser(
-    @Param('channelid') idChan: number,
-    @Param('idAdmin') idAdmin: number,
-    @Param('idUser') idUser: number,
-    @Res() res: Response,
-  ): Promise<Channel | null> {
-    return await this.channelService.unmuteUser(
-      Number(idChan),
-      Number(idAdmin),
-      Number(idUser),
-      res,
-    );
-  }
-
   @Patch('banUser/')
   async banUser(
     @Body() body: BanOrMuteUserDto,
     @Res() res: Response,
   ): Promise<Channel | null> {
-    if ((body.Sanction = 'ban')) {
+    if ((body.Sanction == 'ban')) {
       return await this.channelService.banUser(body, res);
     } else {
       return await this.channelService.muteUser(body, res);
     }
   }
 
-  @Patch(':channelid/unbanUser/:idAdmin/:idUser')
-  async unbanUser(
-    @Param('channelid') idChan: number,
-    @Param('idAdmin') idAdmin: number,
-    @Param('idUser') idUser: number,
+  @Get('Sanction/:channelID')
+  async getSanction(
+    @Param('channelID') idChan: number,
     @Res() res: Response,
-  ): Promise<Channel | null> {
-    return await this.channelService.unbanUser(
-      Number(idChan),
-      Number(idAdmin),
-      Number(idUser),
-      res,
-    );
+    ): Promise<BanModel[] | null> {
+      return await this.channelService.getSanction(
+        Number(idChan),
+        res
+      )
+    }
+
+  @Delete('Sanction/:idSanction')
+  async rmSanction(
+    @Param('idSanction') id: number,
+    @Res() res: Response,
+  ): Promise<BanModel | null> {
+    return await this.channelService.rmSanction(
+      Number(id),
+      res
+    )
   }
 }

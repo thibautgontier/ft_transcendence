@@ -8,6 +8,7 @@ import {
   chanStatus,
   ChatRoomMessage,
   Channel,
+  Sanction
 } from '../types/room'
 import { User } from '../types/User'
 
@@ -19,11 +20,7 @@ export default Vue.extend({
       editChannel: { name: '', protected: false, password: '' },
       sanction: { reason: '', type: '', permanent: true, duration: 0},
       snackbar: { active: false, errorMessage: '' },
-      sanctions: [
-        { type: 'mute', name: 'luigi', reason: 'spam', duration: 1},
-        { type: 'mute', name: 'toto', reason: 'dit de la merde', duration: 2},
-        { type: 'ban', name: 'ben', reason: 'rebellion', duration: -1},
-      ],
+      sanctions: [] as Sanction[],
       activeChannel: OurRoom,
       admin: true,
       addChannelDialog: false,
@@ -158,8 +155,6 @@ export default Vue.extend({
       this.sanction.type = 'ban'
       if (this.sanction.permanent === true)
         this.sanction.duration = -1
-      console.log("User = ", this.dialogUser)
-      console.log("Sanction = ", this.sanction)
       try {
         await axios.patch(
           `/channel/banUser`, {
@@ -169,7 +164,7 @@ export default Vue.extend({
         duration : this.sanction.duration,
         idChan : this.activeChannel.id,
         Sanction: this.sanction.type
-	    	}
+        }
       )
       this.activeChannel.channel.send('Leaving', this.dialogUser)
       const index = this.activeChannel.members.indexOf(this.dialogUser)
@@ -190,8 +185,6 @@ export default Vue.extend({
       this.sanction.type = 'mute'
       if (this.sanction.permanent === true)
         this.sanction.duration = -1
-      console.log("User = ", this.dialogUser)
-      console.log("Sanction = ", this.sanction)
       try {
         await axios.patch(
           `/channel/banUser`, {
@@ -525,6 +518,25 @@ export default Vue.extend({
         this.snackbar.errorMessage = 'Cannot add or remove admin'
       }
     },
+    async updateSanction() {
+      const response = await axios.get(`/channel/Sanction/${this.dialogRoom.id}`)
+      this.sanctions = response.data
+    },
+    async pardonUser(sanction: Sanction) {
+      try {
+        const response = await axios.delete(`/channel/Sanction/${sanction.id}`)
+        for (let i = 0; i < this.sanctions.length; i++)
+        {
+          if (this.sanctions[i].id === sanction.id) {
+            this.sanctions.splice(i, 1)
+            break; }
+        }
+      } catch(e) {
+        console.warn(e)
+        this.snackbar.active = true
+        this.snackbar.errorMessage = 'Cannot Pardon User'
+      }
+    }
   },
 })
 </script>
@@ -887,7 +899,7 @@ export default Vue.extend({
                 @click:append="showPassword = !showPassword"
               ></v-text-field>
               <v-card-actions>
-                <v-btn text color="orange" @click="mode = 'bans'">
+                <v-btn text color="orange" @click="mode = 'bans', updateSanction()">
                   SANCTIONS
                 </v-btn>
                 <v-spacer></v-spacer>
@@ -910,15 +922,15 @@ export default Vue.extend({
                 <v-list v-for="(punished, index) in sanctions" :key="index">
                   <div class="sanction">
                     <v-list-item>
-                      <v-list-item-title>{{punished.name}}</v-list-item-title>
-                      <v-list-item-subtitle>{{punished.type}}</v-list-item-subtitle>
-                      <v-list-item-subtitle v-if="punished.duration === -1">permanent</v-list-item-subtitle>
-                      <v-list-item-subtitle v-else-if="punished.duration === 1">{{punished.duration}} day left</v-list-item-subtitle>
-                      <v-list-item-subtitle v-else>{{punished.duration}} days left</v-list-item-subtitle>
+                      <v-list-item-title>{{punished.User.Nickname}}</v-list-item-title>
+                      <v-list-item-subtitle>{{punished.Type}}</v-list-item-subtitle>
+                      <v-list-item-subtitle v-if="punished.Duration === -1">permanent</v-list-item-subtitle>
+                      <v-list-item-subtitle v-else-if="punished.Duration === 1 || punished.Duration === 0">{{punished.Duration}} minutes left</v-list-item-subtitle>
+                      <v-list-item-subtitle v-else>{{punished.Duration}} minutes left</v-list-item-subtitle>
                     </v-list-item>
                     <v-list-item>
-                      <v-list-item-subtitle>reason: "{{punished.reason}}"</v-list-item-subtitle>
-                      <v-btn>PARDON</v-btn>
+                      <v-list-item-subtitle>reason: "{{punished.Reason}}"</v-list-item-subtitle>
+                      <v-btn @click="pardonUser(punished)">PARDON</v-btn>
                     </v-list-item>
                   </div>
                 </v-list>
@@ -966,10 +978,10 @@ export default Vue.extend({
               v-if="sanction.permanent === false"
               v-model="sanction.duration"
               color="orange"
-              label="Days"
-              hint="Ban Duration in days"
+              label="Minutes"
+              hint="Ban Duration in Minutes"
               min="1"
-              max="365"
+              max="300"
               thumb-label
               class="semiWide"
             ></v-slider>
@@ -1015,10 +1027,10 @@ export default Vue.extend({
               v-if="sanction.permanent === false"
               v-model="sanction.duration"
               color="orange"
-              label="Days"
-              hint="Mute Duration in days"
+              label="Minutes"
+              hint="Mute Duration in Minutes"
               min="1"
-              max="365"
+              max="300"
               thumb-label
               class="semiWide"
             ></v-slider>

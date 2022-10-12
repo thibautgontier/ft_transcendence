@@ -80,3 +80,19 @@ export class ChatRoomMessage implements IChatRoomMessage {
   Content = ''
   Nickname = ''
 }
+
+export interface ISanction {
+  id: number;
+  Type: string;
+  Reason: string;
+  UserName: string;
+  Duration: number;
+}
+
+export class Sanction implements ISanction {
+  id = 0;
+  Type = "";
+  Reason = "";
+  UserName = "";
+  Duration = 0;
+}

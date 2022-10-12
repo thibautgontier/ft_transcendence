@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Session } from '@nestjs/common';
-import { Channel, Message, User } from '@prisma/client';
+import { BanModel, Channel, Message, User } from '@prisma/client';
 import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
@@ -568,14 +568,20 @@ export class ChannelService {
           MutedUsers: { connect: { id: body.idUser } },
         },
       });
-      await this.prisma.banModel.create({
+      const mute = await this.prisma.banModel.create({
         data: {
           User: { connect: { id: body.idUser } },
           Channel: { connect: { id: body.idChan } },
-          Sanction: 'mute',
+          Type: 'mute',
           Reason: body.reason,
+          Duration: body.duration,
         },
       });
+      if (body.duration > 0)
+        setTimeout(async () => {
+          await this.rmSanction2(mute.id);
+          console.log('unmuted');
+        }, body.duration * 60000);
       res.status(HttpStatus.OK).send(chan);
       return chan;
     } catch (error) {
@@ -587,31 +593,17 @@ export class ChannelService {
     }
   }
 
-  async unmuteUser(
-    idChan: number,
-    idAdmin: number,
-    idUser: number,
-    res: Response,
-  ): Promise<Channel | null> {
+  async unmuteUser(idChan: number, idUser: number): Promise<Channel | null> {
     try {
-      if (
-        (await this.getAdminChan(idChan, idAdmin)) === undefined ||
-        (await this.getMutedUsers(idChan, idUser)) === undefined
-      )
-        throw Error;
+      if ((await this.getMutedUsers(idChan, idUser)) === undefined) throw Error;
       const chan = await this.prisma.channel.update({
         where: { id: idChan },
         data: {
           MutedUsers: { disconnect: { id: idUser } },
         },
       });
-      res.status(HttpStatus.OK).send(chan);
       return chan;
     } catch (error) {
-      res.status(HttpStatus.NOT_ACCEPTABLE).send({
-        statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot unmute user',
-      });
       return null;
     }
   }
@@ -636,14 +628,20 @@ export class ChannelService {
           BanUsers: { connect: { id: body.idUser } },
         },
       });
-      await this.prisma.banModel.create({
+      const ban = await this.prisma.banModel.create({
         data: {
           User: { connect: { id: body.idUser } },
           Channel: { connect: { id: body.idChan } },
-          Sanction: 'ban',
+          Type: 'ban',
           Reason: body.reason,
+          Duration: body.duration,
         },
       });
+      if (body.duration > 0)
+        setTimeout(async () => {
+          this.rmSanction2(ban.id);
+          console.log('unbaned');
+        }, body.duration * 60000);
       res.status(HttpStatus.OK).send(channel);
       return channel;
     } catch (error) {
@@ -655,31 +653,70 @@ export class ChannelService {
     }
   }
 
-  async unbanUser(
-    idChan: number,
-    idAdmin: number,
-    idUser: number,
-    res: Response,
-  ): Promise<Channel | null> {
+  async unbanUser(idChan: number, idUser: number): Promise<Channel | null> {
     try {
-      if (
-        (await this.getAdminChan(idChan, idAdmin)) === undefined ||
-        (await this.getBanUsers(idChan, idUser)) === undefined
-      )
-        throw Error;
+      if ((await this.getBanUsers(idChan, idUser)) === undefined) throw Error;
       const channel = await this.prisma.channel.update({
         where: { id: idChan },
         data: {
           BanUsers: { disconnect: { id: idUser } },
         },
       });
-      res.status(HttpStatus.OK).send(channel);
       return channel;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async getSanction(idChan: number, res: Response): Promise<BanModel[] | null> {
+    try {
+      await this.prisma.banModel.updateMany({
+        where: { ChannelID: idChan },
+        data: {},
+      });
+      const sanction = await this.prisma.banModel.findMany({
+        where: { ChannelID: idChan },
+        include: { User: true },
+      });
+      res.status(HttpStatus.OK).send(sanction);
+      return sanction;
     } catch (error) {
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: 'Cannot unban user of this channel',
+        message: 'Cannot find Sanction',
       });
+      return null;
+    }
+  }
+
+  async rmSanction(id: number, res?: Response): Promise<BanModel | null> {
+    try {
+      const ban = await this.prisma.banModel.delete({
+        where: { id: id },
+      });
+      if (ban.Type == 'ban') this.unbanUser(ban.ChannelID, ban.UserID);
+      else this.unmuteUser(ban.ChannelID, ban.UserID);
+      res.status(HttpStatus.OK).send(ban);
+      return ban;
+    } catch (e) {
+      res.status(HttpStatus.NOT_ACCEPTABLE).send({
+        statusCode: HttpStatus.NOT_ACCEPTABLE,
+        message: 'Cannot remove banModel',
+      });
+      return null;
+    }
+  }
+
+  async rmSanction2(id: number): Promise<BanModel | null> {
+    try {
+      const ban = await this.prisma.banModel.delete({
+        where: { id: id },
+      });
+      if (ban.Type == 'ban') this.unbanUser(ban.ChannelID, ban.UserID);
+      else this.unmuteUser(ban.ChannelID, ban.UserID);
+      return ban;
+    } catch (e) {
+      console.log('Cannot remove banModel');
       return null;
     }
   }

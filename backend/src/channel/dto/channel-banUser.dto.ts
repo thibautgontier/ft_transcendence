@@ -19,7 +19,7 @@ export class BanOrMuteUserDto {
 	@ApiProperty({
 		required: true,
 	})
-	duration: string;
+	duration: number;
 
 	@ApiProperty({
 		required: true,

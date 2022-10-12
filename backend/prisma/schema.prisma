@@ -94,8 +94,8 @@ model Channel {
 model BanModel{
   id              Int             @id @default(autoincrement())
   CreatedAt       DateTime        @default(now())
-  ExpiresAt       DateTime?
-  Sanction        Sanction
+  Duration        Int
+  Type            Sanction
   Reason          String
   UserID          Int
   User            User            @relation(fields: [UserID], references: [id], onDelete: Cascade)
