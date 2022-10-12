@@ -469,7 +469,7 @@ export default Vue.extend({
       const responseIsAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${member.id}`)
       this.isAdmin = responseIsAdmin.data
       const responseAmAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${this.$store.state.currentUser.id}`)
-      this.isAdmin = responseAmAdmin.data
+      this.AmAdmin = responseAmAdmin.data
       const responseAmOwner = await axios.get(`/channel/${this.activeChannel.id}/isOwner/${this.$store.state.currentUser.id}`)
       this.amOwner = responseAmOwner.data
       this.sanction.reason = ''
@@ -694,7 +694,7 @@ export default Vue.extend({
                       }}</v-list-item-title>
                       <v-list-item-title>{{
                         member.nickname
-                      }}  <v-icon v-if="isAdmin">mdi-crown</v-icon> </v-list-item-title>
+                      }}  <v-icon v-if="isAdmin  && activeChannel.Type !== 'private'">mdi-crown</v-icon> </v-list-item-title>
                       <v-list-item-subtitle>{{
                         member.status
                       }}</v-list-item-subtitle>
@@ -706,7 +706,7 @@ export default Vue.extend({
 
                 <v-list>
                   <v-list-item
-                    v-if="member.nickname !== $store.state.currentUser.nickname"
+                    v-if="member.nickname !== $store.state.currentUser.nickname && activeChannel.Type !== 'private'"
                   >
                     <v-btn @click.stop="openPrivateChat(member)"
                       >Private chat</v-btn
@@ -726,27 +726,27 @@ export default Vue.extend({
                       >Send friend request</v-btn
                     >
                   </v-list-item>
-                  <v-list-item v-if="isAdmin === false && amAdmin === true">
+                  <v-list-item v-if="isAdmin === false && amAdmin === true  && activeChannel.Type !== 'private'">
                     <v-btn
                       dense
                       @click.stop="makeAdmin(member)"
                     >Make Admin</v-btn>
                   </v-list-item>
-                  <v-list-item v-if="isAdmin === true && amOwner === true && member.id !== $store.state.currentUser.id">
+                  <v-list-item v-if="isAdmin === true && amOwner === true && member.id !== $store.state.currentUser.id  && activeChannel.Type !== 'private'">
                     <v-btn
                       dense
                       @click.stop="removeAdmin(member)"
                     >Remove Admin</v-btn>
                   </v-list-item>
                   <v-list-item
-                    v-if=" amAdmin && member.id !== $store.state.currentUser.id"
+                    v-if=" amAdmin && member.id !== $store.state.currentUser.id  && activeChannel.Type !== 'private'"
                   >
                     <v-btn @click.stop="banUserPending(member)"
                       >Ban</v-btn
                     >
                   </v-list-item>
                   <v-list-item
-                    v-if=" amAdmin && member.id !== $store.state.currentUser.id"
+                    v-if=" amAdmin && member.id !== $store.state.currentUser.id  && activeChannel.Type !== 'private'"
                   >
                     <v-btn @click.stop="muteUserPending(member)"
                       >Mute</v-btn
