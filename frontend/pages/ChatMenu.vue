@@ -419,7 +419,9 @@ export default Vue.extend({
       }
       this.activeChannel.channel.send(
         'Message',
-        this.$store.state.currentUser.nickname + '@:' + this.myMessage
+        {Content : this.myMessage,
+		    Nickname: this.$store.state.currentUser.nickname,
+        idSender: this.$store.state.currentUser.id}
       )
       this.myMessage = ''
     },

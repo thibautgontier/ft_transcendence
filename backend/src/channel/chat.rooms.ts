@@ -75,16 +75,10 @@ export class ChatRoom extends Room {
   async onCreate(options: any) {
     console.info('Chat room created: ');
 
-    this.onMessage('Message', (client, message: string) => {
-      let msg = new ChatRoomMessage();
-      msg.Content = message.substring(
-        message.indexOf('@:') + 2,
-        message.length,
-      );
-      msg.Nickname = message.substring(0, message.indexOf('@:'));
-
+    this.onMessage('Message', (client, msg ) => {
+      
       this.broadcast('Message', msg);
-      console.log('client :', client.sessionId, 'sent', message);
+      console.log('client :', client.sessionId, 'sent', msg.Content);
     });
 
     this.onMessage('Leaving', (client, message: User) => {

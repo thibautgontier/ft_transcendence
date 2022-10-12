@@ -31,6 +31,7 @@ export interface Imessage {
   UpdatedAt: Date
   Content: string
   Nickname: string
+  idSender: number
 }
 
 export class Message implements Imessage {
@@ -39,6 +40,7 @@ export class Message implements Imessage {
   UpdatedAt = new Date()
   Content = ''
   Nickname = ''
+  idSender = 0
 }
 
 export interface Ichannel {
