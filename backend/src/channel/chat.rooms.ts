@@ -91,6 +91,10 @@ export class ChatRoom extends Room {
       this.broadcast('Leaving', message, { except: client });
     });
 
+	this.onMessage('PrivateCreating', (client, Content) => {
+		this.broadcast('PrivateCreating', Content);
+	  });
+
     this.onMessage('ChanMAJ', (client, message: string) => {
       this.broadcast('ChanMAJ', message, { except: client });
     });

@@ -136,6 +136,28 @@ export default Vue.extend({
         room.channel.onMessage('ChanMAJ', (message: string) => {
           room.channelName = message
         })
+		    room.channel.onMessage('PrivateCreating', async (message: any) => {
+			  if (message.id == this.$store.state.currentUser.id)
+        {
+        let newRoom = new OurRoom();
+        newRoom.channel = await this.client.joinById(message.session, this.$store.state.currentUser)
+        const response = await axios.get(`/channel/${message.idChan}`)
+        newRoom.channelName = response.data.Name
+        newRoom.id = message.idChan
+        for (const user of response.data.Users)
+          {
+            const newUser = new User();
+            newUser.avatar = user.Avatar
+            newUser.nickname = user.Nickname
+            newUser.id = user.id
+            newRoom.members.push(newUser)
+          }
+        this.rooms.push(newRoom);
+        this.eventChannel(newRoom)
+        this.inChannel = true;
+        this.activeChannel = newRoom;
+      }
+		})
     },
     leaveChannelPending(current: OurRoom): void {
       this.leaveChannelDialog = !this.leaveChannelDialog
@@ -483,8 +505,9 @@ export default Vue.extend({
           }
           this.rooms.push(newRoom);
           this.inChannel = true;
-          this.activeChannel = newRoom;
           this.eventChannel(newRoom);
+		      this.activeChannel.channel.send('PrivateCreating', {session: newRoom.channel.id, id: member.id, idChan: newRoom.id})
+          this.activeChannel = newRoom;
           } catch(e) {
             console.warn('Cannot create private channel', e);
           }

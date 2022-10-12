@@ -268,10 +268,7 @@ export class ChannelService {
         data: { Users: { disconnect: { id: idRemove } } },
         include: { Users: true },
       });
-      if (
-        channel.Users.length == 0 ||
-        (channel.Users.length == 1 && channel.Type == 'private')
-      )
+      if (channel.Users.length == 0)
         return this.deleteChannel(idChan, 0, res);
       res.status(HttpStatus.OK).send(channel);
       return channel;
