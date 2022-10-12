@@ -313,6 +313,7 @@ export default Vue.extend({
         })
         newRoom.channelName = this.newChannel.name
         newRoom.id = response.data.id
+        newRoom.Type = response.data.Type
         for (const user of response.data.Users)
         {
           const newUser = new User();
@@ -441,6 +442,7 @@ export default Vue.extend({
         }
         room.channelName = channel.Name
         room.id = channel.id
+        room.Type = channel.Type
         room.messages = channel.Messages
         room.messages.forEach((num1, index) => {
           num1.Nickname = channel.Messages[index].User.Nickname
@@ -469,13 +471,14 @@ export default Vue.extend({
       const responseIsAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${member.id}`)
       this.isAdmin = responseIsAdmin.data
       const responseAmAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${this.$store.state.currentUser.id}`)
-      this.AmAdmin = responseAmAdmin.data
+      this.amAdmin = responseAmAdmin.data
       const responseAmOwner = await axios.get(`/channel/${this.activeChannel.id}/isOwner/${this.$store.state.currentUser.id}`)
       this.amOwner = responseAmOwner.data
       this.sanction.reason = ''
       this.sanction.permanent = true
       this.sanction.duration = 0
       this.sanction.type = ''
+      console.log(this.activeChannel)
     },
     async openPrivateChat(member: User) {
       const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
@@ -495,6 +498,7 @@ export default Vue.extend({
           })
           newRoom.channelName = ( this.$store.state.currentUser.nickname + member.nickname );
           newRoom.id = response2.data.id
+          newRoom.Type = response2.data.Type
           for (const user of response2.data.Users)
           {
             const newUser = new User();
@@ -624,6 +628,7 @@ export default Vue.extend({
                 <v-list-item-title>{{ room.channelName }}</v-list-item-title>
               </v-list-item-content>
               <v-btn
+                v-if="room.Type !== 'private'"
                 fab
                 x-small
                 text
@@ -694,7 +699,7 @@ export default Vue.extend({
                       }}</v-list-item-title>
                       <v-list-item-title>{{
                         member.nickname
-                      }}  <v-icon v-if="isAdmin  && activeChannel.Type !== 'private'">mdi-crown</v-icon> </v-list-item-title>
+                      }}  <v-icon v-if="isAdmin === true && activeChannel.Type !== 'private'">mdi-crown</v-icon> </v-list-item-title>
                       <v-list-item-subtitle>{{
                         member.status
                       }}</v-list-item-subtitle>
@@ -726,7 +731,7 @@ export default Vue.extend({
                       >Send friend request</v-btn
                     >
                   </v-list-item>
-                  <v-list-item v-if="isAdmin === false && amAdmin === true  && activeChannel.Type !== 'private'">
+                  <v-list-item v-if="isAdmin === false && amAdmin === true && activeChannel.Type !== 'private'">
                     <v-btn
                       dense
                       @click.stop="makeAdmin(member)"
