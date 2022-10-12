@@ -22,7 +22,6 @@ export default Vue.extend({
       snackbar: { active: false, errorMessage: '' },
       sanctions: [] as Sanction[],
       activeChannel: OurRoom,
-      admin: true,
       addChannelDialog: false,
       createChannelDialog: false,
       editChannelDialog: false,
@@ -46,6 +45,8 @@ export default Vue.extend({
       showPassword: false,
       isBlocked: false,
       isAdmin: false,
+      amAdmin: false,
+      amOwner: false,
       mode: 'settings'
   }
   },
@@ -204,12 +205,12 @@ export default Vue.extend({
     async joinChannel(channel: any) {
       try {
         if (channel.Type === chanStatus.PROTECTED && channel.inputPassword) {
-          const response = await axios.patch(`/channel/addUser/${channel.id}`, {
+          await axios.patch(`/channel/addUser/${channel.id}`, {
             user_id: this.$store.state.currentUser.id,
             password: channel.inputPassword,
           })
         } else {
-          const response = await axios.patch(`/channel/addUser/${channel.id}`, {
+          await axios.patch(`/channel/addUser/${channel.id}`, {
             user_id: this.$store.state.currentUser.id,
           })
         }
@@ -250,9 +251,14 @@ export default Vue.extend({
       this.activeChannel = room
       this.inChannel = true
     },
-    editChannelPending(current: OurRoom): void {
+    async editChannelPending(current: OurRoom) {
       this.editChannelDialog = !this.editChannelDialog
-      this.dialogRoom = current
+      const response = await axios.get(`/channel/${current.id}/isAdmin/${this.$store.state.currentUser.id}`)
+      if (response.data === true)
+        this.dialogRoom = current
+      else
+        this.snackbar.active = true
+        this.snackbar.errorMessage = 'You are not a channel administrator'
     },
     async leaveChannelConfirmed() {
       this.leaveChannelDialog = false
@@ -379,12 +385,12 @@ export default Vue.extend({
     async sendMessage() {
       if (this.myMessage === '') return
       try {
-        const response = await axios.post(
+        await axios.post(
           `channel/${this.activeChannel.id}/sendMessage/${this.$store.state.currentUser.id}`,
           { Content: this.myMessage }
         )
       } catch (e) {
-        console.warn('you are ban or muted:\n', e)
+        console.warn('you are banned or muted:\n', e)
         this.snackbar.active = true
         this.snackbar.errorMessage = 'You have been muted'
         return
@@ -440,6 +446,8 @@ export default Vue.extend({
       this.isBlocked = responseBlocked.data
       const responseAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${member.id}`)
       this.isAdmin = responseAdmin.data
+      // const responseOwner = await axios.get(`/channel/${this.activeChannel.id}/isOwner/${this.$store.state.currentUser.id}`)
+      // this.amOwner = responseOwner.data
       this.sanction.reason = ''
       this.sanction.permanent = true
       this.sanction.duration = 0
@@ -448,7 +456,7 @@ export default Vue.extend({
     async openPrivateChat(member: any) {
       const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
       if (response.data) {
-        this.activeChannel = this.rooms.find((channel: OurRoom) => channel.id == response.data.id)
+        this.activeChannel = this.rooms.find((channel: OurRoom) => channel.id === response.data.id)
         this.inChannel = true;
       }
       else {
@@ -488,34 +496,47 @@ export default Vue.extend({
     },
     async switchBlock(member: any) {
       if (this.isBlocked === false) {
-        const response = await axios.patch(
+        await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
         )
         this.isBlocked = true;
       } else {
-        const response = await axios.patch(
+        await axios.patch(
           `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
         )
         this.isBlocked = false;
       }
     },
-    async switchAdmin(member: any) {
+    async blockUser(member: any) {
+        await axios.patch(
+          `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
+        )
+        this.isBlocked = true;
+    },
+    async unblockUser(member: any) {
+        await axios.patch(
+          `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
+        )
+        this.isBlocked = false;
+    },
+    async makeAdmin(member: any) {
       try{
-        if (this.isAdmin === false) {
-          const response = await axios.patch(
-            `/channel/${this.activeChannel.id}/addAdmin/${member.id}/${this.$store.state.currentUser.id}`
-          )
+          await axios.patch(`/channel/${this.activeChannel.id}/addAdmin/${member.id}/${this.$store.state.currentUser.id}`)
           this.isAdmin = true;
-        } else {
-          const response = await axios.patch(
-            `/channel/${this.activeChannel.id}/removeAdmin/${member.id}/${this.$store.state.currentUser.id}`
-          )
-          this.isAdmin = false;
-        }
       } catch(e) {
-        console.warn('Cannot add or remove admin:', e);
+        console.warn('Cannot make an admin:', e);
         this.snackbar.active = true
-        this.snackbar.errorMessage = 'Cannot add or remove admin'
+        this.snackbar.errorMessage = 'Cannot make an admin'
+      }
+    },
+    async removeAdmin(member: any) {
+      try{
+        await axios.patch(`/channel/${this.activeChannel.id}/removeAdmin/${member.id}/${this.$store.state.currentUser.id}`)
+        this.isAdmin = false;
+      } catch(e) {
+        console.warn('Cannot remove admin:', e);
+        this.snackbar.active = true
+        this.snackbar.errorMessage = 'Cannot remove admin'
       }
     },
     async updateSanction() {
@@ -524,7 +545,7 @@ export default Vue.extend({
     },
     async pardonUser(sanction: Sanction) {
       try {
-        const response = await axios.delete(`/channel/Sanction/${sanction.id}`)
+        await axios.delete(`/channel/Sanction/${sanction.id}`)
         for (let i = 0; i < this.sanctions.length; i++)
         {
           if (this.sanctions[i].id === sanction.id) {
@@ -534,7 +555,7 @@ export default Vue.extend({
       } catch(e) {
         console.warn(e)
         this.snackbar.active = true
-        this.snackbar.errorMessage = 'Cannot Pardon User'
+        this.snackbar.errorMessage = 'Cannot pardon User'
       }
     }
   },
@@ -570,7 +591,6 @@ export default Vue.extend({
                 <v-list-item-title>{{ room.channelName }}</v-list-item-title>
               </v-list-item-content>
               <v-btn
-                v-if="admin"
                 fab
                 x-small
                 text
@@ -641,7 +661,7 @@ export default Vue.extend({
                       }}</v-list-item-title>
                       <v-list-item-title>{{
                         member.nickname
-                      }}</v-list-item-title>
+                      }}  <v-icon v-if="isAdmin">mdi-crown</v-icon> </v-list-item-title>
                       <v-list-item-subtitle>{{
                         member.status
                       }}</v-list-item-subtitle>
@@ -673,38 +693,43 @@ export default Vue.extend({
                       >Send friend request</v-btn
                     >
                   </v-list-item>
+                  <v-list-item v-if="isAdmin === false && amAdmin === true">
+                    <v-btn
+                      dense
+                      @click.stop="makeAdmin(member)"
+                    >Make Admin</v-btn>
+                  </v-list-item>
+                  <v-list-item v-if="isAdmin === true && amOwner === true">
+                    <v-btn
+                      dense
+                      @click.stop="removeAdmin(member)"
+                    >Remove Admin</v-btn>
+                  </v-list-item>
                   <v-list-item
-                    v-if=" admin && member.nickname !== $store.state.currentUser.nickname"
+                    v-if=" amAdmin && member.nickname !== $store.state.currentUser.nickname"
                   >
                     <v-btn @click.stop="banUserPending(member)"
                       >Ban</v-btn
                     >
                   </v-list-item>
                   <v-list-item
+                    v-if=" amAdmin && member.nickname !== $store.state.currentUser.nickname"
                   >
                     <v-btn @click.stop="muteUserPending(member)"
                       >Mute</v-btn
                     >
                   </v-list-item>
-                  <v-list-item
-                    v-if="member.nickname !== $store.state.currentUser.nickname"
-                  >
-                    <v-list-item-title>Blocked</v-list-item-title>
-                    <v-checkbox
-                      :v-bind="isBlocked"
-                      :input-value="isBlocked"
+                  <v-list-item v-if="isBlocked === false">
+                    <v-btn
                       dense
-                      @change="switchBlock(member)"
-                    ></v-checkbox>
+                      @click.stop="blockUser(member)"
+                    >Block</v-btn>
                   </v-list-item>
-                  <v-list-item v-if="admin">
-                    <v-list-item-title>Admin</v-list-item-title>
-                    <v-checkbox
-                      :v-bind="isAdmin"
-                      :input-value="isAdmin"
+                  <v-list-item v-else>
+                    <v-btn
                       dense
-                      @change="switchAdmin(member)"
-                    ></v-checkbox>
+                      @click.stop="unblockUser(member)"
+                    >Unblock</v-btn>
                   </v-list-item>
                 </v-list>
               </v-card>
