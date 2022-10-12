@@ -107,14 +107,14 @@ export default Vue.extend({
                   Background Color:
                 </v-subheader>
                 <v-row class="mt-5">
-                  <v-btn x-large="true" color="#000000" class="colorBtn" @click.stop="changeColor('#000000')">Black</v-btn>
-                  <v-btn x-large="true" color="#FF0000" class="colorBtn" @click.stop="changeColor('#FF0000')"></v-btn>
-                  <v-btn x-large="true" color="#FF8400" class="colorBtn" @click.stop="changeColor('#FF8400')"></v-btn>
-                  <v-btn x-large="true" color="#FFE100" class="colorBtn" @click.stop="changeColor('#FFE100')"></v-btn>
-                  <v-btn x-large="true" color="#00B315" class="colorBtn" @click.stop="changeColor('#00B315')"></v-btn>
-                  <v-btn x-large="true" color="#0067F1" class="colorBtn" @click.stop="changeColor('#0067F1')"></v-btn>
-                  <v-btn x-large="true" color="#B000FD" class="colorBtn" @click.stop="changeColor('#B000FD')"></v-btn>
-                  <v-btn x-large="true" color="#FF00A1" class="colorBtn" @click.stop="changeColor('#FF00A1')"></v-btn>
+                  <v-btn x-large color="#000000" class="colorBtn" @click.stop="changeColor('#000000')">Black</v-btn>
+                  <v-btn x-large color="#FF0000" class="colorBtn" @click.stop="changeColor('#FF0000')"></v-btn>
+                  <v-btn x-large color="#FF8400" class="colorBtn" @click.stop="changeColor('#FF8400')"></v-btn>
+                  <v-btn x-large color="#FFE100" class="colorBtn" @click.stop="changeColor('#FFE100')"></v-btn>
+                  <v-btn x-large color="#00B315" class="colorBtn" @click.stop="changeColor('#00B315')"></v-btn>
+                  <v-btn x-large color="#0067F1" class="colorBtn" @click.stop="changeColor('#0067F1')"></v-btn>
+                  <v-btn x-large color="#B000FD" class="colorBtn" @click.stop="changeColor('#B000FD')"></v-btn>
+                  <v-btn x-large color="#FF00A1" class="colorBtn" @click.stop="changeColor('#FF00A1')"></v-btn>
                   <v-btn height="100" width="100" fab :color="this.color" class="preview">Preview</v-btn>
                 </v-row>
                 <v-row class="justify-space-between">
