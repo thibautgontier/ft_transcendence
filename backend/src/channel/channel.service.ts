@@ -465,11 +465,12 @@ export class ChannelService {
       if ((await this.getAdminChan(idChan, idAdmin)) === undefined) throw Error;
       const channel = await this.prisma.channel.update({
         where: { id: idChan },
-        data: { Type: 'public', Password: null },
+        data: { Type: 'public', Password: undefined },
       });
       res.status(HttpStatus.OK).send(channel);
       return channel;
     } catch (error) {
+      console.log(error)
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
         message: 'Cannot switch private to public',
