@@ -2,16 +2,16 @@
 import Vue from 'vue'
 import * as Colyseus from 'colyseus.js'
 import axios from 'axios'
-import { PaddleMoveMessage } from '../../backend/src/pong/PongRoom'
+import { PaddleMoveMessage } from '../types/pong/PongRoom'
 import {
   GameState,
   GameDimensions,
   Ball,
   Paddle,
   Scoreboard,
-  GameStatus,
-} from '../../backend/src/pong/schema'
-import { PaddleDirection } from '../../backend/src/pong/Physics'
+  GameStatus
+} from '../types/pong/schema'
+import { PaddleDirection } from '../types/pong/Physics'
 
 export default Vue.extend({
   layout: 'DefaultLayout',
@@ -25,14 +25,14 @@ export default Vue.extend({
     }
   },
   beforeCreate() {
-    if (!this.$store.state.currentUser.nickname)
-      this.$router.push('/');
+    if (!this.$store.state.currentUser.nickname) this.$router.push('/')
   },
   async destroyed() {
     try {
       await this.myroom.leave()
     } catch (e) {
-    console.warn(e) }
+      console.warn(e)
+    }
   },
   async mounted() {
     this.$store.commit('changeNoBall', true)
@@ -45,34 +45,50 @@ export default Vue.extend({
       if (this.$route.query.sessionId === undefined) {
         this.myroom = undefined
         const rooms = await client.getAvailableRooms<GameState>('PongRoom')
-        for(let available of rooms){
-            if (available.clients === 1)
-            {
-              this.$store.commit('changeGameUserId', this.$store.state.currentUser.id);
-              console.log(available.roomId);
-              this.myroom = await client.joinById(available.roomId, this.$store.state.gameOption, GameState)
-            }
-        };
-        if (this.myroom === undefined)
-        {
-          this.$store.commit('changeGameUserId', this.$store.state.currentUser.id);
-          this.myroom = await client.create('PongRoom', this.$store.state.gameOption, GameState)
+        for (const available of rooms) {
+          if (available.clients === 1) {
+            this.$store.commit(
+              'changeGameUserId',
+              this.$store.state.currentUser.id
+            )
+            console.log(available.roomId)
+            this.myroom = await client.joinById(
+              available.roomId,
+              this.$store.state.gameOption,
+              GameState
+            )
+          }
+        }
+        if (this.myroom === undefined) {
+          this.$store.commit(
+            'changeGameUserId',
+            this.$store.state.currentUser.id
+          )
+          this.myroom = await client.create(
+            'PongRoom',
+            this.$store.state.gameOption,
+            GameState
+          )
         }
       } else {
-        this.$store.commit('changeGameUserId', this.$store.state.currentUser.id);
-        this.myroom = await client.joinById(this.$route.query.sessionId, this.$store.state.gameOption, GameState)
+        this.$store.commit('changeGameUserId', this.$store.state.currentUser.id)
+        this.myroom = await client.joinById(
+          this.$route.query.sessionId,
+          this.$store.state.gameOption,
+          GameState
+        )
       }
     } catch (e) {
       this.$router.push(`/GameMenu/`)
       console.warn('JOIN ERROR', e)
     }
 
-    this.myroom.onMessage('Score', async (message : any) => {
+    this.myroom.onMessage('Score', async (message: any) => {
       const response = await axios.post('party/gameFinished', message)
     })
 
     this.state = this.myroom.state // set initial state
-    this.myroom.onStateChange((s : any) => {
+    this.myroom.onStateChange((s: any) => {
       // set state on every update
       this.state = s
     })
@@ -87,12 +103,12 @@ export default Vue.extend({
       switch (e.key) {
         case 'ArrowUp':
           this.myroom.send('PaddleMoveMessage', {
-            newDirection: PaddleDirection.UP,
+            newDirection: PaddleDirection.UP
           } as PaddleMoveMessage)
           break
         case 'ArrowDown':
           this.myroom.send('PaddleMoveMessage', {
-            newDirection: PaddleDirection.DOWN,
+            newDirection: PaddleDirection.DOWN
           } as PaddleMoveMessage)
           break
       }
@@ -103,7 +119,7 @@ export default Vue.extend({
         case 'ArrowUp':
         case 'ArrowDown':
           this.myroom.send('PaddleMoveMessage', {
-            newDirection: PaddleDirection.STOP,
+            newDirection: PaddleDirection.STOP
           } as PaddleMoveMessage)
       }
     })
@@ -165,10 +181,8 @@ export default Vue.extend({
       if (this.ctx == null) return
       // Clear screen
       if (this.$store.state.gameOption.color) {
-        this.ctx.fillStyle = this.$store.state.gameOption.color;
-      }
-      else
-        this.ctx.fillStyle = '#000000';
+        this.ctx.fillStyle = this.$store.state.gameOption.color
+      } else this.ctx.fillStyle = '#000000'
       this.ctx.fillRect(0, 0, GameDimensions.width, GameDimensions.height)
 
       // Rendering styles
@@ -193,8 +207,7 @@ export default Vue.extend({
           break
 
         case GameStatus.FINISHED:
-          if (this.score === -1)
-          {
+          if (this.score === -1) {
             this.myroom.send('Score')
             this.score = 0
           }
@@ -216,22 +229,22 @@ export default Vue.extend({
       this.ctx.canvas.width = GameDimensions.width * scale
       this.ctx.canvas.height = GameDimensions.height * scale
       this.ctx.scale(scale, scale)
-    },
-  },
+    }
+  }
 })
 </script>
 
 <template>
-<v-app dark>
+  <v-app dark>
     <canvas id="rendering-canvas" class="template"></canvas>
-</v-app>
+  </v-app>
 </template>
 
 <style>
-  .template{
-    margin: auto;
-    aspect-ratio: 16 9;
-    margin-top: 10%;
-    z-index: 128;
-  }
+.template {
+  margin: auto;
+  aspect-ratio: 16 9;
+  margin-top: 10%;
+  z-index: 128;
+}
 </style>
