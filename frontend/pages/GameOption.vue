@@ -36,9 +36,9 @@ export default Vue.extend({
 </script>
 
 <template>
-	<v-container fill-height>
+  <v-container fill-height>
         <v-row justify="center">
-          <v-subheader class="text-h2 grey--text">
+          <v-subheader class="text-h2 grey--text title">
               Game settings
           </v-subheader>
         </v-row>
@@ -141,5 +141,8 @@ export default Vue.extend({
   }
   .preview{
     margin-left: 133px;
+  }
+  .title {
+  margin-top: 10%;
   }
 </style>

@@ -4,7 +4,7 @@ export default Vue.extend({
 	methods: {
     	loadProfile() {
       		this.$store.commit('changeHistoryId', this.$store.state.currentUser.id);
-      		this.$router.push('/History');
+      		this.$router.push('/Profile');
     	},
 	}
 })
@@ -16,7 +16,7 @@ export default Vue.extend({
 					<v-btn router to="/">Home</v-btn>
 					<v-btn router to="/GameMenu">Game</v-btn>
 					<v-btn router to="/ChatMenu">Chat</v-btn>
-					<v-btn @click.stop="loadProfile()">History</v-btn>
+					<v-btn @click.stop="loadProfile()">Profile</v-btn>
 					<v-btn router to="/GameOption">Game Options</v-btn>
 				</div>
 			</v-app-bar>
@@ -24,7 +24,7 @@ export default Vue.extend({
 
 <style scoped>
 	.nav{
-		z-index: 128;
+		z-index: 1;
 	}
 	.testbuttons {
 		margin-top: 1%;
