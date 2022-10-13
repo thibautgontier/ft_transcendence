@@ -355,7 +355,7 @@ export default Vue.extend({
       } catch (e) {
         console.error('create error', e)
         this.snackbar.active = true
-        this.snackbar.errorMessage = 'Cannot create channel'
+        this.snackbar.errorMessage = 'Cannot create channel, channel name must be already taken'
       }
     },
     async editChannelConfirmed() {
@@ -370,8 +370,11 @@ export default Vue.extend({
         (this.editChannel.protected === true &&
           (this.editChannel.password.length < 3 ||
             this.editChannel.password.length > 12))
-      )
-        return
+      ) {
+          this.snackbar.active = true
+          this.snackbar.errorMessage = 'Invalid input or protected channel is checked without password'
+          return
+      }
       try{
         if (this.editChannel.name !== '') {
         // changement de nom
@@ -619,7 +622,6 @@ export default Vue.extend({
 <template>
   <div>
     <v-app dark>
-      <!-- EXIT ARROW -->
       <!-- CONVERSATIONS -->
       <v-navigation-drawer
         app
@@ -923,6 +925,7 @@ export default Vue.extend({
               :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
               :type="!showPassword ? 'password' : 'text'"
               :rules="inputRules"
+              @keydown.enter.prevent="newChannelConfirmed()"
               @click:append="showPassword = !showPassword"
             ></v-text-field>
             <v-card-actions>
@@ -976,6 +979,7 @@ export default Vue.extend({
                 :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
                 :type="!showPassword ? 'password' : 'text'"
                 :rules="inputRules"
+                @keydown.enter.prevent="editChannelConfirmed()"
                 @click:append="showPassword = !showPassword"
               ></v-text-field>
               <v-card-actions>
