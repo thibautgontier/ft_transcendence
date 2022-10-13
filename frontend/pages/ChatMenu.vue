@@ -575,8 +575,9 @@ export default Vue.extend({
       const user = new User();
       user.avatar = friend.Avatar;
       user.nickname = friend.Nickname
-      user.status = friend.status
+      user.status = friend.Status
       user.id = friend.id
+      this.openPrivateChat(user)
     },
     inviteToPlay(member: User) {},
     async addFriend(member: User) {
@@ -698,7 +699,7 @@ export default Vue.extend({
                 text
                 @click.stop="editChannelPending(room)"
                 ><v-icon>mdi-cog</v-icon></v-btn>
-              <v-btn text fab x-small @click.stop="leaveChannelPending(room)"
+              <v-btn v-if="room.Type !== 'private'" text fab x-small @click.stop="leaveChannelPending(room)"
                 ><v-icon>mdi-close</v-icon></v-btn>
             </v-list-item>
           </v-list-item-group>
