@@ -373,7 +373,7 @@ export default Vue.extend({
             this.editChannel.password.length > 12))
       ) {
           this.snackbar.active = true
-          this.snackbar.errorMessage = 'Invalid input or protected channel is checked without password'
+          this.snackbar.errorMessage = 'Invalid input or "protected channel" is checked without password'
           return
       }
       try{
