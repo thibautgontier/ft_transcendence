@@ -69,7 +69,8 @@ export class PongRoom extends Room<GameState> {
 
   onLeave(client: Client, consented: boolean) {
     // if a player leaves the game is cancelled
-    this.state.gameStatus = GameStatus.INTERRUPTED;
+    if (client.id == this.rpId || client.id == this.lpId)
+      this.state.gameStatus = GameStatus.INTERRUPTED;
   }
 
   onDispose() {
