@@ -440,6 +440,7 @@ export default Vue.extend({
     },
     onlineStatus(status: string) {
       if (status === 'online') return '🟢'
+      else if (status === 'AFK') return '🌙'
       return '🔴'
     },
     async createClient() {
@@ -661,7 +662,10 @@ export default Vue.extend({
     async updateFriends() {
       const response = await axios.get("/social/" + this.$store.state.currentUser.id + "/friend")
       this.friends = response.data
-    }
+    },
+    // updateUserStatus(status : string) {
+    //   this.$store.commit('changeStatus', status)
+    // }
   }
 })
 </script>
@@ -916,6 +920,57 @@ export default Vue.extend({
             </v-menu>
           </v-list-item>
         </v-list>
+        <!-- USER STATUS -->
+        <!-- <v-footer absolute pad outlined>
+          <v-menu
+            :close-on-content-click="true"
+            top
+            offset-y
+            transition="slide-y-reverse-transition"
+            >
+            <template #activator="{ on, attrs }">
+              <v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
+                <v-list-item-avatar>
+                  <v-img absolute :src="$store.state.currentUser.avatar"></v-img>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title>{{ $store.state.currentUser.nickname }}</v-list-item-title>
+                  <v-list-item-action-text>{{ $store.state.currentUser.status }}</v-list-item-action-text>
+                </v-list-item-content>
+              </v-btn>
+            </template> -->
+
+              <!-- USER STATUS MENU -->
+              <!-- <v-card>
+                <v-list>
+                  <v-list-item>
+                    <v-list-item-avatar>
+                      <v-img absolute :src="$store.state.currentUser.avatar"></v-img>
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title>{{ $store.state.currentUser.nickname }}</v-list-item-title>
+                      <v-spacer></v-spacer>
+                      <v-list-item-subtitle>{{ $store.state.currentUser.status }}</v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+
+                <v-divider></v-divider>
+
+                <v-list>
+                  <v-list-item>
+                    <v-btn @click="updateUserStatus('online')">Online</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn @click="updateUserStatus('AFK')">Away</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn @click="updateUserStatus('invisible')">Invisible</v-btn>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </v-menu>
+        </v-footer> -->
       </v-navigation-drawer>
       <!-- TOOLBAR -->
       <!-- CHANNEL -->
@@ -1270,9 +1325,9 @@ export default Vue.extend({
           >
             <v-list-item-content>
               <v-list-item-title>{{ message.Nickname }}</v-list-item-title>
-              <v-list-item-subtitle
-                >> {{ message.Content }}</v-list-item-subtitle
-              >
+              <v-list-item-subtitle class="text-wrap">
+                <p> {{ message.Content }} </p>
+                </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-container>
