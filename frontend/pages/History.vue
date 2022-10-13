@@ -16,7 +16,7 @@ export default Vue.extend({
       this.$router.push('/');
   },
   mounted() {
-      if (!this.$store.state.currentUser.nickname)
+    if (!this.$store.state.currentUser.nickname)
         return
       this.ID = this.$store.state.historyId;
       let path = "/game/";
@@ -27,6 +27,7 @@ export default Vue.extend({
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
     } ).then(response => (this.matchInfosTest = response.data));
+    this.$store.commit('changeNoBall', false)
   },
 })
 </script>

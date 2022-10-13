@@ -14,13 +14,14 @@ export default Vue.extend({
     }
   },
   mounted() {
+    this.$store.commit('changeNoBall', false)
   },
   methods: {
     startGame() {
       const gameOption = { ballSpeed: this.ballSpeed / 100, paddleSpeed: this.paddleSpeed / 100, pointsToWin: this.pointsToWin / 10, color: this.color};
       this.$store.commit('changeGameOption', gameOption);
       this.start = 1;
-      this.$router.push('/GameMenu');
+      this.$router.push('/PlayMenu');
     },
     resetToDefault() {
       this.ballSpeed = 50;
@@ -115,7 +116,7 @@ export default Vue.extend({
                   <v-btn x-large color="#0067F1" class="colorBtn" @click.stop="changeColor('#0067F1')"></v-btn>
                   <v-btn x-large color="#B000FD" class="colorBtn" @click.stop="changeColor('#B000FD')"></v-btn>
                   <v-btn x-large color="#FF00A1" class="colorBtn" @click.stop="changeColor('#FF00A1')"></v-btn>
-                  <v-btn height="100" width="100" fab :color="this.color" class="preview">Preview</v-btn>
+                  <v-btn height="100" width="100" fab :color="color" class="preview">Preview</v-btn>
                 </v-row>
                 <v-row class="justify-space-between">
                   <v-tooltip bottom>

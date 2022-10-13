@@ -38,6 +38,7 @@ export default Vue.extend({
       this.dialog = true;
     }
     this.loginFinish2 = this.$store.state.loginFinish;
+    this.$store.commit('changeNoBall', false)
   },
   watch: {
     loginFinish2() {

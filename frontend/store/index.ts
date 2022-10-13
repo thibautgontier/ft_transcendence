@@ -8,7 +8,7 @@ export const state = () => ({
 	currentUser: User,
 	tmpID: 0,
 	version: '',
-	inMenu: true,
+	noBall: true,
 	loginFinish: false,
 	gameOption: { ballSpeed: 0, paddleSpeed: 0, pointsToWin: 0, color: ''},
 	historyId: 0,
@@ -42,8 +42,8 @@ export const mutations = {
 	changeActiveComponent(state : any,component : any) {
 		state.activeComponent = component
 	},
-	changeInMenu(state : any, value : Boolean) {
-		state.inMenu = value
+	changeNoBall(state : any, value : Boolean) {
+		state.noBall = value
 	},
 	changeNickname(state : any, newNick : any) {
 		state.currentUser.nickname = newNick;

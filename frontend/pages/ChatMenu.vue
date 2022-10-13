@@ -100,7 +100,7 @@ export default Vue.extend({
     await this.createClient()
     await this.getBlockedUsers()
     await this.getChannel()
-    this.$store.commit('changeInMenu', false)
+    this.$store.commit('changeNoBall', true)
   },
   destroyed() {
     for(const channel of this.rooms)
