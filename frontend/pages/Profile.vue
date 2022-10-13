@@ -53,7 +53,6 @@ export default Vue.extend({
               :key="match.id">
               <Match :ennemyID='match.PlayerTwoID' :WinnerID='match.WinnerID' :score='match.WinnerID' :date='match.CreatedAt'/>
             </div>
-            <Friendlist/>
           </v-col>
           <v-divider vertical inset></v-divider>
         </v-row>
