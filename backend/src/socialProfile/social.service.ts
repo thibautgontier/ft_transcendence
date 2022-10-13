@@ -18,7 +18,7 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile);
       return profile;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send(error);
+      res.status(HttpStatus.NOT_ACCEPTABLE).send(error);
       return null;
     }
   }
@@ -32,7 +32,29 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile.Friends);
       return profile.Friends;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send(error);
+      res.status(HttpStatus.NOT_ACCEPTABLE).send(error);
+      return null;
+    }
+  }
+
+  async isFriend(
+    res: Response,
+    userID: number,
+    otherID: number,
+  ): Promise<boolean> {
+    try {
+      const profile = await this.prisma.socialProfile.findUnique({
+        where: { UserID: userID },
+        select: { Friends: true },
+      });
+      if (profile.Friends.find((User) => User.id == otherID) != undefined) {
+        res.status(HttpStatus.OK).send(true);
+        return true;
+      }
+      res.status(HttpStatus.OK).send(false);
+      return false;
+    } catch (error) {
+      res.status(HttpStatus.NOT_ACCEPTABLE).send(error);
       return null;
     }
   }
@@ -53,7 +75,7 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile);
       return profile;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send(error);
+      res.status(HttpStatus.NOT_ACCEPTABLE).send(error);
       return null;
     }
   }
@@ -74,59 +96,7 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile);
       return profile;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send(error);
-      return null;
-    }
-  }
-
-  async getChannels(res: Response, userID: number): Promise<Channel[]> {
-    try {
-      const profile = await this.prisma.socialProfile.findUnique({
-        where: { UserID: userID },
-        select: { Channels: true },
-      });
-      res.status(HttpStatus.OK).send(profile.Channels);
-      return profile.Channels;
-    } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send(error);
-      return null;
-    }
-  }
-
-  async addChannel(
-    res: Response,
-    userID: number,
-    channelID: number,
-  ): Promise<SocialProfile | null> {
-    try {
-      const profile = await this.prisma.socialProfile.update({
-        where: { UserID: userID },
-        data: { Channels: { connect: { id: channelID } } },
-        include: { Channels: true },
-      });
-      res.status(HttpStatus.OK).send(profile);
-      return profile;
-    } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send(error);
-      return null;
-    }
-  }
-
-  async removeChannel(
-    res: Response,
-    userID: number,
-    channelID: number,
-  ): Promise<SocialProfile | null> {
-    try {
-      const profile = await this.prisma.socialProfile.update({
-        where: { UserID: userID },
-        data: { Channels: { disconnect: { id: channelID } } },
-        include: { Channels: true },
-      });
-      res.status(HttpStatus.OK).send(profile);
-      return profile;
-    } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send(error);
+      res.status(HttpStatus.NOT_ACCEPTABLE).send(error);
       return null;
     }
   }
@@ -140,7 +110,29 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile.Blocked);
       return profile.Blocked;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send(error);
+      res.status(HttpStatus.NOT_ACCEPTABLE).send(error);
+      return null;
+    }
+  }
+
+  async isBlocked(
+    res: Response,
+    userID: number,
+    otherID: number,
+  ): Promise<boolean> {
+    try {
+      const profile = await this.prisma.socialProfile.findUnique({
+        where: { UserID: userID },
+        select: { Blocked: true },
+      });
+      if (profile.Blocked.find((User) => User.id == otherID) != undefined) {
+        res.status(HttpStatus.OK).send(true);
+        return true;
+      }
+      res.status(HttpStatus.OK).send(false);
+      return false;
+    } catch (error) {
+      res.status(HttpStatus.NOT_ACCEPTABLE).send(error);
       return null;
     }
   }
@@ -161,7 +153,7 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile);
       return profile;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send(error);
+      res.status(HttpStatus.NOT_ACCEPTABLE).send(error);
       return null;
     }
   }
@@ -182,7 +174,7 @@ export class SocialService {
       res.status(HttpStatus.OK).send(profile);
       return profile;
     } catch (error) {
-      res.status(HttpStatus.NOT_FOUND).send(error);
+      res.status(HttpStatus.NOT_ACCEPTABLE).send(error);
       return null;
     }
   }

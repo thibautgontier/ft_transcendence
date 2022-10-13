@@ -25,6 +25,15 @@ export class SocialController {
     return await this.socialService.getFriends(res, Number(userID));
   }
 
+  @Get(':userID/isFriend/:otherID')
+  async isFriend(
+    @Res() res: Response,
+	@Param('userID') userID: number,
+    @Param('otherID') otherID: number,
+  ): Promise<boolean> {
+    return await this.socialService.isFriend(res, Number(userID), Number(otherID));
+  }
+
   @Patch(':userID/friend/add/:friendID')
   async addFriend(
     @Res() res: Response,
@@ -51,46 +60,21 @@ export class SocialController {
     );
   }
 
-  @Get(':userID/channel')
-  async getChannels(
-    @Res() res: Response,
-    @Param('userID') userID: number,
-  ): Promise<Channel[]> {
-    return await this.socialService.getChannels(res, Number(userID));
-  }
-
-  @Patch(':userID/channel/add/:channelID')
-  async addChannel(
-    @Res() res: Response,
-    @Param('userID') userID: number,
-    @Param('channelID') channelID: number,
-  ): Promise<SocialProfile | null> {
-    return await this.socialService.addChannel(
-      res,
-      Number(userID),
-      Number(channelID),
-    );
-  }
-
-  @Patch(':userID/channel/remove/:channelID')
-  async removeChannel(
-    @Res() res: Response,
-    @Param('userID') userID: number,
-    @Param('channelID') channelID: number,
-  ): Promise<SocialProfile | null> {
-    return await this.socialService.removeChannel(
-      res,
-      Number(userID),
-      Number(channelID),
-    );
-  }
-
   @Get(':userID/blocked')
   async getBlockeds(
     @Res() res: Response,
     @Param('userID') userID: number,
   ): Promise<User[]> {
     return await this.socialService.getBlocked(res, Number(userID));
+  }
+
+  @Get(':userID/isBlocked/:otherID')
+  async isBlocked(
+    @Res() res: Response,
+	@Param('userID') userID: number,
+    @Param('otherID') otherID: number,
+  ): Promise<boolean> {
+    return await this.socialService.isBlocked(res, Number(userID), Number(otherID));
   }
 
   @Patch(':userID/blocked/add/:blockedID')

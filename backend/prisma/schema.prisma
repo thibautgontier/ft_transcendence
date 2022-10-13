@@ -35,9 +35,8 @@ model User {
   ChannelAdmin  Channel[]       @relation(name: "admin")
   MutedUser     Channel[]       @relation(name: "mutedUser")
   BanUser       Channel[]       @relation(name: "banUser")
-  UserNotifyID  Int?            @unique
-  UserNotify    Notify?         @relation(fields: [UserNotifyID], references: [id])
   UserMessage   Message[]
+  BanModel        BanModel[]
 }
 
 model GameProfile {
@@ -63,31 +62,14 @@ model Party {
   Winner        User?         @relation(name: "winner", fields: [WinnerID], references: [id])
   Status        partyStatus   @default(starting)
   GameHistory   GameProfile[] @relation("history")
-  PartyNotifyID Int?          @unique
-  PartyNotify   Notify?       @relation(fields: [PartyNotifyID], references: [id])
 }
 
 model SocialProfile {
   id       Int       @id @default(autoincrement())
-  Channels Channel[] @relation("channels")
   Friends  User[]    @relation("friends")
   Blocked  User[]    @relation("blocked")
-  Notifys  Notify[]
   UserID   Int?      @unique
   User     User?     @relation(fields: [UserID], references: [id], onDelete: Cascade)
-}
-
-model Notify {
-  id             Int            @id @default(autoincrement())
-  CreatedAt      DateTime       @default(now())
-  Type           notifyType
-  Title          String
-  Content        String
-  User           User?
-  Channel        Channel?
-  Party          Party?
-  SocialNotifyID Int?
-  SocialNotify   SocialProfile? @relation(fields: [SocialNotifyID], references: [id])
 }
 
 model Channel {
@@ -104,11 +86,28 @@ model Channel {
   Admins          User[]          @relation("admin")
   MutedUsers      User[]          @relation("mutedUser")
   BanUsers        User[]          @relation("banUser")
+  BanModel        BanModel[]
   Messages        Message[]
+  PasswordID      Int             @unique
+  Password        ChannelPassword @relation(fields: [PasswordID], references: [id], onDelete: Cascade)
+}
+
+model BanModel{
+  id              Int             @id @default(autoincrement())
+  CreatedAt       DateTime        @default(now())
+  Duration        Int
+  Type            Sanction
+  Reason          String
+  UserID          Int
+  User            User            @relation(fields: [UserID], references: [id], onDelete: Cascade)
+  ChannelID       Int
+  Channel         Channel         @relation(fields: [ChannelID], references: [id], onDelete: Cascade)
+}
+
+model ChannelPassword {
+  id              Int             @id @default(autoincrement())
   Password        String?
-  SocialChannel   SocialProfile[] @relation("channels")
-  ChannelNotifyID Int?            @unique
-  ChannelNotify   Notify?         @relation(fields: [ChannelNotifyID], references: [id])
+  Channel         Channel?
 }
 
 model Message {
@@ -129,6 +128,11 @@ enum logStatus {
   AFK
   invisible
   inGame
+}
+
+enum Sanction {
+  ban
+  mute
 }
 
 enum partyStatus {

@@ -31,7 +31,7 @@ export class UserService {
         TwoFA: this.toBool(query.twoFA),
       },
       include: {
-        GameProfile: gameProfile === undefined ? false : gameProfile,
+        // GameProfile: gameProfile === undefined ? false : gameProfile,
         SocialProfile: social === undefined ? false : social,
       },
     });
@@ -156,7 +156,7 @@ export class UserService {
       const user = await this.prisma.user.delete({
         where: { id: userID },
         include: {
-          GameProfile: true,
+        //   GameProfile: true,
           SocialProfile: true,
         },
       });

@@ -9,10 +9,13 @@ import {
   Res,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Channel, Message } from '@prisma/client';
+import { BanModel, Channel, Message } from '@prisma/client';
 import { Response } from 'express';
+import { get } from 'http';
+import { number } from 'joi';
 import { ChannelService } from './channel.service';
 import { ChannelAddUserDto } from './dto/channel-addUser.dto';
+import { BanOrMuteUserDto } from './dto/channel-banUser.dto';
 import { ChannelCreateDto } from './dto/channel-create.dto';
 import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
 import { ChannelSendMsgDto } from './dto/channel-sendMessage.dto';
@@ -32,6 +35,30 @@ export class ChannelController {
   @Get(':id')
   async findID(@Param('id') id: number): Promise<Channel | null> {
     return await this.channelService.findID(Number(id));
+  }
+
+  @Get(`isPrivateCreated/:id1/:id2`)
+  async isPrivateCreated(
+    @Param('id1') id1: number,
+    @Param('id2') id2: number,
+  ): Promise<Channel | null> {
+    return await this.channelService.isPrivateCreated(Number(id1), Number(id2));
+  }
+
+  @Get(':idChannel/isAdmin/:idUser')
+  async isAdmin(
+    @Param('idChannel') idChan: number,
+    @Param('idUser') idUser: number,
+  ): Promise<boolean> {
+    return await this.channelService.isAdmin(Number(idChan), Number(idUser));
+  }
+
+  @Get(':idChannel/isOwner/:idUser')
+  async isOwner(
+    @Param('idChannel') idChan: number,
+    @Param('idUser') idUser: number,
+  ): Promise<boolean> {
+    return await this.channelService.isOwner(Number(idChan), Number(idUser));
   }
 
   @Post('create')
@@ -209,63 +236,37 @@ export class ChannelController {
     );
   }
 
-  @Patch(':channelid/muteUser/:idAdmin/:idUser')
-  async muteUser(
-    @Param('channelid') idChan: number,
-    @Param('idAdmin') idAdmin: number,
-    @Param('idUser') idUser: number,
-    @Res() res: Response,
-  ): Promise<Channel | null> {
-    return await this.channelService.muteUser(
-      Number(idChan),
-      Number(idAdmin),
-      Number(idUser),
-      res,
-    );
-  }
-
-  @Patch(':channelid/unmuteUser/:idAdmin/:idUser')
-  async unmuteUser(
-    @Param('channelid') idChan: number,
-    @Param('idAdmin') idAdmin: number,
-    @Param('idUser') idUser: number,
-    @Res() res: Response,
-  ): Promise<Channel | null> {
-    return await this.channelService.unmuteUser(
-      Number(idChan),
-      Number(idAdmin),
-      Number(idUser),
-      res,
-    );
-  }
-
-  @Patch(':channelid/banUser/:idAdmin/:idUser')
+  @Patch('banUser/')
   async banUser(
-    @Param('channelid') idChan: number,
-    @Param('idAdmin') idAdmin: number,
-    @Param('idUser') idUser: number,
+    @Body() body: BanOrMuteUserDto,
     @Res() res: Response,
   ): Promise<Channel | null> {
-    return await this.channelService.banUser(
-      Number(idChan),
-      Number(idAdmin),
-      Number(idUser),
-      res,
-    );
+    if ((body.Sanction == 'ban')) {
+      return await this.channelService.banUser(body, res);
+    } else {
+      return await this.channelService.muteUser(body, res);
+    }
   }
 
-  @Patch(':channelid/unbanUser/:idAdmin/:idUser')
-  async unbanUser(
-    @Param('channelid') idChan: number,
-    @Param('idAdmin') idAdmin: number,
-    @Param('idUser') idUser: number,
+  @Get('Sanction/:channelID')
+  async getSanction(
+    @Param('channelID') idChan: number,
     @Res() res: Response,
-  ): Promise<Channel | null> {
-    return await this.channelService.unbanUser(
-      Number(idChan),
-      Number(idAdmin),
-      Number(idUser),
-      res,
-    );
+    ): Promise<BanModel[] | null> {
+      return await this.channelService.getSanction(
+        Number(idChan),
+        res
+      )
+    }
+
+  @Delete('Sanction/:idSanction')
+  async rmSanction(
+    @Param('idSanction') id: number,
+    @Res() res: Response,
+  ): Promise<BanModel | null> {
+    return await this.channelService.rmSanction(
+      Number(id),
+      res
+    )
   }
 }

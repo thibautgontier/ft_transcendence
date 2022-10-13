@@ -1,0 +1,17 @@
+-- CreateTable
+CREATE TABLE "BanModel" (
+    "id" SERIAL NOT NULL,
+    "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "ExpiresAt" TIMESTAMP(3),
+    "Reason" TEXT NOT NULL,
+    "UserID" INTEGER NOT NULL,
+    "ChannelID" INTEGER NOT NULL,
+
+    CONSTRAINT "BanModel_pkey" PRIMARY KEY ("id")
+);
+
+-- AddForeignKey
+ALTER TABLE "BanModel" ADD CONSTRAINT "BanModel_UserID_fkey" FOREIGN KEY ("UserID") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "BanModel" ADD CONSTRAINT "BanModel_ChannelID_fkey" FOREIGN KEY ("ChannelID") REFERENCES "Channel"("id") ON DELETE CASCADE ON UPDATE CASCADE;
