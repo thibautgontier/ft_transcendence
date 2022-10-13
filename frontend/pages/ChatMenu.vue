@@ -1326,7 +1326,7 @@ export default Vue.extend({
             <v-list-item-content>
               <v-list-item-title>{{ message.Nickname }}</v-list-item-title>
               <v-list-item-subtitle class="text-wrap">
-                <p> {{ message.Content }} </p>
+                <p class="text-justify text-wrap message"> {{ message.Content }} </p>
                 </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -1377,5 +1377,8 @@ export default Vue.extend({
 }
 .memberCard {
   z-index: 129;
+}
+.message {
+  word-break: break-word;
 }
 </style>
