@@ -192,7 +192,7 @@ export default Vue.extend({
           break
 
         case GameStatus.FINISHED:
-          if (this.score == -1)
+          if (this.score === -1)
           {
             this.myroom.send('Score')
             this.score = 0
@@ -230,6 +230,7 @@ export default Vue.extend({
   .template{
     margin: auto;
     aspect-ratio: 16 9;
+    margin-top: 10%;
     z-index: 128;
   }
 </style>
