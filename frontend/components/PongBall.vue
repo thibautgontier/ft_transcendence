@@ -36,7 +36,7 @@
 		animation: pong 30s infinite linear;
 		height: fit-content;
 		width: fit-content;
-		z-index: 128;
+		z-index: 0;
 	}
 
 	@keyframes pong {

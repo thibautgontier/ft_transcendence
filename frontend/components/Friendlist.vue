@@ -56,8 +56,8 @@ export default Vue.extend({
               absolute
               offset-y
               style="max-width: 600px">
-            <template v-slot:activator="{ on, attrs }">
-            <v-card v-bind="attrs" v-on="on" style="width: 650px; height: 50px">
+            <template #activator="{ on, attrs }">
+            <v-card v-bind="attrs" style="width: 650px; height: 50px" v-on="on">
               <v-row>
                 <v-list-item-avatar class="mt-4 ml-5">
                   <v-img :src="friend.Avatar"></v-img>
@@ -65,18 +65,18 @@ export default Vue.extend({
                 <v-list-item-content>
                   <v-list-item-title v-text="friend.Nickname"></v-list-item-title>
                 </v-list-item-content>
-                <v-badge class="mt-6 mr-6" v-if="friend.Status == 'online'" inline color="green"></v-badge>
-                <v-badge class="mt-6 mr-6" v-if="friend.Status == 'AFK'" inline color="orange"></v-badge>
-                <v-badge class="mt-6 mr-6" v-if="friend.Status == 'inGame'" inline color="blue"></v-badge>
-                <v-badge class="mt-6 mr-6" v-if="friend.Status == 'doNotDistrub'" inline color="red"></v-badge>
+                <v-badge v-if="friend.Status == 'online'" class="mt-6 mr-6" inline color="green"></v-badge>
+                <v-badge v-if="friend.Status == 'AFK'" class="mt-6 mr-6" inline color="orange"></v-badge>
+                <v-badge v-if="friend.Status == 'inGame'" class="mt-6 mr-6" inline color="blue"></v-badge>
+                <v-badge v-if="friend.Status == 'doNotDistrub'" class="mt-6 mr-6" inline color="red"></v-badge>
               </v-row>
             </v-card>
             </template>
             <v-list>
               <v-row>
                 <v-btn
-                  @click.stop="loadProfile(friend.id)"
-                  elevation="2">
+                  elevation="2"
+                  @click.stop="loadProfile(friend.id)">
                   Profile
                 </v-btn>
               </v-row>
@@ -101,8 +101,8 @@ export default Vue.extend({
           absolute
           offset-y
           style="max-width: 600px">
-        <template v-slot:activator="{ on, attrs }">
-          <v-card v-bind="attrs" v-on="on" style="width: 650px; height: 50px">
+        <template #activator="{ on, attrs }">
+          <v-card v-bind="attrs" style="width: 650px; height: 50px" v-on="on">
             <v-row>
               <v-list-item-avatar>
                 <v-img :src="$store.state.currentUser.Avatar"></v-img>
@@ -116,8 +116,8 @@ export default Vue.extend({
             <v-list>
               <v-row>
                 <v-btn
-                  @click.stop="loadProfile(friend.id)" 
-                  elevation="2">
+                  elevation="2" 
+                  @click.stop="loadProfile(friend.id)">
                   Profile
                 </v-btn>
               </v-row>
