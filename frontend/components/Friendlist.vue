@@ -2,8 +2,6 @@
 import Vue from 'vue'
 import axios from 'axios'
 
-let id = 0
-
 export default Vue.extend({
   data() {
     return {
@@ -12,13 +10,22 @@ export default Vue.extend({
       newComponent: '',
     }
   },
-  mounted() {
+  async mounted() {
+    const user = await axios.get("/user?id=" + this.$store.state.currentUser.id);
+    if (!user.data[0]) {
+      this.$store.commit('deleteUser');
+      this.$cookies.remove('user');
+      this.$store.commit('changeLoginFinish', false);
+      this.$store.commit('change2faStatus', false);
+      this.$router.push('/');
+      return;
+    }
     if (!this.$store.state.currentUser.nickname)
       return
-      axios.get("/social/" + this.$store.state.currentUser.id + "/friend", {
-        headers: {
-          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-        }
+    axios.get("/social/" + this.$store.state.currentUser.id + "/friend", {
+      headers: {
+        'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+      }
     } ).then(response => {(this.friendTest = response.data)});
   },
   methods: {

@@ -15,7 +15,16 @@ export default Vue.extend({
     if (!this.$store.state.currentUser.nickname)
       this.$router.push('/');
   },
-  mounted() {
+  async mounted() {
+    const user = await axios.get("/user?id=" + this.$store.state.currentUser.id);
+    if (!user.data[0]) {
+        this.$store.commit('deleteUser');
+        this.$cookies.remove('user');
+        this.$store.commit('changeLoginFinish', false);
+        this.$store.commit('change2faStatus', false);
+        this.$router.push('/');
+        return;
+    }
     if (!this.$store.state.currentUser.nickname)
         return
       this.ID = this.$store.state.historyId;

@@ -51,6 +51,9 @@ export const mutations = {
 		newUser.nickname = newNick;
 		localStorage.setItem('currentUser', JSON.stringify(newUser));
 	},
+	changeStatus(state : any, newStatus : string) {
+		state.currentUser.status = newStatus;
+	},
 	changeAvatar(state : any, newAvatar : any) {
 		state.currentUser.avatar = newAvatar;
 		let newUser = JSON.parse(localStorage.getItem('currentUser'));

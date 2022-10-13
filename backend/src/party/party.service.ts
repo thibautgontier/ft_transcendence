@@ -75,4 +75,51 @@ export class PartyService {
       return null;
     }
   }
+
+  async finishGame(winnerId: string, loserId: string) {
+    await this.prisma.gameProfile.update({
+      where: {
+        id: Number(winnerId),
+      },
+      data: {
+        NbWin: {
+          increment: 1,
+        },
+        Xp: {
+          increment: 20,
+        },
+        NbParty: {
+          increment: 1,
+        }
+      },
+    });
+    await this.prisma.gameProfile.update({
+      where: {
+        id: Number(loserId),
+      },
+      data: {
+        Xp: {
+          increment: 10,
+        },
+        NbParty: {
+          increment: 1,
+        }
+      },
+    });
+    await this.prisma.gameProfile.updateMany({
+      where: {
+        Xp: {
+          gte: 100,
+        },
+      },
+      data: {
+        Level: {
+          increment: 1,
+        },
+        Xp: {
+          decrement: 100,
+        },
+      }
+    });
+  }
 }

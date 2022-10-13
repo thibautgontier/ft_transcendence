@@ -7,13 +7,14 @@ import {
     Patch,
     Post,
     Query,
+    Req,
     Res,
   } from '@nestjs/common';
   import { ApiTags } from '@nestjs/swagger';
   import { Party } from '@prisma/client';
   import { PartyUpdateDto } from './dto/party-update.dto';
   import { PartyService } from './party.service';
-  import { Response } from 'express';
+  import { Request, Response } from 'express';
   
   @ApiTags('party')
   @Controller('party')
@@ -48,5 +49,13 @@ import {
       @Res() res: Response,
     ): Promise<Party | null> {
       return await this.partyService.deleteParty(Number(id), res);
+    }
+    
+    @Post('gameFinished')
+    async gameFinished(@Req() req: Request, @Res() res: Response) {
+      if (req.body.winnerId) {
+        await this.partyService.finishGame(req.body.winnerId, req.body.loserId);
+        res.status(200).send('success');
+      }
     }
   }

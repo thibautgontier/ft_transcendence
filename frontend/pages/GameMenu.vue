@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
+import axios from 'axios'
 
 export default Vue.extend({
     layout: 'DefaultLayout',
@@ -11,7 +12,16 @@ export default Vue.extend({
     if (!this.$store.state.currentUser.nickname)
       this.$router.push('/');
   },
-  mounted() {
+  async mounted() {
+    const user = await axios.get("/user?id=" + this.$store.state.currentUser.id);
+    if (!user.data[0]) {
+        this.$store.commit('deleteUser');
+        this.$cookies.remove('user');
+        this.$store.commit('changeLoginFinish', false);
+        this.$store.commit('change2faStatus', false);
+        this.$router.push('/');
+        return;
+    }
     this.$store.commit('changeNoBall', false)
   }
 })
