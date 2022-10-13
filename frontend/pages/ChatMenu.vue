@@ -839,8 +839,7 @@ export default Vue.extend({
                     v-if="member.nickname !== $store.state.currentUser.nickname && activeChannel.Type !== 'private'"
                   >
                     <v-btn @click.stop="openPrivateChat(member)"
-                      >Private chat</v-btn
-                    >
+                      >Private chat</v-btn>
                   </v-list-item>
                   <v-list-item
                     v-if="member.nickname !== $store.state.currentUser.nickname"
