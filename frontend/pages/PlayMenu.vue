@@ -1,6 +1,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import * as Colyseus from 'colyseus.js'
+import axios from 'axios'
 import { PaddleMoveMessage } from '../../backend/src/pong/PongRoom'
 import {
   GameState,
@@ -20,6 +21,7 @@ export default Vue.extend({
       canvas: Document,
       ctx: CanvasRenderingContext2D,
       myroom: GameState,
+      score: -1
     }
   },
   beforeCreate() {
@@ -27,7 +29,10 @@ export default Vue.extend({
       this.$router.push('/');
   },
   destroyed() {
-    this.myroom.leave()
+    try {
+      this.myroom.leave()
+    } catch (e) {
+    console.warn(e) }
   },
   async mounted() {
     this.$store.commit('changeNoBall', true)
@@ -56,10 +61,14 @@ export default Vue.extend({
         this.$store.commit('changeGameUserId', this.$store.state.currentUser.id);
         this.myroom = await client.joinById(this.$route.query.sessionId, this.$store.state.gameOption, GameState)
       }
-      console.log(this.myroom.sessionId, 'joined', this.myroom.name)
     } catch (e) {
-      console.log('JOIN ERROR', e)
+      this.$router.push(`/GameMenu/`)
+      console.warn('JOIN ERROR', e)
     }
+
+    this.myroom.onMessage('Score', async (message : any) => {
+      const response = await axios.post('party/gameFinished', message)
+    })
 
     this.state = this.myroom.state // set initial state
     this.myroom.onStateChange((s : any) => {
@@ -183,6 +192,11 @@ export default Vue.extend({
           break
 
         case GameStatus.FINISHED:
+          if (this.score == -1)
+          {
+            this.myroom.send('Score')
+            this.score = 0
+          }
           this.renderScoreboard(state.scoreboard)
           this.drawTextCenter('Game finished')
           break

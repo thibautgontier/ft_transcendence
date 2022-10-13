@@ -53,6 +53,7 @@ export default {
     '/social/': 'http://localhost:3000',
     '/login/': 'http://localhost:3000',
     '/user': 'http://localhost:3000',
+	'/party': 'http://localhost:3000',
   },
 
   router: {

@@ -50,8 +50,8 @@ import {
     ): Promise<Party | null> {
       return await this.partyService.deleteParty(Number(id), res);
     }
-    
-    @Post('gameFinished')
+
+    @Post('gameFinished') //body {winnerId: number, loserId: number}
     async gameFinished(@Req() req: Request, @Res() res: Response) {
       if (req.body.winnerId) {
         await this.partyService.finishGame(req.body.winnerId, req.body.loserId);

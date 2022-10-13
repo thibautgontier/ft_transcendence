@@ -36,8 +36,17 @@ export class PongRoom extends Room<GameState> {
 	
 		if (client.id === this.lpId)
 		  this.physics.setLeftPaddleDirection(message.newDirection);
-	  })
+	  });
+    this.onMessage('Score', (client: Client, message : any) => {
+      if (client.id == this.lpId) {
+        if (this.state.scoreboard.left > this.state.scoreboard.right)
+          client.send('Score', {winnerId: this.User1ID, loserId: this.User2ID})
+        else
+          client.send('Score', {winnerId: this.User2ID, loserId: this.User1ID})
+      }
+    })
   }
+
 
   private update(deltaTime: number) {
     if (this.state.gameStatus !== GameStatus.PLAYING) return;

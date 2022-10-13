@@ -38,7 +38,6 @@ export default Vue.extend({
     for (let room of this.available)
     {
       if (room.clients >= 2) {
-        console.log('test:', room.roomId, this.rooms);
         let newavailable = new newAvailableRoom()
         newavailable.pongRoom = await this.client.joinById(room.roomId, this.$store.state.gameOption, GameState)
         newavailable.pongRoom.onMessage('info', async (message: any) => {
