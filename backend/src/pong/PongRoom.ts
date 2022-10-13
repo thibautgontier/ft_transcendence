@@ -18,8 +18,14 @@ export class PongRoom extends Room<GameState> {
     console.info('PongRoom created', options);
     this.setState(new GameState());
 
-    this.physics = new Physics(this.state.ball, this.state.leftPaddle, this.state.rightPaddle, options);
-    this.pointsToWin = options.pointsToWin;
+    if (options.ballSpeed) {
+      this.physics = new Physics(this.state.ball, this.state.leftPaddle, this.state.rightPaddle, options);
+      this.pointsToWin = options.pointsToWin;
+    }
+    else {
+      this.physics = new Physics(this.state.ball, this.state.leftPaddle, this.state.rightPaddle, { ballSpeed: 0.5, paddleSpeed: 0.5 });
+      this.pointsToWin = 3;
+    }
 	  // FIXME: strong typing of message is not enforced
 	this.onMessage('PaddleMoveMessage', (client: Client, message : PaddleMoveMessage) => {
 		if (client.id === this.rpId)
@@ -47,7 +53,6 @@ export class PongRoom extends Room<GameState> {
       this.state.gameStatus = GameStatus.FINISHED;
       return;
     }
-
     this.physics.update(deltaTime);
   }
 

@@ -132,7 +132,11 @@ export default Vue.extend({
     render(state: GameState) {
       if (this.ctx == null) return
       // Clear screen
-      this.ctx.fillStyle = this.$store.state.gameOption.color;
+      if (this.$store.state.gameOption.color) {
+        this.ctx.fillStyle = this.$store.state.gameOption.color;
+      }
+      else
+        this.ctx.fillStyle = '#000000';
       this.ctx.fillRect(0, 0, GameDimensions.width, GameDimensions.height)
 
       // Rendering styles
