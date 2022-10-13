@@ -28,9 +28,9 @@ export default Vue.extend({
     if (!this.$store.state.currentUser.nickname)
       this.$router.push('/');
   },
-  destroyed() {
+  async destroyed() {
     try {
-      this.myroom.leave()
+      await this.myroom.leave()
     } catch (e) {
     console.warn(e) }
   },
@@ -42,17 +42,18 @@ export default Vue.extend({
     this.ctx = this.canvas.getContext('2d')
     const client = new Colyseus.Client('ws://localhost:3000')
     try {
-      if (this.$route.query.sessionId == undefined) {
+      if (this.$route.query.sessionId === undefined) {
         this.myroom = undefined
-        let rooms = await client.getAvailableRooms<GameState>('PongRoom')
+        const rooms = await client.getAvailableRooms<GameState>('PongRoom')
         for(let available of rooms){
-            if(available.clients == 1)
+            if (available.clients === 1)
             {
               this.$store.commit('changeGameUserId', this.$store.state.currentUser.id);
+              console.log(available.roomId);
               this.myroom = await client.joinById(available.roomId, this.$store.state.gameOption, GameState)
             }
         };
-        if (this.myroom == undefined)
+        if (this.myroom === undefined)
         {
           this.$store.commit('changeGameUserId', this.$store.state.currentUser.id);
           this.myroom = await client.create('PongRoom', this.$store.state.gameOption, GameState)
