@@ -290,10 +290,12 @@ export default Vue.extend({
       this.inChannel = true
     },
     async editChannelPending(current: OurRoom) {
-      this.editChannelDialog = !this.editChannelDialog
       const response = await axios.get(`/channel/${current.id}/isAdmin/${this.$store.state.currentUser.id}`)
       if (response.data === true)
+      {
+        this.editChannelDialog = !this.editChannelDialog
         this.dialogRoom = current
+      }
       else
         this.snackbar.active = true
         this.snackbar.errorMessage = 'You are not a channel administrator'
@@ -408,8 +410,8 @@ export default Vue.extend({
       }
       this.editChannelDialog = false
     },
-    onlineStatus(online: boolean) {
-      if (online === true) return '🟢'
+    onlineStatus(status: string) {
+      if (status === 'online') return '🟢'
       return '🔴'
     },
     async createClient() {
@@ -696,7 +698,7 @@ export default Vue.extend({
                   <v-list-item-content class="ml-2">
                     <v-list-item-title>{{ member.nickname }}</v-list-item-title>
                     <v-list-item-subtitle>{{
-                      onlineStatus(member.status)
+                      onlineStatus(member.Status)
                     }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-btn>
@@ -709,13 +711,13 @@ export default Vue.extend({
                     <v-avatar size="64"><img :src="member.avatar" /></v-avatar>
                     <v-list-item-content class="ml-2">
                       <v-list-item-title>{{
-                        onlineStatus(member.status)
+                        onlineStatus(member.Status)
                       }}</v-list-item-title>
                       <v-list-item-title>{{
                         member.nickname
                       }}  <v-icon v-if="isAdmin === true && activeChannel.Type !== 'private'">mdi-crown</v-icon> </v-list-item-title>
                       <v-list-item-subtitle>{{
-                        member.status
+                        member.Status
                       }}</v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
