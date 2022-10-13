@@ -8,6 +8,7 @@ export interface IRoom {
   id: number
   Type: chanStatus
   members: any[]
+  newMessage: number
 }
 
 export class OurRoom implements IRoom {
@@ -17,6 +18,7 @@ export class OurRoom implements IRoom {
   id = 0
   Type = chanStatus.PUBLIC
   members: any[] = []
+  newMessage = 0
 }
 
 export enum chanStatus {

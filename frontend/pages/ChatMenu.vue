@@ -125,6 +125,8 @@ export default Vue.extend({
           const newMsg = new Message()
           newMsg.Content = message.Content
           newMsg.Nickname = message.Nickname
+          if (this.activeChannel.id !== room.id)
+            room.newMessage++;
           if (this.blocked.find(element => element === message.idSender) === undefined)
           {
             room.messages.push(newMsg)
@@ -687,11 +689,19 @@ export default Vue.extend({
             <v-list-item
               v-for="(room, index) in rooms"
               :key="index"
-              @click.stop="activeChannel = room"
+              @click.stop="activeChannel = room, activeChannel.newMessage = 0"
             >
               <v-list-item-content>
                 <v-list-item-title>{{ room.channelName }}</v-list-item-title>
               </v-list-item-content>
+                <v-badge
+                  v-if="room.newMessage >= 1"
+                  :content="room.newMessage"
+                  left
+                  overlap
+                  color="orange"
+                  offset-x="-15"
+                ></v-badge>
               <v-btn
                 v-if="room.Type !== 'private'"
                 fab
