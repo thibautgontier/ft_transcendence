@@ -1,33 +1,61 @@
 <script lang="ts">
 import Vue from 'vue'
+import * as Colyseus from 'colyseus.js'
+import axios from 'axios'
+import {
+  GameState,
+} from '../../backend/src/pong/schema'
+
+export class newAvailableRoom{
+  player1 = '';
+  player2 = '';
+  pongRoom = new Colyseus.Room('');
+}
 
 export default Vue.extend({
   layout: 'DefaultLayout',
   data () {
     return {
-      rooms: [
-        {player1: 'Ben', player2: 'Toto'},
-        {player1: 'Ben', player2: 'Toto'},
-        {player1: 'Ben', player2: 'Toto'},
-        {player1: 'Ben', player2: 'Toto'},
-        {player1: 'Ben', player2: 'Toto'},
-        {player1: 'Ben', player2: 'Toto'},
-        {player1: 'Ben', player2: 'Toto'}
-      ]
+      client: Colyseus.Client,
+      available: [],
+      rooms: [] as newAvailableRoom[],
     }
   },
-  beforeCreate() {
+  beforeCreate() { 
     if (!this.$store.state.currentUser.nickname)
       this.$router.push('/');
   },
-  mounted() {
+  destroyed() {
+    for(const channel of this.rooms)
+    {
+      channel.pongRoom.leave()
+    }
+  },
+  async mounted() {
     this.$store.commit('changeNoBall', false)
+    this.client =  new Colyseus.Client('ws://localhost:3000');
+    this.available = await this.client.getAvailableRooms('PongRoom', GameState)
+    for (let room of this.available)
+    {
+      if (room.clients >= 2) {
+        console.log('test:', room.roomId, this.rooms);
+        let newavailable = new newAvailableRoom()
+        newavailable.pongRoom = await this.client.joinById(room.roomId, this.$store.state.gameOption, GameState)
+        newavailable.pongRoom.onMessage('info', async (message: any) => {
+          let nickname = await axios.get(`user/${message.id1}`)
+          newavailable.player1 = nickname.data.Nickname;
+          nickname = await axios.get(`user/${message.id2}`)
+          newavailable.player2 = nickname.data.Nickname;
+        });
+        this.rooms.push(newavailable);
+      }
+    }
   },
   methods: {
-    watchRoom(room : any) {
-      console.log("Currently watchin room: ", room);
-    }
-  }
+    watchRoom(room : newAvailableRoom){
+      this.$router.push(`/PlayMenu/?sessionId=${room.pongRoom.id}`);
+    },
+  },
 })
 </script>
 

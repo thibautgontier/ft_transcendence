@@ -7,15 +7,18 @@ export interface PaddleMoveMessage {
 }
 
 export class PongRoom extends Room<GameState> {
-  maxClients = 2;
 
   private physics!: Physics;
   private lpId!: string;
   private rpId!: string;
+  private User1ID!: number;
+  private User2ID!: number
   private pointsToWin!: number;
 
   onCreate(options: any) {
-    console.info('PongRoom created', options);
+    console.info('PongRoom created');
+    this.User1ID = -1;
+    this.User2ID = -1;
     this.setState(new GameState());
 
     if (options.ballSpeed) {
@@ -57,20 +60,35 @@ export class PongRoom extends Room<GameState> {
   }
 
   onJoin(client: Client, options: any) {
-    if (this.clients.length === 1) {
+    if (this.clients.length === 1 && this.User1ID == -1) {
+      this.User1ID = options.idPlayer
       this.lpId = client.id;
-    } else if (this.clients.length === 2) {
+      console.log(1)
+    } else if (this.clients.length === 2 && this.User2ID == -1) {
+      console.log(2)
+      this.User2ID = options.idPlayer
       this.rpId = client.id;
       this.state.gameStatus = GameStatus.PLAYING;
       this.setSimulationInterval(deltaTime => this.update(deltaTime));
       this.setPatchRate(16.66);
+    } else {
+      console.log('spectator')
+      client.send('info', {'id1' : this.User1ID, 'id2' : this.User2ID})
     }
   }
 
   onLeave(client: Client, consented: boolean) {
     // if a player leaves the game is cancelled
-    if (client.id == this.rpId || client.id == this.lpId)
+    if (client.id == this.rpId || client.id == this.lpId) {
       this.state.gameStatus = GameStatus.INTERRUPTED;
+      this.lock()
+    }
+    if(client.id == this.lpId) {
+      console.log('client 1 left');
+    } else if(client.id == this.rpId) {
+      console.log('client 2 left');
+    } else
+      console.log('spectator left');
   }
 
   onDispose() {

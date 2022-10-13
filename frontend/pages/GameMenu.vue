@@ -5,7 +5,6 @@ export default Vue.extend({
     layout: 'DefaultLayout',
     data () {
       return {
-
       }
     },
     beforeCreate() {

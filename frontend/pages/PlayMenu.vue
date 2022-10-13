@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
-import { Client, Room } from 'colyseus.js'
+import * as Colyseus from 'colyseus.js'
 import { PaddleMoveMessage } from '../../backend/src/pong/PongRoom'
 import {
   GameState,
@@ -11,6 +11,7 @@ import {
   GameStatus,
 } from '../../backend/src/pong/schema'
 import { PaddleDirection } from '../../backend/src/pong/Physics'
+
 export default Vue.extend({
   layout: 'DefaultLayout',
   data(): any {
@@ -18,12 +19,15 @@ export default Vue.extend({
       state: GameState,
       canvas: Document,
       ctx: CanvasRenderingContext2D,
-      room: GameState,
+      myroom: GameState,
     }
   },
   beforeCreate() {
     if (!this.$store.state.currentUser.nickname)
       this.$router.push('/');
+  },
+  destroyed() {
+    this.myroom.leave()
   },
   async mounted() {
     this.$store.commit('changeNoBall', true)
@@ -31,16 +35,34 @@ export default Vue.extend({
       'rendering-canvas'
     ) as HTMLCanvasElement
     this.ctx = this.canvas.getContext('2d')
-    const client = new Client('ws://localhost:3000')
+    const client = new Colyseus.Client('ws://localhost:3000')
     try {
-      this.room = await client.joinOrCreate('PongRoom', this.$store.state.gameOption, GameState)
-      console.log(this.room.sessionId, 'joined', this.room.name)
+      if (this.$route.query.sessionId == undefined) {
+        this.myroom = undefined
+        let rooms = await client.getAvailableRooms<GameState>('PongRoom')
+        for(let available of rooms){
+            if(available.clients == 1)
+            {
+              this.$store.commit('changeGameUserId', this.$store.state.currentUser.id);
+              this.myroom = await client.joinById(available.roomId, this.$store.state.gameOption, GameState)
+            }
+        };
+        if (this.myroom == undefined)
+        {
+          this.$store.commit('changeGameUserId', this.$store.state.currentUser.id);
+          this.myroom = await client.create('PongRoom', this.$store.state.gameOption, GameState)
+        }
+      } else {
+        this.$store.commit('changeGameUserId', this.$store.state.currentUser.id);
+        this.myroom = await client.joinById(this.$route.query.sessionId, this.$store.state.gameOption, GameState)
+      }
+      console.log(this.myroom.sessionId, 'joined', this.myroom.name)
     } catch (e) {
       console.log('JOIN ERROR', e)
     }
 
-    this.state = this.room.state // set initial state
-    this.room.onStateChange((s : any) => {
+    this.state = this.myroom.state // set initial state
+    this.myroom.onStateChange((s : any) => {
       // set state on every update
       this.state = s
     })
@@ -54,12 +76,12 @@ export default Vue.extend({
     document.addEventListener('keydown', (e) => {
       switch (e.key) {
         case 'ArrowUp':
-          this.room.send('PaddleMoveMessage', {
+          this.myroom.send('PaddleMoveMessage', {
             newDirection: PaddleDirection.UP,
           } as PaddleMoveMessage)
           break
         case 'ArrowDown':
-          this.room.send('PaddleMoveMessage', {
+          this.myroom.send('PaddleMoveMessage', {
             newDirection: PaddleDirection.DOWN,
           } as PaddleMoveMessage)
           break
@@ -70,7 +92,7 @@ export default Vue.extend({
       switch (e.key) {
         case 'ArrowUp':
         case 'ArrowDown':
-          this.room.send('PaddleMoveMessage', {
+          this.myroom.send('PaddleMoveMessage', {
             newDirection: PaddleDirection.STOP,
           } as PaddleMoveMessage)
       }

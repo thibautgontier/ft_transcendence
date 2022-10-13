@@ -10,7 +10,7 @@ export const state = () => ({
 	version: '',
 	noBall: true,
 	loginFinish: false,
-	gameOption: { ballSpeed: 0, paddleSpeed: 0, pointsToWin: 0, color: ''},
+	gameOption: { ballSpeed: 0, paddleSpeed: 0, pointsToWin: 0, color: '', idPlayer: 0},
 	historyId: 0,
 })
 
@@ -90,6 +90,9 @@ export const mutations = {
 		state.gameOption.paddleSpeed = newOption.paddleSpeed;
 		state.gameOption.pointsToWin = newOption.pointsToWin;
 		state.gameOption.color = newOption.color;
+	},
+	changeGameUserId(state, id) {
+		state.gameOption.idPlayer = id;
 	},
 	changeHistoryId(state, id) {
 		state.historyId = id;
