@@ -112,8 +112,8 @@ export default Vue.extend({
         <v-snackbar v-model="loginSuccess" timeout="3000" color="green" min-height="60">
             <div class="snackText">Logged successfully!</div>
         </v-snackbar>
-        <v-snackbar v-model="loginFailed" timeout="3000" color="green" min-height="60">
-            <div class="snackText">Logged failed!</div>
+        <v-snackbar v-model="loginFailed" timeout="3000" color="red" min-height="60">
+            <div class="snackText">Login failed!</div>
         </v-snackbar>
     </v-col>
     <v-row justify="center">
