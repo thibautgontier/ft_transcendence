@@ -21,6 +21,7 @@ export default Vue.extend({
       snackbar: { active: false, errorMessage: '' },
       sanctions: [] as Sanction[],
       blocked: [] as number[],
+      friends: [] as User[],
       activeChannel: OurRoom,
       addChannelDialog: false,
       createChannelDialog: false,
@@ -48,7 +49,8 @@ export default Vue.extend({
       isFriend: false,
       amAdmin: false,
       amOwner: false,
-      mode: 'settings'
+      editMode: 'settings',
+      drawerMode: 'conversations'
   }
   },
   head(): {} {
@@ -78,7 +80,7 @@ export default Vue.extend({
         this.editChannel.password = ''
         this.editChannel.protected = false
         this.showPassword = false
-        this.mode = 'settings'
+        this.editMode = 'settings'
       }
     },
     channelChange(newValue, oldValue) {
@@ -162,6 +164,7 @@ export default Vue.extend({
               newUser.avatar = user.Avatar
               newUser.nickname = user.Nickname
               newUser.id = user.id
+              newUser.status = user.Status
               newRoom.members.push(newUser)
             }
           this.rooms.push(newRoom);
@@ -287,6 +290,7 @@ export default Vue.extend({
           newUser.avatar = user.Avatar
           newUser.nickname = user.Nickname
           newUser.id = user.id
+          newUser.status = user.Status
           room.members.push(newUser)
         }
       this.rooms.push(room)
@@ -344,6 +348,7 @@ export default Vue.extend({
           newUser.avatar = user.Avatar
           newUser.nickname = user.Nickname
           newUser.id = user.id
+          newUser.status = user.Status
           newRoom.members.push(newUser)
         }
         this.newChannel.name = ''
@@ -487,6 +492,7 @@ export default Vue.extend({
           newUser.avatar = user.Avatar
           newUser.nickname = user.Nickname
           newUser.id = user.id
+          newUser.status = user.Status
           room.members.push(newUser)
         }
         this.rooms.push(room);
@@ -540,6 +546,7 @@ export default Vue.extend({
             newUser.avatar = user.Avatar
             newUser.nickname = user.Nickname
             newUser.id = user.id
+            newUser.status = user.Status
             newRoom.members.push(newUser)
           }
           this.rooms.push(newRoom);
@@ -555,12 +562,27 @@ export default Vue.extend({
           }
         }
     },
+    openPrivateChatAdapter(friend : any) {
+      const user = new User();
+      user.avatar = friend.Avatar;
+      user.nickname = friend.Nickname
+      user.status = friend.status
+      user.id = friend.id
+    },
     inviteToPlay(member: User) {},
     async addFriend(member: User) {
       await axios.patch(
         `/social/${this.$store.state.currentUser.id}/friend/add/${member.id}`
       )
     this.isFriend = true;
+    this.updateFriends();
+    },
+    async removeFriend(friend) {
+      await axios.patch(
+        `/social/${this.$store.state.currentUser.id}/friend/remove/${friend.id}`
+      )
+    this.isFriend = false;
+    this.friends.splice(this.friends.indexOf(friend), 1);
     },
     async blockUser(member: User) {
         await axios.patch(
@@ -623,8 +645,12 @@ export default Vue.extend({
         this.snackbar.active = true
         this.snackbar.errorMessage = 'Cannot pardon User'
       }
+    },
+    async updateFriends() {
+      const response = await axios.get("/social/" + this.$store.state.currentUser.id + "/friend")
+      this.friends = response.data
     }
-  },
+  }
 })
 </script>
 
@@ -633,6 +659,7 @@ export default Vue.extend({
     <v-app dark>
       <!-- CONVERSATIONS -->
       <v-navigation-drawer
+        v-if="drawerMode === 'conversations'"
         app
         permanent
         :expand-on-hover="$vuetify.breakpoint.smAndDown"
@@ -641,10 +668,10 @@ export default Vue.extend({
           <v-list-item-icon>
             <v-icon>mdi-chat</v-icon>
           </v-list-item-icon>
-          <v-list-item-title>Conversations</v-list-item-title>
+          <v-list-item-title>Channels</v-list-item-title>
+          <v-btn small @click.stop="updateFriends(), drawerMode='friends'">FRIENDS</v-btn>
         </v-list-item>
         <v-divider></v-divider>
-
         <v-list v-if="inChannel" dense>
           <v-list-item-group>
             <v-list-item
@@ -661,11 +688,9 @@ export default Vue.extend({
                 x-small
                 text
                 @click.stop="editChannelPending(room)"
-                ><v-icon>mdi-cog</v-icon></v-btn
-              >
+                ><v-icon>mdi-cog</v-icon></v-btn>
               <v-btn text fab x-small @click.stop="leaveChannelPending(room)"
-                ><v-icon>mdi-close</v-icon></v-btn
-              >
+                ><v-icon>mdi-close</v-icon></v-btn>
             </v-list-item>
           </v-list-item-group>
         </v-list>
@@ -675,6 +700,80 @@ export default Vue.extend({
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </v-footer>
+      </v-navigation-drawer>
+      <!-- FRIENDS -->
+      <v-navigation-drawer
+        v-else
+        app
+        permanent
+        :expand-on-hover="$vuetify.breakpoint.smAndDown"
+      >
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>mdi-human-greeting-variant</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Friends</v-list-item-title>
+          <v-btn small @click.stop="drawerMode = 'conversations'">CHANNELS</v-btn>
+        </v-list-item>
+        <v-divider></v-divider>
+        <v-list dense>
+          <v-list-item
+            v-for="(friend, index) in friends"
+            :key="index"
+          >
+            <v-menu
+              v-model="friend.menu"
+              :close-on-content-click="false"
+              right
+              offset-x
+              transition="slide-x-transition"
+              class="memberCard"
+            >
+              <template #activator="{ on, attrs }">
+                <v-btn class="wide" text color="white" v-bind="attrs" v-on="on" @click.stop="">
+                  <v-avatar size="32"><img :src="friend.Avatar" /></v-avatar>
+                  <v-list-item-content class="ml-2">
+                    <v-list-item-title>{{ friend.Nickname }}</v-list-item-title>
+                    <v-list-item-subtitle>{{
+                      onlineStatus(friend.Status)
+                    }}</v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-btn>
+              </template>
+              <!-- FRIEND CARD MENU -->
+              <v-card>
+                <v-list>
+                  <v-list-item>
+                    <v-avatar size="64"><img :src="friend.Avatar" /></v-avatar>
+                    <v-list-item-content class="ml-2">
+                      <v-list-item-title>{{
+                        onlineStatus(friend.Status)
+                      }}</v-list-item-title>
+                      <v-list-item-title>{{
+                        friend.Nickname
+                      }}</v-list-item-title>
+                      <v-list-item-subtitle>{{
+                        friend.status
+                      }}</v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+                <v-divider></v-divider>
+                <v-list>
+                  <v-list-item>
+                    <v-btn @click.stop="openPrivateChatAdapter(friend)">Private chat</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn @click.stop="inviteToPlay(friend)">Invite to a match</v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn @click.stop="removeFriend(friend)">Remove Friend</v-btn>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </v-menu>
+          </v-list-item>
+        </v-list>
       </v-navigation-drawer>
       <!-- MEMBERS -->
       <v-navigation-drawer
@@ -710,7 +809,7 @@ export default Vue.extend({
                   <v-list-item-content class="ml-2">
                     <v-list-item-title>{{ member.nickname }}</v-list-item-title>
                     <v-list-item-subtitle>{{
-                      onlineStatus(member.Status)
+                      onlineStatus(member.status)
                     }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-btn>
@@ -723,20 +822,18 @@ export default Vue.extend({
                     <v-avatar size="64"><img :src="member.avatar" /></v-avatar>
                     <v-list-item-content class="ml-2">
                       <v-list-item-title>{{
-                        onlineStatus(member.Status)
+                        onlineStatus(member.status)
                       }}</v-list-item-title>
                       <v-list-item-title>{{
                         member.nickname
                       }}  <v-icon v-if="isAdmin === true && activeChannel.Type !== 'private'">mdi-crown</v-icon> </v-list-item-title>
                       <v-list-item-subtitle>{{
-                        member.Status
+                        member.status
                       }}</v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list>
-
                 <v-divider></v-divider>
-
                 <v-list>
                   <v-list-item
                     v-if="member.nickname !== $store.state.currentUser.nickname && activeChannel.Type !== 'private'"
@@ -781,9 +878,7 @@ export default Vue.extend({
                   <v-list-item
                     v-if=" amAdmin && member.id !== $store.state.currentUser.id  && activeChannel.Type !== 'private'"
                   >
-                    <v-btn @click.stop="muteUserPending(member)"
-                      >Mute</v-btn
-                    >
+                    <v-btn @click.stop="muteUserPending(member)">Mute</v-btn>
                   </v-list-item>
                   <v-list-item v-if="isBlocked === false && member.id !== $store.state.currentUser.id">
                     <v-btn
@@ -952,7 +1047,7 @@ export default Vue.extend({
         <!-- CHANNEL CONTROL PANEL DIALOG -->
         <v-dialog v-model="editChannelDialog" max-width="400px">
           <v-card>
-            <div v-if="mode === 'settings'">
+            <div v-if="editMode === 'settings'">
               <v-card-text class="text-center">
                 <div class="white--text dialogTitle">CHANNEL CONTROL PANEL</div>
               </v-card-text>
@@ -992,7 +1087,7 @@ export default Vue.extend({
                 @click:append="showPassword = !showPassword"
               ></v-text-field>
               <v-card-actions>
-                <v-btn text color="orange" @click="mode = 'bans', updateSanction()">
+                <v-btn text color="orange" @click="editMode = 'bans', updateSanction()">
                   SANCTIONS
                 </v-btn>
                 <v-spacer></v-spacer>
@@ -1030,7 +1125,7 @@ export default Vue.extend({
                 </v-list>
               </v-container>
               <v-card-actions>
-                <v-btn text color="orange" @click="mode = 'settings'">
+                <v-btn text color="orange" @click="editMmode = 'settings'">
                   SETTINGS
                 </v-btn>
                 <v-spacer></v-spacer>
