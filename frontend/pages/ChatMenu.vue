@@ -490,8 +490,8 @@ export default Vue.extend({
       this.isBlocked = responseBlocked.data
       const responseIsAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${member.id}`)
       this.isAdmin = responseIsAdmin.data
-      // const responseIsFriend = await axios.get(`/social/${this.$store.state.currentUser.id}/isFriend/${member.id}`)
-      // this.isFriend = responseIsFriend
+      const responseIsFriend = await axios.get(`/social/${this.$store.state.currentUser.id}/isFriend/${member.id}`)
+      this.isFriend = responseIsFriend.data
       const responseAmAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${this.$store.state.currentUser.id}`)
       this.amAdmin = responseAmAdmin.data
       const responseAmOwner = await axios.get(`/channel/${this.activeChannel.id}/isOwner/${this.$store.state.currentUser.id}`)
@@ -546,6 +546,7 @@ export default Vue.extend({
       await axios.patch(
         `/social/${this.$store.state.currentUser.id}/friend/add/${member.id}`
       )
+    this.isFriend = true;
     },
     async blockUser(member: User) {
         await axios.patch(

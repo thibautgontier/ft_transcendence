@@ -37,6 +37,28 @@ export class SocialService {
     }
   }
 
+  async isFriend(
+    res: Response,
+    userID: number,
+    otherID: number,
+  ): Promise<boolean> {
+    try {
+      const profile = await this.prisma.socialProfile.findUnique({
+        where: { UserID: userID },
+        select: { Friends: true },
+      });
+      if (profile.Friends.find((User) => User.id == otherID) != undefined) {
+        res.status(HttpStatus.OK).send(true);
+        return true;
+      }
+      res.status(HttpStatus.OK).send(false);
+      return false;
+    } catch (error) {
+      res.status(HttpStatus.NOT_ACCEPTABLE).send(error);
+      return null;
+    }
+  }
+
   async addFriend(
     res: Response,
     userID: number,

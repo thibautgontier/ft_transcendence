@@ -25,6 +25,15 @@ export class SocialController {
     return await this.socialService.getFriends(res, Number(userID));
   }
 
+  @Get(':userID/isFriend/:otherID')
+  async isFriend(
+    @Res() res: Response,
+	@Param('userID') userID: number,
+    @Param('otherID') otherID: number,
+  ): Promise<boolean> {
+    return await this.socialService.isFriend(res, Number(userID), Number(otherID));
+  }
+
   @Patch(':userID/friend/add/:friendID')
   async addFriend(
     @Res() res: Response,
