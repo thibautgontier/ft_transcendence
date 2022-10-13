@@ -160,8 +160,8 @@ export default Vue.extend({
             }
           this.rooms.push(newRoom);
           this.eventChannel(newRoom)
-          this.inChannel = true;
           this.activeChannel = newRoom;
+          this.inChannel = true;
           }
       })
     },
@@ -340,8 +340,6 @@ export default Vue.extend({
           newUser.id = user.id
           newRoom.members.push(newUser)
         }
-        this.rooms.push(newRoom)
-        this.inChannel = true
         this.newChannel.name = ''
         this.createChannelDialog = false
         if (this.newChannel.protected === true) {
@@ -349,11 +347,14 @@ export default Vue.extend({
             `/channel/${newRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`,
             { Password: this.newChannel.password }
           )
+          newRoom.Type = chanStatus.PROTECTED
         }
+        this.rooms.push(newRoom)
         this.activeChannel = newRoom
+        this.inChannel = true
         this.eventChannel(newRoom);
       } catch (e) {
-        console.error('create error', e)
+        console.warn('create error', e)
         this.snackbar.active = true
         this.snackbar.errorMessage = 'Cannot create channel, channel name must be already taken'
       }
@@ -376,7 +377,7 @@ export default Vue.extend({
           return
       }
       try{
-        if (this.editChannel.name !== '') {
+        if (this.editChannel.name !== '' && this.editChannel.name !== this.dialogRoom.channelName) {
         // changement de nom
         await axios.patch(
           `/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
@@ -392,6 +393,7 @@ export default Vue.extend({
             `/channel/${this.dialogRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`,
             { Password: this.editChannel.password }
           )
+          this.dialogRoom.Type = chanStatus.PROTECTED
         }
       } // if channel is protected by a pw
       else if (this.editChannel.protected === false) {
@@ -399,6 +401,7 @@ export default Vue.extend({
         await axios.patch(
           `/channel/${this.dialogRoom.id}/switchToPublic/${this.$store.state.currentUser.id}`
         )
+        this.dialogRoom.Type = chanStatus.PUBLIC
       } else if (this.editChannel.protected === true) {
         // changement du mdp
         await axios.patch(
@@ -421,7 +424,7 @@ export default Vue.extend({
       try {
         this.client = await new Colyseus.Client('ws://localhost:3000')
       } catch (e) {
-        console.error('Create Client ERROR', e)
+        console.warn('Create Client ERROR', e)
         this.snackbar.active = true
         this.snackbar.errorMessage = 'Cannot create client'
       }
@@ -534,10 +537,10 @@ export default Vue.extend({
             newRoom.members.push(newUser)
           }
           this.rooms.push(newRoom);
-          this.inChannel = true;
           this.eventChannel(newRoom);
 		      this.activeChannel.channel.send('PrivateCreating', {session: newRoom.channel.id, id: member.id, idChan: newRoom.id})
           this.activeChannel = newRoom;
+          this.inChannel = true;
           } catch(e) {
             newRoom.channel.leave()
             console.warn('Cannot create private channel', e);
