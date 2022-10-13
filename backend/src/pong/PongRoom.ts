@@ -32,7 +32,6 @@ export class PongRoom extends Room<GameState> {
 
   private update(deltaTime: number) {
     if (this.state.gameStatus !== GameStatus.PLAYING) return;
-
     if (this.physics.checkLeftWall()) {
       this.state.scoreboard.right += 1;
       this.state.ball.center();
@@ -59,6 +58,7 @@ export class PongRoom extends Room<GameState> {
       this.rpId = client.id;
       this.state.gameStatus = GameStatus.PLAYING;
       this.setSimulationInterval(deltaTime => this.update(deltaTime));
+      this.setPatchRate(16.66);
     }
   }
 
