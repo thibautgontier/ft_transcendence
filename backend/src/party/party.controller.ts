@@ -31,8 +31,8 @@ import {
     }
   
     @Post('create')
-    async createParty(): Promise<Party> {
-      return await this.partyService.createParty();
+    async createParty(@Req() req: Request): Promise<Party> {
+      return await this.partyService.createParty(req.body.winnerId, req.body.loserId);
     }
   
     @Patch('update/:id')

@@ -1114,7 +1114,7 @@ export default Vue.extend({
               <v-btn text color="grey" @click="createChannelDialog = false">
                 CANCEL
               </v-btn>
-              <v-btn text color="red" @click="newChannelConfirmed()">
+              <v-btn text color="green" @click="newChannelConfirmed()">
                 CREATE
               </v-btn>
             </v-card-actions>
