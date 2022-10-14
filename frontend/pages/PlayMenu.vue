@@ -29,6 +29,8 @@ export default Vue.extend({
   },
   async destroyed() {
     try {
+      document.removeEventListener('keydown', this.keyDown)
+      document.removeEventListener('keyup', this.keyUp)
       await this.myroom.leave()
     } catch (e) {
       console.warn(e)
@@ -51,7 +53,6 @@ export default Vue.extend({
               'changeGameUserId',
               this.$store.state.currentUser.id
             )
-            console.log(available.roomId)
             this.myroom = await client.joinById(
               available.roomId,
               this.$store.state.gameOption,
@@ -99,7 +100,16 @@ export default Vue.extend({
     this.renderLoop() // start render loop
 
     // input handling
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', this.keyDown)
+
+    document.addEventListener('keyup', this.keyUp)
+  },
+  methods: {
+    renderLoop() {
+      requestAnimationFrame(this.renderLoop)
+      this.render(this.state)
+    },
+    keyDown(e : any) {
       switch (e.key) {
         case 'ArrowUp':
           this.myroom.send('PaddleMoveMessage', {
@@ -112,9 +122,8 @@ export default Vue.extend({
           } as PaddleMoveMessage)
           break
       }
-    })
-
-    document.addEventListener('keyup', (e) => {
+    },
+    keyUp(e : any) {
       switch (e.key) {
         case 'ArrowUp':
         case 'ArrowDown':
@@ -122,12 +131,6 @@ export default Vue.extend({
             newDirection: PaddleDirection.STOP
           } as PaddleMoveMessage)
       }
-    })
-  },
-  methods: {
-    renderLoop() {
-      requestAnimationFrame(this.renderLoop)
-      this.render(this.state)
     },
     drawTextCenter(text: string) {
       if (this.ctx == null) return
