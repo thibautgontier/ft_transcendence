@@ -36,11 +36,6 @@ export default Vue.extend({
 					<v-btn router to="/GameOption">Game Options</v-btn>
 				</div>
 				<div>
-					<v-row
-					justify="center"
-					>
-						<v-btn @click.stop="active = true">Send notification</v-btn>
-					</v-row>
 					<v-snackbar
 						v-model="active"
 						:timeout="timeout"
