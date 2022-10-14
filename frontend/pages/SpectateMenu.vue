@@ -25,10 +25,10 @@ export default Vue.extend({
     if (!this.$store.state.currentUser.nickname)
       this.$router.push('/');
   },
-  destroyed() {
+  async destroyed() {
     for(const channel of this.rooms)
     {
-      channel.pongRoom.leave()
+      await channel.pongRoom.leave()
     }
   },
   async mounted() {

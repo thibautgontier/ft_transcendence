@@ -113,10 +113,10 @@ export default Vue.extend({
     await this.getChannel()
     this.$store.commit('changeNoBall', true)
   },
-  destroyed() {
+  async destroyed() {
     for(const channel of this.rooms)
     {
-      channel.channel.leave()
+      await channel.channel.leave()
     }
   },
     methods: {

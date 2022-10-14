@@ -28,9 +28,9 @@ export default Vue.extend({
     if (!this.$store.state.currentUser.nickname)
       this.$router.push('/');
   },
-  destroyed() {
+  async destroyed() {
     try {
-      this.myroom.leave()
+      await this.myroom.leave()
     } catch (e) {
     console.warn(e) }
   },
