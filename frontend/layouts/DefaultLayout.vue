@@ -19,7 +19,7 @@ export default Vue.extend({
 	<div>
 		<v-app dark>
 			<PongBall />
-			<NavBar />
+			<NavBar v-if="$store.state.loginFinish != false"/>
 			<Transition name="fade" mode="out-in">
 				<nuxt-child />
 			</Transition>
