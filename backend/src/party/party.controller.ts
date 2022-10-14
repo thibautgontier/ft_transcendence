@@ -23,33 +23,49 @@ import {
     constructor(private partyService: PartyService, private authService: AuthService) {}
   
     @Get()
-    async getParty(@Query('id') id?: number): Promise<Party[]> {
-      const partyID = Number(id);
-      return await this.partyService.getParty(
-        Number.isNaN(partyID) ? undefined : partyID,
-      );
+    async getParty(@Req() req: Request, @Query('id') id?: number): Promise<Party[]> {
+      if (req.headers.authorization) {
+        const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+        if (user) {
+          const partyID = Number(id);
+          return await this.partyService.getParty(
+            Number.isNaN(partyID) ? undefined : partyID,
+          );
+        }
+      }
     }
   
     @Post('create')
     async createParty(@Req() req: Request): Promise<Party> {
-      return await this.partyService.createParty(req.body.winnerId, req.body.loserId);
+      if (req.headers.authorization) {
+        const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+        if (user) return await this.partyService.createParty(req.body.winnerId, req.body.loserId);
+      }
     }
   
     @Patch('update/:id')
     async updateParty(
+      @Req() req: Request,
       @Body() body: PartyUpdateDto,
       @Param('id') id: number,
       @Res() res: Response,
     ): Promise<Party | null> {
-      return await this.partyService.updateParty(body, Number(id), res);
+      if (req.headers.authorization) {
+        const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+        if (user) return await this.partyService.updateParty(body, Number(id), res);
+      }
     }
   
     @Delete('delete/:id')
     async deleteParty(
+      @Req() req: Request,
       @Param('id') id: number,
       @Res() res: Response,
     ): Promise<Party | null> {
-      return await this.partyService.deleteParty(Number(id), res);
+      if (req.headers.authorization) {
+        const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+        if (user) return await this.partyService.deleteParty(Number(id), res);
+      }
     }
 
     @Post('gameFinished') //body {winnerId: number, loserId: number}

@@ -99,6 +99,7 @@ export class ChannelService {
       res.status(HttpStatus.CREATED).send(channel);
       return channel;
     } catch (error) {
+      console.log('isue here: ', error)
       res.status(HttpStatus.NOT_ACCEPTABLE).send({
         statusCode: HttpStatus.NOT_ACCEPTABLE,
         message: 'Cannot create channel',
@@ -303,6 +304,7 @@ export class ChannelService {
     const password = await this.prisma.channelPassword.findUnique({
       where: { id: channel.PasswordID },
     });
+    //decrypt here
     if (
       (channel.Type == 'protected' && password.Password == body.password) ||
       channel.Type == 'public'
@@ -439,6 +441,7 @@ export class ChannelService {
         where: { id: idChan },
         data: { Type: 'protected' },
       });
+      // const newPassword = bcrypt.encrypt(body.password);
       const pw = await this.prisma.channelPassword.update({
         where: { id: channel.PasswordID },
         data: {

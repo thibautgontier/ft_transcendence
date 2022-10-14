@@ -25,7 +25,9 @@ export default Vue.extend({
     }
   },
   beforeCreate() {
-    if (!this.$store.state.currentUser.nickname) this.$router.push('/')
+    if (!this.$store.state.currentUser.nickname){ 
+      this.$router.push('/')
+    }
   },
   async destroyed() {
     try {

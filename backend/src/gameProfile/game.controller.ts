@@ -207,10 +207,14 @@ export class GameController {
 
   @Get(':userID/nbWin')
   async getNbWin(
+    @Req() req: Request,
     @Res() res: Response,
     @Param('userID') userID: number,
   ): Promise<string | null> {
-    return await this.gameService.getNbWin(res, Number(userID));
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+      if (user) return await this.gameService.getNbWin(res, Number(userID));
+    }
   }
 
   @Get(':userID/nbLose')

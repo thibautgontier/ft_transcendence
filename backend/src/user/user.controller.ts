@@ -42,57 +42,85 @@ export class UserController {
   @ApiQuery({ name: 'twoFA', type: Boolean, required: false })
   @ApiQuery({ name: 'gameProfile', type: Boolean, required: false })
   @ApiQuery({ name: 'socialProfile', type: Boolean, required: false })
-  async getAll(@Query() query?: UserFilterDto): Promise<User[]> {
-    return await this.userService.getAll(query);
+  async getAll(@Req() req: Request, @Query() query?: UserFilterDto): Promise<User[]> {
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+      if (user) return await this.userService.getAll(query);
+    }
   }
 
   @Get('channel/:userID')
   async getChannel(
+  @Req() req: Request,
   @Res() res: Response,
   @Param('userID') userID: number,
   ): Promise < User | null > {
-    return await this.userService.getChannel(res, Number(userID));
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+      if (user) return await this.userService.getChannel(res, Number(userID));
+    }
   }
 
   @Get('otherChannel/:userID')
   async getOtherChannel(
+  @Req() req: Request,
   @Res() res: Response,
   @Param('userID') userID: number,
   ): Promise < Channel[] | null > {
-    return await this.userService.getOtherChannel(res, Number(userID));
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+      if (user) return await this.userService.getOtherChannel(res, Number(userID));
+    }
   }
 
   @Get(':userID')
   async getUser(
+  @Req() req: Request,
   @Res() res: Response,
   @Param('userID') userID: number,
   ): Promise < User | null > {
-    return await this.userService.getUser(res, Number(userID));
+    console.log('user failed')
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+      if (user) return await this.userService.getUser(res, Number(userID));
+    }
   }
 
   @Get('create')
   @UseGuards(FtOauthGuard)
   async createUser(
+    @Req() req: Request,
     @Res() res: Response,
     @Student() body: Profile,
   ): Promise<User | null> {
-    return await this.userService.createUser(res, body);
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+      if (user) return await this.userService.createUser(res, body);
+    }
   }
 
   @Delete('delete/:userID')
   async deleteUser(
+    @Req() req: Request,
     @Res() res: Response,
     @Param('userID') userID: number,
   ): Promise<User | null> {
-    return await this.userService.deleteUser(res, Number(userID));
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+      if (user) return await this.userService.deleteUser(res, Number(userID));
+    }
   }
 
   @Patch('update/:userID')
   async updateUser(
+    @Req() req: Request,
     @Param('userID') userID: number,
     @Body() body: UserUpdateDto,
   ): Promise<User | null> {
-    return await this.userService.updateUser(Number(userID), body);
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+      if (user) return await this.userService.updateUser(Number(userID), body);
+    }
   }
 
   @Patch('updateNickname')
@@ -143,7 +171,7 @@ export class UserController {
         if (user) return await this.userService.updateUserAvatar(user, file, res);
       }
   }
-
+  
   @Get('avatars/:fileId')
   async serveAvatar(@Param('fileId') fileId: any, @Res() res: any): Promise<any> {
     return (res.sendFile(fileId, { root: 'avatars'}));

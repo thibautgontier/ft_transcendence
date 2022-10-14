@@ -51,7 +51,11 @@ export default Vue.extend({
     }
   },
     async mounted() {
-        const user = await axios.get("/user?id=" + this.$store.state.currentUser.id);
+        const user = await axios.get("/user?id=" + this.$store.state.currentUser.id, {
+            headers: {
+            'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            }
+            });
         if (!user.data[0]) {
             this.$store.commit('deleteUser');
             this.$cookies.remove('user');
@@ -226,7 +230,7 @@ export default Vue.extend({
                         <img :src="this.photo">
                     </v-avatar>
                 </div>
-                <v-btn v-if="$store.state.twoFA === false" class="dfa" x-large color="black" @click.stop="activate2fa()">Activate 2FA</v-btn>
+                <v-btn v-if="$store.state.currentUser.twoFA === false" class="dfa" x-large color="black" @click.stop="activate2fa()">Activate 2FA</v-btn>
                 <v-btn v-else class="dfa" x-large color="black" @click.stop="deactivate2fa()">Deactivate 2FA</v-btn>
                 </v-col>
                 <v-card

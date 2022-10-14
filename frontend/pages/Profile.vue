@@ -11,28 +11,33 @@ export default Vue.extend({
     }
   },
   beforeCreate() {
-    if (!this.$store.state.currentUser.nickname)
+    if (!this.$store.state.currentUser.nickname) {
       this.$router.push('/');
+    }
   },
   async mounted() {
-    const user = await axios.get("/user?id=" + this.$store.state.currentUser.id);
-    if (!user.data[0]) {
-        this.$store.commit('deleteUser');
+    if (!this.$store.state.currentUser.nickname)
+      return
+    const user = await axios.get("/user?id=" + this.$store.state.currentUser.id, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          });
+    if (!user.data) {
+      this.$store.commit('deleteUser');
         this.$cookies.remove('user');
         this.$store.commit('changeLoginFinish', false);
         this.$store.commit('change2faStatus', false);
         this.$router.push('/');
         return;
     }
-    if (!this.$store.state.currentUser.nickname)
-        return
-      let path = "/game/";
-      
-      path += this.$route.query.id + "/history";
-      axios.get(path, {
-        headers: {
-          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-        }
+    let path = "/game/";
+    
+    path += this.$route.query.id + "/history";
+    axios.get(path, {
+      headers: {
+        'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+      }
     } ).then(response => (this.matchInfosTest = response.data));
     this.$store.commit('changeNoBall', false)
   },

@@ -88,6 +88,7 @@ export class ChannelController {
       const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
       if (user) return await this.channelService.createChannel(res, body);
     }
+    console.log('2');
   }
 
   @Delete(':channelid/delete/:idAdmin')

@@ -20,7 +20,9 @@ export default Vue.extend({
     }
   },
   beforeCreate() {
-    if (!this.$store.state.currentUser.nickname) this.$router.push('/')
+    if (!this.$store.state.currentUser.nickname){
+      this.$router.push('/')
+    }
   },
   async destroyed() {
     for(const channel of this.rooms)
@@ -41,9 +43,17 @@ export default Vue.extend({
           GameState
         )
         newavailable.pongRoom.onMessage('info', async (message: any) => {
-          let nickname = await axios.get(`user/${message.id1}`)
+          let nickname = await axios.get(`user/${message.id1}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          })
           newavailable.player1 = nickname.data.Nickname
-          nickname = await axios.get(`user/${message.id2}`)
+          nickname = await axios.get(`user/${message.id2}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          })
           newavailable.player2 = nickname.data.Nickname
         })
         this.rooms.push(newavailable)

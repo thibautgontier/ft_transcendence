@@ -93,11 +93,16 @@ export default Vue.extend({
     },
   },
   beforeCreate() {
-    if (!this.$store.state.currentUser.nickname)
+    if (!this.$store.state.currentUser.nickname) {
       this.$router.push('/');
+    }
   },
   async mounted() {
-    const user = await axios.get("/user?id=" + this.$store.state.currentUser.id);
+    const user = await axios.get("/user?id=" + this.$store.state.currentUser.id, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          });
     if (!user.data[0]) {
         this.$store.commit('deleteUser');
         this.$cookies.remove('user');
@@ -165,7 +170,11 @@ export default Vue.extend({
         {
           const newRoom = new OurRoom();
           newRoom.channel = await this.client.joinById(message.session, this.$store.getters.getCurrentUser)
-          const response = await axios.get(`/channel/${message.idChan}`)
+          const response = await axios.get(`/channel/${message.idChan}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          })
           newRoom.channelName = response.data.Name
           newRoom.id = message.idChan
           newRoom.Type = response.data.Type
@@ -186,7 +195,11 @@ export default Vue.extend({
       })
     },
     async getBlockedUsers() {
-      const response = await axios.get(`/social/${this.$store.state.currentUser.id}/blocked`)
+      const response = await axios.get(`/social/${this.$store.state.currentUser.id}/blocked`, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        },
+      })
       for (let i = 0; i < response.data.length; i++)
       {
         this.blocked.push(response.data[i].id)
@@ -199,7 +212,11 @@ export default Vue.extend({
     async addChannelPending() {
       this.addChannelDialog = !this.addChannelDialog
       const response = await axios.get(
-        `/user/otherChannel/${this.$store.state.currentUser.id}`
+        `/user/otherChannel/${this.$store.state.currentUser.id}`, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        },
+      }
       )
       this.availableChannels = response.data
     },
@@ -212,15 +229,18 @@ export default Vue.extend({
       if (this.sanction.permanent === true)
         this.sanction.duration = -1
       try {
-        await axios.patch(
-          `/channel/banUser`, {
-            idUser : this.dialogUser.id,
-        idAdmin : this.$store.state.currentUser.id,
-        reason : this.sanction.reason,
-        duration : this.sanction.duration,
-        idChan : this.activeChannel.id,
-        Sanction: this.sanction.type
-        }
+        await axios.patch(`/channel/banUser`, {
+          idUser : this.dialogUser.id,
+          idAdmin : this.$store.state.currentUser.id,
+          reason : this.sanction.reason,
+          duration : this.sanction.duration,
+          idChan : this.activeChannel.id,
+          Sanction: this.sanction.type
+          }, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          },
       )
       this.activeChannel.channel.send('Leaving', this.dialogUser)
       const index = this.activeChannel.members.indexOf(this.dialogUser)
@@ -242,15 +262,16 @@ export default Vue.extend({
       if (this.sanction.permanent === true)
         this.sanction.duration = -1
       try {
-        await axios.patch(
-          `/channel/banUser`, {
-        idUser : this.dialogUser.id,
-        idAdmin : this.$store.state.currentUser.id,
-        reason : this.sanction.reason,
-        duration : this.sanction.duration,
-        idChan : this.activeChannel.id,
-        Sanction: this.sanction.type
-	    	}
+        await axios.patch(`/channel/banUser`, {
+          idUser : this.dialogUser.id,
+          idAdmin : this.$store.state.currentUser.id,
+          reason : this.sanction.reason,
+          duration : this.sanction.duration,
+          idChan : this.activeChannel.id,
+          Sanction: this.sanction.type
+          }, {
+            headers: { 'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken, },
+          },
       )
       } catch(e) {
         this.snackbar.active = true
@@ -263,10 +284,14 @@ export default Vue.extend({
           await axios.patch(`/channel/addUser/${channel.id}`, {
             user_id: this.$store.state.currentUser.id,
             password: channel.inputPassword,
+          }, {
+            headers: { 'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken, },
           })
         } else {
           await axios.patch(`/channel/addUser/${channel.id}`, {
             user_id: this.$store.state.currentUser.id,
+          }, {
+            headers: { 'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken, },
           })
         }
       } catch (e) {
@@ -282,7 +307,9 @@ export default Vue.extend({
         room.channel = await this.client.create('ChatRoom', this.$store.getters.getCurrentUser)
         await axios.patch(
           `/channel/update/${channel.id}/${this.$store.state.currentUser.id}`,
-          { RoomId: room.channel.id }
+          { RoomId: room.channel.id }, {
+            headers: { 'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken, },
+          }
         )
       }
       room.channelName = channel.Name
@@ -294,7 +321,7 @@ export default Vue.extend({
           room.messages[room.messages.length - 1].Nickname = channel.Messages[i].User.Nickname
         }
       }
-      const response = await axios.get(`channel/${channel.id}`)
+      const response = await axios.get(`channel/${channel.id}`, { headers: { 'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken, }, })
       for (const user of response.data.Users)
         {
           const newUser = new User();
@@ -311,7 +338,7 @@ export default Vue.extend({
       this.inChannel = true
     },
     async editChannelPending(current: OurRoom) {
-      const response = await axios.get(`/channel/${current.id}/isAdmin/${this.$store.state.currentUser.id}`)
+      const response = await axios.get(`/channel/${current.id}/isAdmin/${this.$store.state.currentUser.id}`, { headers: { 'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken, }, })
       if (response.data === true)
       {
         this.editChannelDialog = !this.editChannelDialog
@@ -329,9 +356,7 @@ export default Vue.extend({
       this.rooms.splice(index, 1)
       this.activeChannel = this.rooms[0]
       if (this.rooms.length === 0) this.inChannel = false
-      await axios.patch(
-        `/channel/${this.dialogRoom.id}/removeUser/${this.$store.state.currentUser.id}`
-      )
+      await axios.patch(`/channel/${this.dialogRoom.id}/removeUser/${this.$store.state.currentUser.id}`, {}, { headers: {'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken, }} )
     },
     async newChannelConfirmed() {
       if (
@@ -349,6 +374,10 @@ export default Vue.extend({
           owner: `${this.$store.state.currentUser.id}`,
           Name: this.newChannel.name,
           RoomId: newRoom.channel.id,
+        }, {
+          headers: {
+            'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+          },
         })
         newRoom.channelName = this.newChannel.name
         newRoom.id = response.data.id
@@ -366,8 +395,12 @@ export default Vue.extend({
         this.createChannelDialog = false
         if (this.newChannel.protected === true) {
           await axios.patch(
-            `/channel/${newRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`,
-            { Password: this.newChannel.password }
+            `/channel/${newRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`, {
+              Password: this.newChannel.password }, {
+                headers: {
+                  'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+                },
+              },
           )
           newRoom.Type = chanStatus.PROTECTED
         }
@@ -403,8 +436,11 @@ export default Vue.extend({
         // changement de nom
         await axios.patch(
           `/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
-          { name: this.editChannel.name }
-        )
+          { name: this.editChannel.name }, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+        })
         this.dialogRoom.channelName = this.editChannel.name;
         this.dialogRoom.channel.send('ChanMAJ', this.dialogRoom.channelName);
       }
@@ -413,22 +449,33 @@ export default Vue.extend({
           // channel public devient protected
           await axios.patch(
             `/channel/${this.dialogRoom.id}/switchToPrivate/${this.$store.state.currentUser.id}`,
-            { Password: this.editChannel.password }
-          )
+            { Password: this.editChannel.password }, {
+              headers: {
+                'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+              },
+            })
           this.dialogRoom.Type = chanStatus.PROTECTED
         }
       } // if channel is protected by a pw
       else if (this.editChannel.protected === false) {
         // channel protected devient public
         await axios.patch(
-          `/channel/${this.dialogRoom.id}/switchToPublic/${this.$store.state.currentUser.id}`
+          `/channel/${this.dialogRoom.id}/switchToPublic/${this.$store.state.currentUser.id}`, {}, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          }
         )
         this.dialogRoom.Type = chanStatus.PUBLIC
       } else if (this.editChannel.protected === true) {
         // changement du mdp
         await axios.patch(
           `/channel/update/${this.dialogRoom.id}/${this.$store.state.currentUser.id}`,
-          { Password: this.editChannel.password }
+          { Password: this.editChannel.password }, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          }
         )
       }
       } catch(e) {
@@ -457,7 +504,11 @@ export default Vue.extend({
       try {
         await axios.post(
           `channel/${this.activeChannel.id}/sendMessage/${this.$store.state.currentUser.id}`,
-          { Content: this.myMessage }
+          { Content: this.myMessage }, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          }
         )
       } catch (e) {
         console.warn('you are banned or muted:\n', e)
@@ -475,7 +526,11 @@ export default Vue.extend({
     },
     async getChannel() {
       const response = await axios.get(
-        `/user/channel/${this.$store.state.currentUser.id}`
+        `/user/channel/${this.$store.state.currentUser.id}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+        }
       )
       if (response.data.ChannelUser === undefined) return;
       for (const channel of response.data.ChannelUser) {
@@ -486,7 +541,11 @@ export default Vue.extend({
           room.channel = await this.client.create('ChatRoom', this.$store.getters.getCurrentUser)
           await axios.patch(
             `/channel/update/${channel.id}/${this.$store.state.currentUser.id}`,
-            { RoomId: room.channel.id }
+            { RoomId: room.channel.id }, {
+              headers: {
+                'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+              },
+            }
           )
         }
         room.channelName = channel.Name
@@ -518,15 +577,35 @@ export default Vue.extend({
       }
     },
     async updateMember (member: any) {
-      const responseBlocked = await axios.get(`/social/${this.$store.state.currentUser.id}/isBlocked/${member.id}`)
+      const responseBlocked = await axios.get(`/social/${this.$store.state.currentUser.id}/isBlocked/${member.id}`, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        },
+      })
       this.isBlocked = responseBlocked.data
-      const responseIsAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${member.id}`)
+      const responseIsAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${member.id}`, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        },
+      })
       this.isAdmin = responseIsAdmin.data
-      const responseIsFriend = await axios.get(`/social/${this.$store.state.currentUser.id}/isFriend/${member.id}`)
+      const responseIsFriend = await axios.get(`/social/${this.$store.state.currentUser.id}/isFriend/${member.id}`, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        },
+      })
       this.isFriend = responseIsFriend.data
-      const responseAmAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${this.$store.state.currentUser.id}`)
+      const responseAmAdmin = await axios.get(`/channel/${this.activeChannel.id}/isAdmin/${this.$store.state.currentUser.id}`, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        },
+      })
       this.amAdmin = responseAmAdmin.data
-      const responseAmOwner = await axios.get(`/channel/${this.activeChannel.id}/isOwner/${this.$store.state.currentUser.id}`)
+      const responseAmOwner = await axios.get(`/channel/${this.activeChannel.id}/isOwner/${this.$store.state.currentUser.id}`, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        },
+      })
       this.amOwner = responseAmOwner.data
       this.sanction.reason = ''
       this.sanction.permanent = true
@@ -534,7 +613,11 @@ export default Vue.extend({
       this.sanction.type = ''
     },
     async openPrivateChat(member: User) {
-      const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`)
+      const response = await axios.get(`channel/isPrivateCreated/${member.id}/${this.$store.state.currentUser.id}`, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        },
+      })
       if (response.data) {
         this.activeChannel = this.rooms.find((channel: OurRoom) => channel.id === response.data.id)
         this.inChannel = true;
@@ -548,6 +631,10 @@ export default Vue.extend({
             user_2 : member.id,
             Name : ( this.$store.state.currentUser.nickname + member.nickname),
             RoomId: newRoom.channel.id,
+          }, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
           })
           newRoom.channelName = ( this.$store.state.currentUser.nickname + member.nickname );
           newRoom.id = response2.data.id
@@ -582,31 +669,49 @@ export default Vue.extend({
       user.id = friend.id
       this.openPrivateChat(user)
     },
-    inviteToPlay(member: User) {},
+    inviteToPlay(member: User) {
+      this.$router.push(`/PlayMenu/?id=${member.id}`)
+    },
     async addFriend(member: User) {
       await axios.patch(
-        `/social/${this.$store.state.currentUser.id}/friend/add/${member.id}`
+        `/social/${this.$store.state.currentUser.id}/friend/add/${member.id}`, {
+          headers: {
+            'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+          },
+        }
       )
     this.isFriend = true;
     this.updateFriends();
     },
     async removeFriend(friend) {
       await axios.patch(
-        `/social/${this.$store.state.currentUser.id}/friend/remove/${friend.id}`
+        `/social/${this.$store.state.currentUser.id}/friend/remove/${friend.id}`, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        },
+      }
       )
     this.isFriend = false;
     this.friends.splice(this.friends.indexOf(friend), 1);
     },
     async blockUser(member: User) {
         await axios.patch(
-          `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`
+          `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          }
         )
         this.isBlocked = true;
         this.blocked.push(member.id);
     },
     async unblockUser(member: User) {
         await axios.patch(
-          `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`
+          `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          }
         )
         this.isBlocked = false;
         const index = this.blocked.indexOf(member.id)
@@ -614,7 +719,11 @@ export default Vue.extend({
     },
     async makeAdmin(member: any) {
       try{
-          await axios.patch(`/channel/${this.activeChannel.id}/addAdmin/${member.id}/${this.$store.state.currentUser.id}`)
+          await axios.patch(`/channel/${this.activeChannel.id}/addAdmin/${member.id}/${this.$store.state.currentUser.id}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          })
           this.isAdmin = true;
       } catch(e) {
         console.warn('Cannot make an admin:', e);
@@ -624,7 +733,11 @@ export default Vue.extend({
     },
     async removeAdmin(member: any) {
       try{
-        await axios.patch(`/channel/${this.activeChannel.id}/removeAdmin/${member.id}/${this.$store.state.currentUser.id}`)
+        await axios.patch(`/channel/${this.activeChannel.id}/removeAdmin/${member.id}/${this.$store.state.currentUser.id}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          })
         this.isAdmin = false;
       } catch(e) {
         console.warn('Cannot remove admin:', e);
@@ -633,7 +746,11 @@ export default Vue.extend({
       }
     },
     async updateSanction() {
-      const response = await axios.get(`/channel/Sanction/${this.dialogRoom.id}`)
+      const response = await axios.get(`/channel/Sanction/${this.dialogRoom.id}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          })
       for (const sanction of response.data)
       {
         if (sanction.Duration > 0)
@@ -646,7 +763,11 @@ export default Vue.extend({
     },
     async pardonUser(sanction: Sanction) {
       try {
-        await axios.delete(`/channel/Sanction/${sanction.id}`)
+        await axios.delete(`/channel/Sanction/${sanction.id}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          })
         for (let i = 0; i < this.sanctions.length; i++)
         {
           if (this.sanctions[i].id === sanction.id) {
@@ -660,7 +781,11 @@ export default Vue.extend({
       }
     },
     async updateFriends() {
-      const response = await axios.get("/social/" + this.$store.state.currentUser.id + "/friend")
+      const response = await axios.get("/social/" + this.$store.state.currentUser.id + "/friend", {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          })
       this.friends = response.data
     },
     loadProfile(id: number) {

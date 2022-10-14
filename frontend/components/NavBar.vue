@@ -6,8 +6,11 @@ import { User } from '../types/User'
 export default Vue.extend({
   data(): any {
     return {
+			toUpdate: User,
       client: Colyseus.Client,
+			mainRoom: Colyseus.Room,
 			active: false,
+			sessoinId: '',
 			nickname: 'toto',
 			text: 'wants to play !',
 			timeout: 4000,
@@ -18,17 +21,30 @@ export default Vue.extend({
     this.client = new Colyseus.Client('ws://localhost:3000');
     this.$store.commit('setMainRoom', (await this.client.joinOrCreate('MainRoom', this.$store.getters.getCurrentUser)));
     await this.$store.state.myMainRoom.send('Joining', this.$store.getters.getCurrentUser)
+    this.$store.state.myMainRoom.onMessage('Invitation', (message: any) => {
+      if (message.id == this.$store.state.currentUser.id) {
+        this.active = true;
+        this.sessionId = message.sessionId; }
+    })
+    this.$store.state.myMainRoom.onMessage('isOnline', (idUser: any) => {
+      // TO DO
+    })
+    this.$store.state.myMainRoom.onMessage('isOnGame', (idUser: any) => {
+      // TO DO
+    })
+    this.$store.state.myMainRoom.onMessage('isOffline', (idUser: any) => {
+      // TO DO
+    })
   },
 	methods: {
 			acceptInvitation() {
-				// METTRE LE CODE QUI S'OCCUPE DE REJOINDRE LA PONGROOM
+				this.$router.push(`/PlayMenu/?sessionId=${this.sessionId}`)
 			}
 	}
 })
 </script>
 
 <template>
-		<!-- Penser a changer la height pour avoir quelquechose de responsive -->
 			<v-app-bar app color="#121212" height="90px" class="nav">			<div class="testbuttons mx-auto">
 					<v-btn router to="/">Home</v-btn>
 					<v-btn router to="/GameMenu">Game</v-btn>
@@ -36,6 +52,10 @@ export default Vue.extend({
 					<v-btn router to="/GameOption">Game Options</v-btn>
 				</div>
 				<div>
+					<v-row
+					justify="center"
+					>
+					</v-row>
 					<v-snackbar
 						v-model="active"
 						:timeout="timeout"
