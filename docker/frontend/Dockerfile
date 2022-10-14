@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 COPY ./frontend/ .
 COPY ./docker/frontend/setup.sh ./setup.sh
 
-RUN npm install
+RUN npm install -s
 RUN npm run build
 
 ENTRYPOINT [ "bash", "setup.sh" ]
