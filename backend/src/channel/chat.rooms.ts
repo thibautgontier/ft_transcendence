@@ -63,11 +63,11 @@ export class ChatRoom extends Room {
   }
 
   async onCreate(options: any) {
-    console.info('Chat room created: ');
+    // console.info('Chat room created: ');
 
     this.onMessage('Message', (client, msg) => {
       this.broadcast('Message', msg);
-      console.log('client :', client.sessionId, 'sent', msg.Content);
+    //   console.log('client :', client.sessionId, 'sent', msg.Content);
     });
 
     this.onMessage('Leaving', (client, message: User) => {
@@ -83,23 +83,23 @@ export class ChatRoom extends Room {
     });
 
     this.onMessage('*', (client, type, message) => {
-      console.log('client :', client.sessionId, 'sent', type, message);
+    //   console.log('client :', client.sessionId, 'sent', type, message);
     });
   }
 
   async onJoin(client: Client, options: User) {
-    console.info(
-      `Client sessionId: ${client.sessionId} roomId: ${this.roomId} joined the chat`,
-      options.nickname,
-    );
+    // console.info(
+    //   `Client sessionId: ${client.sessionId} roomId: ${this.roomId} joined the chat`,
+    //   options.nickname,
+    // );
     this.broadcast('Joining', options, { except: client });
   }
 
   async onLeave(client: Client, options: any) {
-    console.info(`Client ${client.sessionId} left the chat`);
+    // console.info(`Client ${client.sessionId} left the chat`);
   }
 
   async onDispose() {
-    console.info(`Chat room : ${this.roomId} disposed`);
+    // console.info(`Chat room : ${this.roomId} disposed`);
   }
 }

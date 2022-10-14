@@ -1,10 +1,12 @@
 import {User} from '../types/User'
+import * as Colyseus from 'colyseus.js'
 
 // state
 export const state = () => ({
 	friends: [],
 	activeComponent: 'Login',
 	twoFA: false,
+	myMainRoom: Colyseus.Room,
 	currentUser: User,
 	tmpID: 0,
 	version: '',
@@ -99,5 +101,8 @@ export const mutations = {
 	},
 	changeHistoryId(state, id) {
 		state.historyId = id;
+	},
+	setMainRoom(state, newMainRoom: Colyseus.Room) {
+		state.myMainRoom = newMainRoom
 	}
 }

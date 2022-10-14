@@ -1,6 +1,18 @@
 <script lang="ts">
+import * as Colyseus from 'colyseus.js'
 import Vue from 'vue'
+
 export default Vue.extend({
+  data(): any {
+    return {
+      client: Colyseus.Client,
+    }
+  },
+  async mounted() {
+    this.client = new Colyseus.Client('ws://localhost:3000');
+    this.$store.commit('setMainRoom', (await this.client.joinOrCreate('MainRoom', this.$store.state.currentUser)));
+    await this.$store.state.myMainRoom.send('Joining', this.$store.state.currentUser)
+  },
 	methods: {
     	loadProfile() {
       		this.$store.commit('changeHistoryId', this.$store.state.currentUser.id);

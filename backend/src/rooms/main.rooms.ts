@@ -6,15 +6,18 @@ export class MainRoom extends Room {
   }
 
   async onCreate(options: any) {
-    console.info('Main room created: ', options);
+    console.info('Main room created: ');
+
+    this.onMessage('Joining', (client: Client, message: any) => {
+      console.log('MainRoom: client', message.nickname, 'is online');
+    })
   }
 
   async onJoin(client: Client, options: any) {
-    console.info(`Client ${client.sessionId} joined`);
   }
 
   async onLeave(client: Client, options: any) {
-    console.info(`Client ${client.sessionId} left`);
+    console.log('MainRoom: client', options.nickname, 'is online');
   }
 
   async onDispose() {
