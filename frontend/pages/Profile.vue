@@ -8,7 +8,6 @@ export default Vue.extend({
     return {
       matchNumber: 0,
       matchInfosTest: null,
-      ID: 0,
     }
   },
   beforeCreate() {
@@ -27,10 +26,9 @@ export default Vue.extend({
     }
     if (!this.$store.state.currentUser.nickname)
         return
-      this.ID = this.$store.state.historyId;
       let path = "/game/";
       
-      path += this.ID + "/history";
+      path += this.$route.query.id + "/history";
       axios.get(path, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
@@ -45,7 +43,7 @@ export default Vue.extend({
         <v-row>
           <v-col>
             <div class="Stats">
-              <Stats :userID='ID'/>
+              <Stats :userID='Number(this.$route.query.id)'/>
             </div>
             <v-divider class="mb-5"></v-divider>
             <div
@@ -61,5 +59,6 @@ export default Vue.extend({
 <style>
 .Stats {
   margin-left: 15px;
+  margin-top: 5%;
 }
 </style>

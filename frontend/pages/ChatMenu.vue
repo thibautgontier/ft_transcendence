@@ -582,9 +582,7 @@ export default Vue.extend({
       user.id = friend.id
       this.openPrivateChat(user)
     },
-    async inviteToPlay(member: User) {
-      this.$router.push(`/PlayMenu/?id=${member.id}`)
-    },
+    inviteToPlay(member: User) {},
     async addFriend(member: User) {
       await axios.patch(
         `/social/${this.$store.state.currentUser.id}/friend/add/${member.id}`
@@ -665,6 +663,9 @@ export default Vue.extend({
       const response = await axios.get("/social/" + this.$store.state.currentUser.id + "/friend")
       this.friends = response.data
     },
+    loadProfile(id: number) {
+      this.$router.push('/Profile?id=' + id);
+    }
     // updateUserStatus(status : string) {
     //   this.$store.commit('changeStatus', status)
     // }
@@ -790,6 +791,9 @@ export default Vue.extend({
                     <v-btn @click.stop="openPrivateChatAdapter(friend)">Private chat</v-btn>
                   </v-list-item>
                   <v-list-item>
+                    <v-btn @click.stop="loadProfile(friend.id)">User profile</v-btn>
+                  </v-list-item>
+                  <v-list-item>
                     <v-btn @click.stop="inviteToPlay(friend)">Invite to a match</v-btn>
                   </v-list-item>
                   <v-list-item>
@@ -867,6 +871,10 @@ export default Vue.extend({
                     <v-btn @click.stop="openPrivateChat(member)"
                       >Private chat</v-btn>
                   </v-list-item>
+                  <v-list-item>
+                    <v-btn @click.stop="loadProfile(member.id)"
+                      >User profile</v-btn>
+                  </v-list-item>
                   <v-list-item
                     v-if="member.nickname !== $store.state.currentUser.nickname"
                   >
@@ -923,7 +931,7 @@ export default Vue.extend({
           </v-list-item>
         </v-list>
         <!-- USER STATUS -->
-        <!-- <v-footer absolute pad outlined>
+        <v-footer absolute pad outlined>
           <v-menu
             :close-on-content-click="true"
             top
@@ -940,10 +948,10 @@ export default Vue.extend({
                   <v-list-item-action-text>{{ $store.state.currentUser.status }}</v-list-item-action-text>
                 </v-list-item-content>
               </v-btn>
-            </template> -->
+            </template>
 
               <!-- USER STATUS MENU -->
-              <!-- <v-card>
+              <v-card>
                 <v-list>
                   <v-list-item>
                     <v-list-item-avatar>
@@ -961,6 +969,9 @@ export default Vue.extend({
 
                 <v-list>
                   <v-list-item>
+                    <v-btn @click.stop="loadProfile($store.state.currentUser.id)">My Profile</v-btn>
+                  </v-list-item>
+                  <!-- <v-list-item>
                     <v-btn @click="updateUserStatus('online')">Online</v-btn>
                   </v-list-item>
                   <v-list-item>
@@ -968,11 +979,11 @@ export default Vue.extend({
                   </v-list-item>
                   <v-list-item>
                     <v-btn @click="updateUserStatus('invisible')">Invisible</v-btn>
-                  </v-list-item>
+                  </v-list-item> -->
                 </v-list>
               </v-card>
             </v-menu>
-        </v-footer> -->
+        </v-footer>
       </v-navigation-drawer>
       <!-- TOOLBAR -->
       <!-- CHANNEL -->
