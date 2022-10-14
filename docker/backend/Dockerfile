@@ -8,6 +8,7 @@ COPY ./backend/ .
 COPY ./docker/backend/setup.sh ./setup.sh
 
 RUN npm install -s
+RUN npm update
 
 ENTRYPOINT [ "bash", "setup.sh" ]
 
