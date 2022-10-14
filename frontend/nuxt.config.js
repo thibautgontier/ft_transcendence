@@ -57,7 +57,7 @@ export default {
   },
 
   router: {
-    prefetchLinks: false,
+    prefetchLinks: true,
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
