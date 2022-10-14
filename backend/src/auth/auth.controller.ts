@@ -42,30 +42,44 @@ export class AuthController {
 
   @Get('logout')
   async logOut(@Req() req: Request, @Res() res: Response) {
-    const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
-    if (user) await this.authService.logout(user);
-    res.status(200).send('successful logout');
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+      if (user) {
+        await this.authService.logout(user);
+        res.status(200).send('successful logout');
+      }
+    }
   }
 
   @Get('2fa')
   async setup2fa(@Req() req: Request) {
-    const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
-    this.authService.setup2fa(user);
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+      if (user) this.authService.setup2fa(user);
+    }
   }
 
   @Post('validate2fa')
   async validate2fa(@Req() req: Request, @Res() res: Response) {
-    const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
-    const validate = await this.authService.validate2faCode(req.body.code, user);
-    res.status(200).send(validate);
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+      if (user) {
+        const validate = await this.authService.validate2faCode(req.body.code, user);
+        res.status(200).send(validate);
+      }
+    }
   }
 
   @Post('2faemail')
   async change2faEmail(@Req() req: Request, @Res() res: Response) {
-    const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
-    if (req.body.email) {
-      const result = await this.authService.changeEmail(user, req.body.email);
-      res.status(200).send(result);
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
+      if (user) {
+        if (req.body.email) {
+          const result = await this.authService.changeEmail(user, req.body.email);
+          res.status(200).send(result);
+        }
+      }
     }
   }
 }

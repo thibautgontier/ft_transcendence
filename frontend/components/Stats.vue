@@ -284,7 +284,7 @@ export default Vue.extend({
                             <v-chip color="blue"
                                     outlined
                                     large> 
-                                Loose 
+                                Lose 
                             </v-chip>
                         </v-card-title>
                         <v-card-text class="Text red--text" style="text-align:center">

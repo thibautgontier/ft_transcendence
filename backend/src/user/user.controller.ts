@@ -101,10 +101,12 @@ export class UserController {
     @Body() body: any,
     @Res() res: Response,
   ): Promise<User | null> {
-    const user = await this.authService.findUser(
-      req.headers.authorization.split(' ')[1],
-    );
-    return await this.userService.updateUserNickname(user, body.newNickname, res);
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(
+        req.headers.authorization.split(' ')[1],
+      );
+      if (user) return await this.userService.updateUserNickname(user, body.newNickname, res);
+    }
   }
 
   @Patch('updateAvatar')
@@ -113,10 +115,12 @@ export class UserController {
     @Body() body: any,
     @Res() res: Response,
   ): Promise<User | null> {
-    const user = await this.authService.findUser(
-      req.headers.authorization.split(' ')[1],
-    );
-    return await this.userService.updateUserAvatar(user, body.newAvatar, res);
+    if (req.headers.authorization) {
+      const user = await this.authService.findUser(
+        req.headers.authorization.split(' ')[1],
+      );
+      if (user) return await this.userService.updateUserAvatar(user, body.newAvatar, res);
+    }
   }
 
   @Post('uploadAvatar')
@@ -132,10 +136,12 @@ export class UserController {
     @Body() body: any,
     @Res() res: Response,
     ): Promise<User | null> {
-      const user = await this.authService.findUser(
-        req.headers.authorization.split(' ')[1],
-      );
-    return await this.userService.updateUserAvatar(user, file, res);
+      if (req.headers.authorization) {
+        const user = await this.authService.findUser(
+          req.headers.authorization.split(' ')[1],
+        );
+        if (user) return await this.userService.updateUserAvatar(user, file, res);
+      }
   }
 
   @Get('avatars/:fileId')
