@@ -164,7 +164,7 @@ export default Vue.extend({
 			  if (message.id === this.$store.state.currentUser.id)
         {
           const newRoom = new OurRoom();
-          newRoom.channel = await this.client.joinById(message.session, this.$store.state.currentUser)
+          newRoom.channel = await this.client.joinById(message.session, this.$store.getters.getCurrentUser)
           const response = await axios.get(`/channel/${message.idChan}`)
           newRoom.channelName = response.data.Name
           newRoom.id = message.idChan
@@ -277,9 +277,9 @@ export default Vue.extend({
       }
       const room = new OurRoom()
       try {
-        room.channel = await this.client.joinById(channel.RoomId, this.$store.state.currentUser)
+        room.channel = await this.client.joinById(channel.RoomId, this.$store.getters.getCurrentUser)
       } catch (e) {
-        room.channel = await this.client.create('ChatRoom', this.$store.state.currentUser)
+        room.channel = await this.client.create('ChatRoom', this.$store.getters.getCurrentUser)
         await axios.patch(
           `/channel/update/${channel.id}/${this.$store.state.currentUser.id}`,
           { RoomId: room.channel.id }
@@ -323,7 +323,7 @@ export default Vue.extend({
     },
     async leaveChannelConfirmed() {
       this.leaveChannelDialog = false
-      this.dialogRoom.channel.send('Leaving', this.$store.state.currentUser)
+      this.dialogRoom.channel.send('Leaving', this.$store.getters.getCurrentUser)
       this.dialogRoom.channel.leave()
       const index = this.rooms.indexOf(this.dialogRoom)
       this.rooms.splice(index, 1)
@@ -344,7 +344,7 @@ export default Vue.extend({
         return
       const newRoom = new OurRoom()
       try {
-        newRoom.channel = await this.client.create('ChatRoom', this.$store.state.currentUser)
+        newRoom.channel = await this.client.create('ChatRoom', this.$store.getters.getCurrentUser)
         const response = await axios.post('/channel/create', {
           owner: `${this.$store.state.currentUser.id}`,
           Name: this.newChannel.name,
@@ -481,9 +481,9 @@ export default Vue.extend({
       for (const channel of response.data.ChannelUser) {
         const room = new OurRoom()
         try {
-          room.channel = await this.client.joinById(channel.RoomId, this.$store.state.currentUser)
+          room.channel = await this.client.joinById(channel.RoomId, this.$store.getters.getCurrentUser)
         } catch (e) {
-          room.channel = await this.client.create('ChatRoom', this.$store.state.currentUser)
+          room.channel = await this.client.create('ChatRoom', this.$store.getters.getCurrentUser)
           await axios.patch(
             `/channel/update/${channel.id}/${this.$store.state.currentUser.id}`,
             { RoomId: room.channel.id }
@@ -542,7 +542,7 @@ export default Vue.extend({
       else {
         const newRoom = new OurRoom()
         try{
-          newRoom.channel = await this.client.create('ChatRoom', this.$store.state.currentUser)
+          newRoom.channel = await this.client.create('ChatRoom', this.$store.getters.getCurrentUser)
           const response2 = await axios.post('channel/createPriv', {
             user_1 : this.$store.state.currentUser.id,
             user_2 : member.id,

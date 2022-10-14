@@ -4,6 +4,7 @@ export interface Iuser {
 	status: string,
 	id: number,
 	accessToken: string,
+	twoFA: boolean
 }
 
 export class User implements Iuser {
@@ -12,4 +13,5 @@ export class User implements Iuser {
 	status = ''
 	id = 0;
 	accessToken = '';
+	twoFA = false
 }

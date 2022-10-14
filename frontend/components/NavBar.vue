@@ -1,6 +1,7 @@
 <script lang="ts">
-import * as Colyseus from 'colyseus.js'
 import Vue from 'vue'
+import * as Colyseus from 'colyseus.js'
+import { User } from '../types/User'
 
 export default Vue.extend({
   data(): any {
