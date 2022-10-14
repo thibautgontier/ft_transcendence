@@ -47,7 +47,7 @@ export default Vue.extend({
             headers: {
             'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
             }
-            } ).then(response => {this.photo = response.data[0].Avatar; console.log(this.photo)});
+            } ).then(response => {this.photo = response.data[0].Avatar});
     }
   },
     async mounted() {
@@ -78,7 +78,7 @@ export default Vue.extend({
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
-        } ).then(response => {this.photo = response.data[0].Avatar; console.log('peut etre? ', this.photo);});
+        } ).then(response => {this.photo = response.data[0].Avatar;});
     },
     methods: {
         openParameters() {
