@@ -100,8 +100,9 @@ export class PongRoom extends Room<GameState> {
       console.log('spectator left');
   }
 
-  onDispose() {
+  async onDispose() {
     console.info('Disposing PongRoom');
+    await this.disconnect()
   }
 
 }
