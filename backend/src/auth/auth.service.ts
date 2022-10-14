@@ -59,6 +59,7 @@ export class AuthService {
         id: user.id,
         accessToken: token.access_token,
         twoFA: user.TwoFA,
+		status: user.Status
       };
     }
     return null;

@@ -6,8 +6,11 @@ import { User } from '../types/User'
 export default Vue.extend({
   data(): any {
     return {
+      toUpdate: User,
       client: Colyseus.Client,
+      mainRoom: Colyseus.Room,
 			active: false,
+      sessoinId: '',
 			nickname: 'toto',
 			text: 'wants to play !',
 			timeout: 4000,
@@ -15,11 +18,23 @@ export default Vue.extend({
     }
   },
   async mounted() {
-    console.log('navbar');
     this.client = new Colyseus.Client('ws://localhost:3000');
-    this.$store.commit('setMainRoom', (await this.client.joinOrCreate('MainRoom', this.$store.state.currentUser)));
-    await this.$store.state.myMainRoom.send('Joining', this.$store.state.currentUser)
-    this.$store.state.myMainRoom.onMessage('')
+    this.$store.commit('setMainRoom', (await this.client.joinOrCreate('MainRoom', this.$store.getters.getCurrentUser)));
+    await this.$store.state.myMainRoom.send('Joining', this.$store.getters.getCurrentUser)
+    this.$store.state.myMainRoom.onMessage('Invitation', (message: any) => {
+      if (message.id == this.$store.state.currentUser.id) {
+        this.active = true;
+        this.sessionId = message.sessionId; }
+    })
+    this.$store.state.myMainRoom.onMessage('isOnline', (idUser: any) => {
+      // TO DO
+    })
+    this.$store.state.myMainRoom.onMessage('isOnGame', (idUser: any) => {
+      // TO DO
+    })
+    this.$store.state.myMainRoom.onMessage('isOffline', (idUser: any) => {
+      // TO DO
+    })
   },
 	methods: {
     	loadProfile() {
@@ -27,7 +42,7 @@ export default Vue.extend({
       		this.$router.push('/Profile');
     	},
 			acceptInvitation() {
-				// METTRE LE CODE QUI S'OCCUPE DE REJOINDRE LA PONGROOM
+				this.$router.push(`/PlayMenu/?sessionId=${this.sessionId}`)
 			}
 	}
 })
@@ -46,7 +61,7 @@ export default Vue.extend({
 					<v-row
 					justify="center"
 					>
-						<v-btn @click.stop="active = true">Send notification</v-btn>
+						<!-- <v-btn @click.stop="active = true">Send notification</v-btn> -->
 					</v-row>
 					<v-snackbar
 						v-model="active"

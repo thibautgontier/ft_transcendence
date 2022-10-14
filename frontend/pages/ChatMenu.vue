@@ -582,7 +582,9 @@ export default Vue.extend({
       user.id = friend.id
       this.openPrivateChat(user)
     },
-    inviteToPlay(member: User) {},
+    async inviteToPlay(member: User) {
+      this.$router.push(`/PlayMenu/?id=${member.id}`)
+    },
     async addFriend(member: User) {
       await axios.patch(
         `/social/${this.$store.state.currentUser.id}/friend/add/${member.id}`

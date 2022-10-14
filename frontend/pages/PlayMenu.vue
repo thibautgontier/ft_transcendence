@@ -44,7 +44,20 @@ export default Vue.extend({
     this.ctx = this.canvas.getContext('2d')
     const client = new Colyseus.Client('ws://localhost:3000')
     try {
-      if (this.$route.query.sessionId === undefined) {
+      if (this.$route.query.id !== undefined)
+      {
+        this.$store.commit(
+          'changeGameUserId',
+          this.$store.state.currentUser.id
+        )
+        this.myroom = await client.create(
+            'PongRoom',
+            this.$store.state.gameOption,
+            GameState
+          )
+        await this.$store.state.myMainRoom.send('Invitating', {id: this.$route.query.id, sessionId: this.myroom.id})
+      }
+      else if (this.$route.query.sessionId === undefined) {
         this.myroom = undefined
         const rooms = await client.getAvailableRooms<GameState>('PongRoom')
         for (const available of rooms) {

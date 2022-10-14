@@ -30,6 +30,7 @@ export class AuthController {
         avatar: result.avatar,
         accessToken: result.accessToken,
         twoFA: result.twoFA,
+		status: result.status
       });
       res.cookie('user', obj, {
         httpOnly: false,

@@ -28,7 +28,11 @@ export const getters = {
 		user.id = state.currentUser.id;
 		user.accessToken = state.currentUser.accessToken;
 		user.status = state.currentUser.status;
+		user.status = state.currentUser.twoFA
 		return (user)
+	},
+	getMainRoom(state: any) {
+		return state.myMainRoom;
 	}
 }
 
@@ -112,5 +116,5 @@ export const mutations = {
 	},
 	setMainRoom(state, newMainRoom: Colyseus.Room) {
 		state.myMainRoom = newMainRoom
-	}
+	},
 }
