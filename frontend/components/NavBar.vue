@@ -6,6 +6,11 @@ export default Vue.extend({
   data(): any {
     return {
       client: Colyseus.Client,
+			active: false,
+			nickname: 'toto',
+			text: 'wants to play !',
+			timeout: 4000,
+			type: 'invite'
     }
   },
   async mounted() {
@@ -18,6 +23,9 @@ export default Vue.extend({
       		this.$store.commit('changeHistoryId', this.$store.state.currentUser.id);
       		this.$router.push('/Profile');
     	},
+			acceptInvitation() {
+				// METTRE LE CODE QUI S'OCCUPE DE REJOINDRE LA PONGROOM
+			}
 	}
 })
 </script>
@@ -31,6 +39,38 @@ export default Vue.extend({
 					<v-btn @click.stop="loadProfile()">Profile</v-btn>
 					<v-btn router to="/GameOption">Game Options</v-btn>
 				</div>
+				<div>
+					<v-row
+					justify="center"
+					>
+						<v-btn @click.stop="active = true">Send notification</v-btn>
+					</v-row>
+					<v-snackbar
+						v-model="active"
+						:timeout="timeout"
+						top right
+						absolute
+						max-height="2%"
+						elevation="5"
+						transition="slide-x-reverse-transition"
+						class="notification"
+					>
+						<strong>{{ nickname }}</strong> {{ text }}
+						<div class="actions">
+							<v-btn
+								v-if="type === 'invite'"
+								color="orange"
+								small
+								@click="active = false, acceptInvitation()"
+							> ACCEPT </v-btn>
+							<v-btn
+								color="#fff"
+								icon
+								@click="active = false"
+							> > </v-btn>
+						</div>
+					</v-snackbar>
+				</div>
 			</v-app-bar>
 </template>
 
@@ -42,5 +82,19 @@ export default Vue.extend({
 		margin-top: 1%;
 		margin-bottom: 2%;
 		align-content: center;
+	}
+	.notification {
+		position: absolute;
+		top: 1px;
+		left: 0px;
+		z-index: 129;
+		display: flex;
+	}
+	.actions {
+		position: absolute;
+		display: inline;
+		margin: auto;
+		margin-left: 20%;
+		top: 0%;
 	}
 </style>
