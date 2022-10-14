@@ -17,7 +17,7 @@ export class MainRoom extends Room {
   }
 
   async onLeave(client: Client, options: any) {
-    console.log('MainRoom: client', options.nickname, 'is online');
+    console.log('MainRoom: client', options.nickname, 'is offline');
   }
 
   async onDispose() {
