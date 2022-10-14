@@ -19,9 +19,13 @@ export class PartyService {
     });
   }
 
-  async createParty(): Promise<Party> {
+  async createParty(winnerId: string, loserId: string): Promise<Party> {
     return await this.prisma.party.create({
-      data: {},
+      data: {
+        PlayerOneID: Number(winnerId),
+        PlayerTwoID: Number(loserId),
+        WinnerID: Number(winnerId),
+      },
       include: {
         PlayerOne: { select: { id: true, Nickname: true } },
         PlayerTwo: { select: { id: true, Nickname: true } },

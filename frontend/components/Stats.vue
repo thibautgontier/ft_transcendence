@@ -245,7 +245,7 @@ export default Vue.extend({
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
                                     <v-progress-circular
-                                        value=50
+                                        :value="Xp"
                                         color="teal"
                                         height="25"
                                         size="125"

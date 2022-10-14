@@ -85,7 +85,26 @@ export default Vue.extend({
     }
 
     this.myroom.onMessage('Score', async (message: any) => {
-      const response = await axios.post('party/gameFinished', message)
+      const response = await axios.post('party/gameFinished', message, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+      });
+      const response2 = await axios.post('party/create', message, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+      });
+      await axios.patch('game/' + message.winnerId + '/history/add/' + response2.data.id, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+      });
+      await axios.patch('game/' + message.loserId + '/history/add/' + response2.data.id, {
+        headers: {
+          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+        }
+      });
     })
 
     this.state = this.myroom.state // set initial state
