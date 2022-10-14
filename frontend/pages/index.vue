@@ -18,12 +18,12 @@ export default Vue.extend({
   },
   mounted() {
     const user = this.$cookies.get('user');
-    if (!user) {
+    if (user === undefined) {
       if (this.$store.state.currentUser.nickname) this.disconnectRequest();
     }
     else if (user && !this.$store.state.currentUser.nickname)
     {
-      this.$store.commit('getCurrentUser', user);
+      this.$store.commit('setCurrentUser', user);
         if (user.twoFA)
         {
           this.$store.commit('change2faStatus', true);

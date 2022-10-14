@@ -5,7 +5,6 @@ import * as Colyseus from 'colyseus.js'
 export const state = () => ({
 	friends: [],
 	activeComponent: 'Login',
-	twoFA: false,
 	myMainRoom: Colyseus.Room,
 	currentUser: User,
 	tmpID: 0,
@@ -21,6 +20,15 @@ export const state = () => ({
 export const getters = {
 	getActiveComponent (state : any) {
 		return (state.activeComponent)
+	},
+	getCurrentUser: (state : any) => {
+		const user = new User();
+		user.avatar = state.currentUser.avatar;
+		user.nickname = state.currentUser.nickname;
+		user.id = state.currentUser.id;
+		user.accessToken = state.currentUser.accessToken;
+		user.status = state.currentUser.status;
+		return (user)
 	}
 }
 
@@ -65,7 +73,7 @@ export const mutations = {
 	changeTmpID(state : any, newID : any) {
 		state.tmpID = newID;
 	},
-	getCurrentUser(state : any, newUser : any) {
+	setCurrentUser(state : any, newUser : any) {
 		state.currentUser.avatar = newUser.avatar;
 		state.currentUser.id = newUser.id;
 		state.currentUser.nickname = newUser.nickname;
@@ -83,7 +91,7 @@ export const mutations = {
 		localStorage.removeItem('currentUser');
 	},
 	change2faStatus(state, value) {
-		state.twoFA = value;
+		state.currentUser.twoFA = value;
 		localStorage.setItem('twoFA', JSON.stringify(value));
 	},
 	changeLoginFinish(state, newLoginValue) {

@@ -1,6 +1,7 @@
 <script lang="ts">
-import * as Colyseus from 'colyseus.js'
 import Vue from 'vue'
+import * as Colyseus from 'colyseus.js'
+import { User } from '../types/User'
 
 export default Vue.extend({
   data(): any {
@@ -15,8 +16,8 @@ export default Vue.extend({
   },
   async mounted() {
     this.client = new Colyseus.Client('ws://localhost:3000');
-    this.$store.commit('setMainRoom', (await this.client.joinOrCreate('MainRoom', this.$store.state.currentUser)));
-    await this.$store.state.myMainRoom.send('Joining', this.$store.state.currentUser)
+    this.$store.commit('setMainRoom', (await this.client.joinOrCreate('MainRoom', this.$store.getters.getCurrentUser)));
+    await this.$store.state.myMainRoom.send('Joining', this.$store.getters.getCurrentUser)
   },
 	methods: {
     	loadProfile() {

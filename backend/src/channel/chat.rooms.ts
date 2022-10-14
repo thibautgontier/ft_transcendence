@@ -1,20 +1,22 @@
 import { Client, Room } from 'colyseus';
 import * as Colyseus from 'colyseus.js';
 
-export interface IUser {
-  accessToken: string;
-  avatar: string;
-  id: number;
-  nickname: string;
-  twoFA: boolean;
+export interface Iuser {
+	avatar: string,
+	nickname: string,
+	status: string,
+	id: number,
+	accessToken: string,
+	twoFA: boolean
 }
 
-export class User implements IUser {
-  accessToken = '';
-  avatar = '';
-  id = 0;
-  nickname = '';
-  twoFA = false;
+export class User implements Iuser {
+	avatar = '';
+	nickname = '';
+	status = ''
+	id = 0;
+	accessToken = '';
+	twoFA = false
 }
 
 export interface IRoom {
