@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 COPY ./backend/ .
 COPY ./docker/backend/setup.sh ./setup.sh
 
-RUN npm install
+RUN npm install -s
 
 ENTRYPOINT [ "bash", "setup.sh" ]
 
