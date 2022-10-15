@@ -10,11 +10,15 @@ import {
   Sanction
 } from '../types/room'
 import { User } from '../types/User'
+import { newAvailableRoom } from './SpectateMenu.vue' 
+import { GameState } from '../types/pong/schema'
 
 export default Vue.extend({
   layout: 'DefaultLayout',
   data(): any {
     return {
+		  available: [],
+      spectateRoomId: '', 
       newChannel: { name: '', protected: false, password: '' },
       editChannel: { name: '', protected: false, password: '' },
       sanction: { reason: '', type: '', permanent: true, duration: 0},
@@ -487,7 +491,7 @@ export default Vue.extend({
     },
     onlineStatus(status: string) {
       if (status === 'online') return '🟢'
-      else if (status === 'AFK') return '🌙'
+      else if (status === 'inGame') return '🔵'
       return '🔴'
     },
     async createClient() {
@@ -680,8 +684,8 @@ export default Vue.extend({
           },
         }
       )
-    this.isFriend = true;
-    this.updateFriends();
+      this.isFriend = true;
+      this.updateFriends();
     },
     async removeFriend(friend) {
       await axios.patch(
@@ -790,11 +794,31 @@ export default Vue.extend({
     },
     loadProfile(id: number) {
       this.$router.push('/Profile?id=' + id);
+    },
+    async isPlaying(friend: any) {
+      let newAvailable = new newAvailableRoom();
+      this.available = await this.client.getAvailableRooms('PongRoom', GameState)
+      for (const room of this.available) {
+        if (room.clients >= 2) {
+          newAvailable.pongRoom = await this.client.joinById(
+            room.roomId,
+            this.$store.state.gameOption, 
+            GameState
+          )
+          newAvailable.pongRoom.onMessage('info', async (message: any) => {
+            if(friend.id == message.id1 || friend.id == message.id2) {
+              this.spectateRoomId = room.roomId
+              friend.Status = 'inGame'
+            }
+            newAvailable.pongRoom.leave()
+          })
+        }
+      }
+    },
+    watchRoom() {
+      this.$router.push(`/PlayMenu/?sessionId=${this.spectateRoomId}`)
     }
-    // updateUserStatus(status : string) {
-    //   this.$store.commit('changeStatus', status)
-    // }
-  }
+    }
 })
 </script>
 
@@ -882,13 +906,10 @@ export default Vue.extend({
               class="memberCard"
             >
               <template #activator="{ on, attrs }">
-                <v-btn class="wide" text color="white" v-bind="attrs" v-on="on" @click.stop="">
+                <v-btn class="wide" text color="white" v-bind="attrs" v-on="on" @click.stop="isPlaying(friend)">
                   <v-avatar size="32"><img :src="friend.Avatar" /></v-avatar>
                   <v-list-item-content class="ml-2">
                     <v-list-item-title>{{ friend.Nickname }}</v-list-item-title>
-                    <v-list-item-subtitle>{{
-                      onlineStatus(friend.Status)
-                    }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-btn>
               </template>
@@ -905,7 +926,7 @@ export default Vue.extend({
                         friend.Nickname
                       }}</v-list-item-title>
                       <v-list-item-subtitle>{{
-                        friend.status
+                        friend.Status
                       }}</v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
@@ -914,6 +935,9 @@ export default Vue.extend({
                 <v-list>
                   <v-list-item>
                     <v-btn @click.stop="openPrivateChatAdapter(friend)">Private chat</v-btn>
+                  </v-list-item>
+                  <v-list-item v-if="friend.Status === 'inGame'">
+                    <v-btn @click.stop="watchRoom()">Spectate</v-btn>
                   </v-list-item>
                   <v-list-item>
                     <v-btn @click.stop="loadProfile(friend.id)">User profile</v-btn>
@@ -963,9 +987,6 @@ export default Vue.extend({
                   <v-avatar size="32"><img :src="member.avatar" /></v-avatar>
                   <v-list-item-content class="ml-2">
                     <v-list-item-title>{{ member.nickname }}</v-list-item-title>
-                    <v-list-item-subtitle>{{
-                      onlineStatus(member.status)
-                    }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-btn>
               </template>
@@ -977,14 +998,8 @@ export default Vue.extend({
                     <v-avatar size="64"><img :src="member.avatar" /></v-avatar>
                     <v-list-item-content class="ml-2">
                       <v-list-item-title>{{
-                        onlineStatus(member.status)
-                      }}</v-list-item-title>
-                      <v-list-item-title>{{
                         member.nickname
                       }}  <v-icon v-if="isAdmin === true && activeChannel.Type !== 'private'">mdi-crown</v-icon> </v-list-item-title>
-                      <v-list-item-subtitle>{{
-                        member.status
-                      }}</v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list>
@@ -1055,60 +1070,6 @@ export default Vue.extend({
             </v-menu>
           </v-list-item>
         </v-list>
-        <!-- USER STATUS -->
-        <v-footer absolute pad outlined>
-          <v-menu
-            :close-on-content-click="true"
-            top
-            offset-y
-            transition="slide-y-reverse-transition"
-            >
-            <template #activator="{ on, attrs }">
-              <v-btn class="wide" text color="white" v-bind="attrs" v-on="on">
-                <v-list-item-avatar>
-                  <v-img absolute :src="$store.state.currentUser.avatar"></v-img>
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title>{{ $store.state.currentUser.nickname }}</v-list-item-title>
-                  <v-list-item-action-text>{{ $store.state.currentUser.status }}</v-list-item-action-text>
-                </v-list-item-content>
-              </v-btn>
-            </template>
-
-              <!-- USER STATUS MENU -->
-              <v-card>
-                <v-list>
-                  <v-list-item>
-                    <v-list-item-avatar>
-                      <v-img absolute :src="$store.state.currentUser.avatar"></v-img>
-                    </v-list-item-avatar>
-                    <v-list-item-content>
-                      <v-list-item-title>{{ $store.state.currentUser.nickname }}</v-list-item-title>
-                      <v-spacer></v-spacer>
-                      <v-list-item-subtitle>{{ $store.state.currentUser.status }}</v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-
-                <v-divider></v-divider>
-
-                <v-list>
-                  <v-list-item>
-                    <v-btn @click.stop="loadProfile($store.state.currentUser.id)">My Profile</v-btn>
-                  </v-list-item>
-                  <!-- <v-list-item>
-                    <v-btn @click="updateUserStatus('online')">Online</v-btn>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-btn @click="updateUserStatus('AFK')">Away</v-btn>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-btn @click="updateUserStatus('invisible')">Invisible</v-btn>
-                  </v-list-item> -->
-                </v-list>
-              </v-card>
-            </v-menu>
-        </v-footer>
       </v-navigation-drawer>
       <!-- TOOLBAR -->
       <!-- CHANNEL -->

@@ -33,9 +33,10 @@ export default Vue.extend({
     try {
       document.removeEventListener('keydown', this.keyDown)
       document.removeEventListener('keyup', this.keyUp)
-      await this.myroom.leave()
+      if (this.myroom != undefined)
+        await this.myroom.leave()
     } catch (e) {
-      console.warn(e)
+      console.warn('LEAVE ERROR', e)
     }
   },
   async mounted() {
@@ -93,11 +94,14 @@ export default Vue.extend({
           this.$store.state.gameOption,
           GameState
         )
-      }
-    } catch (e) {
+	}
+} catch (e) {
       this.$router.push(`/GameMenu/`)
       console.warn('JOIN ERROR', e)
+      return
     }
+	if (this.myroom != undefined) {
+    this.myroom.onMessage('info', async (message: any) => {})
 
     this.myroom.onMessage('Score', async (message: any) => {
       const response = await axios.post('party/gameFinished', message, {
@@ -121,6 +125,7 @@ export default Vue.extend({
         }
       });
     })
+	}
 
     this.state = this.myroom.state // set initial state
     this.myroom.onStateChange((s: any) => {

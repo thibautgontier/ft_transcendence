@@ -11,9 +11,9 @@ export default Vue.extend({
 			mainRoom: Colyseus.Room,
 			active: false,
 			sessoinId: '',
-			nickname: 'toto',
+			nickname: '',
 			text: 'wants to play !',
-			timeout: 4000,
+			timeout: 10000,
 			type: 'invite'
     }
   },
@@ -23,6 +23,7 @@ export default Vue.extend({
     await this.$store.state.myMainRoom.send('Joining', this.$store.getters.getCurrentUser)
     this.$store.state.myMainRoom.onMessage('Invitation', (message: any) => {
       if (message.id == this.$store.state.currentUser.id) {
+		
         this.active = true;
         this.sessionId = message.sessionId; }
     })
@@ -48,8 +49,7 @@ export default Vue.extend({
 			<v-app-bar app color="#121212" height="90px" class="nav">			<div class="testbuttons mx-auto">
 					<v-btn router to="/">Home</v-btn>
 					<v-btn router to="/GameMenu">Game</v-btn>
-					<v-btn router to="/ChatMenu">Chat</v-btn>
-					<v-btn router to="/GameOption">Game Options</v-btn>
+					<v-btn router to="/Social">Social</v-btn>
 				</div>
 				<div>
 					<v-row
