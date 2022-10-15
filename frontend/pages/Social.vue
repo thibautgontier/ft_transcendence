@@ -674,7 +674,7 @@ export default Vue.extend({
       this.openPrivateChat(user)
     },
     inviteToPlay(member: User) {
-      this.$router.push(`/PlayMenu/?id=${member.id}`)
+      this.$router.push(`/GameOption/?id=${member.id}`)
     },
     async addFriend(member: User) {
       await axios.patch(
@@ -700,7 +700,7 @@ export default Vue.extend({
     },
     async blockUser(member: User) {
         await axios.patch(
-          `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`, {}, {
+          `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`,{}, {
             headers: {
               'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
             },

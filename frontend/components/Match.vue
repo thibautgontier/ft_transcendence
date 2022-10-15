@@ -6,19 +6,23 @@ export default Vue.extend({
 	props: {
 		WinnerID: Number,
         date: String,
-        score: Number,
-        ennemyID: Number,
+        playerOneID: Number,
+        playerTwoID: Number,
     },
     data() {
         return {
-            ennemy: '',
+            ennemy: 0,
             win: 0,
         }
     },
     mounted() {
     if (!this.$store.state.currentUser.nickname)
         return
-      axios.get("/user?id=" + this.ennemyID, {
+    if (this.$store.state.currentUser.id === this.playerOneID)
+        this.ennemy = this.playerTwoID;
+    else
+        this.ennemy = this.playerOneID;
+      axios.get("/user?id=" + this.ennemy, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
@@ -56,9 +60,6 @@ export default Vue.extend({
                 </v-list-item-title>
             </h1>
         </v-list-item-content>
-        <div class="Score">
-            {{score}}
-        </div>
         </v-list-item>
         </v-card>
     </h1>
@@ -71,7 +72,4 @@ export default Vue.extend({
   color: lemonchiffon;
 }
 
-.Score {
-    color: Grey;
-}
 </style>
