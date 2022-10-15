@@ -65,7 +65,7 @@ export default Vue.extend({
             this.$router.push('/');
             return;
         }
-        this.twoFA = user.data[0].twoFA;
+        this.twoFA = this.$store.state.currentUser.twoFA;
         if (!this.$store.state.currentUser.nickname)
           return
         let use = this.$store.state.currentUser.id;
