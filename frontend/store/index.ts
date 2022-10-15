@@ -28,7 +28,7 @@ export const getters = {
 		user.id = state.currentUser.id;
 		user.accessToken = state.currentUser.accessToken;
 		user.status = state.currentUser.status;
-		user.status = state.currentUser.twoFA
+		user.twoFA = state.currentUser.twoFA
 		return (user)
 	},
 	getMainRoom(state: any) {
@@ -48,9 +48,6 @@ export const mutations = {
 		}
 		if(localStorage.getItem('loginFinish')) {
 			state.loginFinish = localStorage.getItem('loginFinish');
-		if(localStorage.getItem('twoFA') === 'true') {
-			state.twoFA = true;
-		}
 }
 	},
 	changeActiveComponent(state : any,component : any) {
@@ -82,6 +79,7 @@ export const mutations = {
 		state.currentUser.id = newUser.id;
 		state.currentUser.nickname = newUser.nickname;
 		state.currentUser.accessToken = newUser.accessToken;
+		state.currentUser.twoFA = newUser.twoFA;
 		localStorage.setItem('currentUser', JSON.stringify(newUser));
 		console.log('finished login');
 	},
@@ -90,13 +88,16 @@ export const mutations = {
 		state.currentUser.id = 0;
 		state.currentUser.nickname = '';
 		state.currentUser.accessToken = '';
+		state.currentUser.twoFA = false;
 		state.loginFinish = false;
 		localStorage.removeItem('loginFinish');
 		localStorage.removeItem('currentUser');
 	},
 	change2faStatus(state, value) {
 		state.currentUser.twoFA = value;
-		localStorage.setItem('twoFA', JSON.stringify(value));
+		let newUser = JSON.parse(localStorage.getItem('currentUser'));
+		newUser.twoFA = value;
+		localStorage.setItem('currentUser', JSON.stringify(newUser));
 	},
 	changeLoginFinish(state, newLoginValue) {
 		state.loginFinish = newLoginValue;

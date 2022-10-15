@@ -230,7 +230,7 @@ export default Vue.extend({
                         <img :src="this.photo">
                     </v-avatar>
                 </div>
-                <v-btn v-if="$store.state.currentUser.twoFA === false" class="dfa" x-large color="black" @click.stop="activate2fa()">Activate 2FA</v-btn>
+                <v-btn v-if="this.$store.state.currentUser.twoFA === false" class="dfa" x-large color="black" @click.stop="activate2fa()">Activate 2FA</v-btn>
                 <v-btn v-else class="dfa" x-large color="black" @click.stop="deactivate2fa()">Deactivate 2FA</v-btn>
                 </v-col>
                 <v-card

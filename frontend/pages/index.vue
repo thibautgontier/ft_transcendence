@@ -68,7 +68,6 @@ export default Vue.extend({
         this.$cookies.remove('user');
         this.loginSuccess = 0;
         this.loginFailed = 0;
-        this.$store.commit('change2faStatus', false);
       }
 		},
     async sendTwoFA() {
