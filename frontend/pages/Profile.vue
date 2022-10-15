@@ -38,7 +38,7 @@ export default Vue.extend({
       headers: {
         'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
       }
-    } ).then(response => (this.matchInfosTest = response.data));
+    } ).then(response => {(this.matchInfosTest = response.data)});
     this.$store.commit('changeNoBall', false)
   },
 })
@@ -54,7 +54,7 @@ export default Vue.extend({
             <div
               v-for="match in matchInfosTest"
               :key="match.id">
-              <Match :ennemyID='match.PlayerTwoID' :WinnerID='match.WinnerID' :score='match.WinnerID' :date='match.CreatedAt'/>
+              <Match :playerOneID='match.PlayerOneID' :playerTwoID='match.PlayerTwoID' :WinnerID='match.WinnerID' :date='match.CreatedAt'/>
             </div>
           </v-col>
           <v-divider vertical inset></v-divider>
