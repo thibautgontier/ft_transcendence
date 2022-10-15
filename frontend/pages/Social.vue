@@ -796,6 +796,12 @@ export default Vue.extend({
       this.$router.push('/Profile?id=' + id);
     },
     async isPlaying(friend: any) {
+		const response = await axios.get(`/user/${friend.id}`, {
+            headers: {
+              'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+            },
+          });
+		friend.Status = response.data.Status;
       let newAvailable = new newAvailableRoom();
       this.available = await this.client.getAvailableRooms('PongRoom', GameState)
       for (const room of this.available) {
@@ -942,7 +948,7 @@ export default Vue.extend({
                   <v-list-item>
                     <v-btn @click.stop="loadProfile(friend.id)">User profile</v-btn>
                   </v-list-item>
-                  <v-list-item>
+                  <v-list-item v-if="friend.Status === 'online'">
                     <v-btn @click.stop="inviteToPlay(friend)">Invite to a match</v-btn>
                   </v-list-item>
                   <v-list-item>
@@ -1015,14 +1021,7 @@ export default Vue.extend({
                     <v-btn @click.stop="loadProfile(member.id)"
                       >User profile</v-btn>
                   </v-list-item>
-                  <v-list-item
-                    v-if="member.nickname !== $store.state.currentUser.nickname"
-                  >
-                    <v-btn @click.stop="inviteToPlay(member)"
-                      >Invite to a match</v-btn
-                    >
-                  </v-list-item>
-                  <v-list-item
+                  <v-list-item	
                     v-if="member.nickname !== $store.state.currentUser.nickname && isFriend === false"
                   >
                     <v-btn @click.stop="addFriend(member)"

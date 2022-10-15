@@ -34,7 +34,8 @@ export class MainRoom extends Room {
     })
 
     this.onMessage('Invitating', (client: Client, message: any) => {
-      this.broadcast('Invitation', message, {except : client} )
+	let invituser = this.users.find((element) => element.clientid == client.id);
+      this.broadcast('Invitation', {nickname : invituser.user.nickname, id: message.id, sessionId: message.sessionId}, {except : client} )
     })
   }
 

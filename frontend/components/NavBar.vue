@@ -2,6 +2,7 @@
 import Vue from 'vue'
 import * as Colyseus from 'colyseus.js'
 import { User } from '../types/User'
+import axios from 'axios'
 export default Vue.extend({
   data(): any {
     return {
@@ -22,7 +23,7 @@ export default Vue.extend({
     await this.$store.state.myMainRoom.send('Joining', this.$store.getters.getCurrentUser)
     this.$store.state.myMainRoom.onMessage('Invitation', (message: any) => {
       if (message.id == this.$store.state.currentUser.id) {
-		
+		this.nickname = message.nickname;
         this.active = true;
         this.sessionId = message.sessionId; }
     })
@@ -104,7 +105,7 @@ export default Vue.extend({
 		position: absolute;
 		display: inline;
 		margin: auto;
-		margin-left: 20%;
+		margin-left: 10%;
 		top: 0%;
 	}
 </style>

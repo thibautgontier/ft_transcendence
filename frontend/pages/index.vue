@@ -56,8 +56,12 @@ export default Vue.extend({
     redirectToLog() {
       window.location.href = "http://localhost:3000/login/42";       
     },
-		async disconnectRequest() {
+	async disconnectRequest() {
       const res = await axios.get("/login/logout");
+	  await axios.patch(`/user/update/${this.$store.state.currentUser.id}`, { status: 'offline' }, { headers: {
+			  'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
+			},
+		})
       if (res) {
         this.$store.commit('changeLoginFinish', false);
         this.$store.commit('deleteUser');
@@ -65,7 +69,7 @@ export default Vue.extend({
         this.loginSuccess = 0;
         this.loginFailed = 0;
       }
-		},
+	},
     async sendTwoFA() {
       this.twoFaFail = 0;
       const res = await axios.post("/login/validate2fa", {code: this.twoFACode}, {

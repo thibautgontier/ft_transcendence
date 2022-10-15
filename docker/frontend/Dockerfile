@@ -8,7 +8,7 @@ COPY ./frontend/ .
 COPY ./docker/frontend/setup.sh ./setup.sh
 
 RUN npm install -s
-RUN npm update
+RUN npm update -s
 RUN npm run build
 
 ENTRYPOINT [ "bash", "setup.sh" ]
