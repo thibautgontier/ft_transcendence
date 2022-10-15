@@ -674,7 +674,7 @@ export default Vue.extend({
     },
     async addFriend(member: User) {
       await axios.patch(
-        `/social/${this.$store.state.currentUser.id}/friend/add/${member.id}`, {
+        `/social/${this.$store.state.currentUser.id}/friend/add/${member.id}`, {}, {
           headers: {
             'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
           },
@@ -685,7 +685,7 @@ export default Vue.extend({
     },
     async removeFriend(friend) {
       await axios.patch(
-        `/social/${this.$store.state.currentUser.id}/friend/remove/${friend.id}`, {
+        `/social/${this.$store.state.currentUser.id}/friend/remove/${friend.id}`, {}, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         },
@@ -696,7 +696,7 @@ export default Vue.extend({
     },
     async blockUser(member: User) {
         await axios.patch(
-          `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`, {
+          `/social/${this.$store.state.currentUser.id}/blocked/add/${member.id}`,{}, {
             headers: {
               'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
             },
@@ -707,7 +707,7 @@ export default Vue.extend({
     },
     async unblockUser(member: User) {
         await axios.patch(
-          `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`, {
+          `/social/${this.$store.state.currentUser.id}/blocked/remove/${member.id}`, {}, {
             headers: {
               'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
             },
@@ -719,7 +719,7 @@ export default Vue.extend({
     },
     async makeAdmin(member: any) {
       try{
-          await axios.patch(`/channel/${this.activeChannel.id}/addAdmin/${member.id}/${this.$store.state.currentUser.id}`, {
+          await axios.patch(`/channel/${this.activeChannel.id}/addAdmin/${member.id}/${this.$store.state.currentUser.id}`, {}, {
             headers: {
               'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
             },
@@ -733,7 +733,7 @@ export default Vue.extend({
     },
     async removeAdmin(member: any) {
       try{
-        await axios.patch(`/channel/${this.activeChannel.id}/removeAdmin/${member.id}/${this.$store.state.currentUser.id}`, {
+        await axios.patch(`/channel/${this.activeChannel.id}/removeAdmin/${member.id}/${this.$store.state.currentUser.id}`, {}, {
             headers: {
               'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
             },
