@@ -11,9 +11,9 @@ export default Vue.extend({
 			mainRoom: Colyseus.Room,
 			active: false,
 			sessoinId: '',
-			nickname: 'toto',
+			nickname: '',
 			text: 'wants to play !',
-			timeout: 4000,
+			timeout: 10000,
 			type: 'invite'
     }
   },
@@ -49,7 +49,7 @@ export default Vue.extend({
 					<v-btn router to="/">Home</v-btn>
 					<v-btn router to="/GameMenu">Game</v-btn>
 					<v-btn router to="/ChatMenu">Chat</v-btn>
-					<v-btn router to="/GameOption">Game Options</v-btn>
+					<!-- <v-btn router to="/GameOption">Game Options</v-btn> -->
 				</div>
 				<div>
 					<v-row
