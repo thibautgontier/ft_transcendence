@@ -29,6 +29,7 @@ export default Vue.extend({
         settingsSuccess: 0,
         settingsFail: 0,
         snackbarMessage: '',
+        twoFA: false,
     }),
     watch: {
         userID() {
@@ -64,6 +65,7 @@ export default Vue.extend({
             this.$router.push('/');
             return;
         }
+        this.twoFA = user.data[0].twoFA;
         if (!this.$store.state.currentUser.nickname)
           return
         let use = this.$store.state.currentUser.id;
@@ -97,6 +99,7 @@ export default Vue.extend({
             this.$store.commit('change2faStatus', true);
             this.overlay = true;
             this.defaultEmail = true;
+            this.twoFA = true;
         },
         async deactivate2fa() {
             await axios.get("/login/2fa", {
@@ -105,6 +108,7 @@ export default Vue.extend({
                 }
             });
             this.$store.commit('change2faStatus', false);
+            this.twoFA = false;
             this.email = '';
         },
         async confirmSetting(){
@@ -230,7 +234,7 @@ export default Vue.extend({
                         <img :src="this.photo">
                     </v-avatar>
                 </div>
-                <v-btn v-if="this.$store.state.currentUser.twoFA === false" class="dfa" x-large color="black" @click.stop="activate2fa()">Activate 2FA</v-btn>
+                <v-btn v-if="this.twoFA === false" class="dfa" x-large color="black" @click.stop="activate2fa()">Activate 2FA</v-btn>
                 <v-btn v-else class="dfa" x-large color="black" @click.stop="deactivate2fa()">Deactivate 2FA</v-btn>
                 </v-col>
                 <v-card
