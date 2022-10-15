@@ -57,11 +57,7 @@ export default Vue.extend({
       window.location.href = "http://localhost:3000/login/42";       
     },
 		async disconnectRequest() {
-      const res = await axios.get("/login/logout", {
-        headers: {
-          'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
-        }
-      });
+      const res = await axios.get("/login/logout");
       if (res) {
         this.$store.commit('changeLoginFinish', false);
         this.$store.commit('deleteUser');

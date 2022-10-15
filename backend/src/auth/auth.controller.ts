@@ -47,9 +47,9 @@ export class AuthController {
       const user = await this.authService.findUser(req.headers.authorization.split(' ')[1]);
       if (user) {
         await this.authService.logout(user);
-        res.status(200).send('successful logout');
       }
     }
+    res.status(200).send('successful logout');
   }
 
   @Get('2fa')

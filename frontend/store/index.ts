@@ -79,7 +79,7 @@ export const mutations = {
 		state.currentUser.id = newUser.id;
 		state.currentUser.nickname = newUser.nickname;
 		state.currentUser.accessToken = newUser.accessToken;
-		state.currentUser.twoFA = newUser.twoFA;
+		state.currentUser.twoFA = newUser.twoFA;	
 		localStorage.setItem('currentUser', JSON.stringify(newUser));
 		console.log('finished login');
 	},
@@ -95,7 +95,7 @@ export const mutations = {
 	},
 	change2faStatus(state, value) {
 		state.currentUser.twoFA = value;
-		let newUser = JSON.parse(localStorage.getItem('currentUser'));
+		const newUser = JSON.parse(localStorage.getItem('currentUser'));
 		newUser.twoFA = value;
 		localStorage.setItem('currentUser', JSON.stringify(newUser));
 	},
