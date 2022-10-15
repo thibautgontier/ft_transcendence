@@ -11,17 +11,27 @@ export default Vue.extend({
         paddleSpeed: 30,
         pointsToWin: 30,
         start: 0,
+        isLocked: false,
+        sessionId: '',
     }
   },
   mounted() {
     this.$store.commit('changeNoBall', false)
+    // if (this.$route.query.param) this.isLocked = true;
+    if (this.$route.query.sessionId) {
+      this.isLocked = true;
+      this.sessionId = this.$route.query.sessionId;
+    }
   },
   methods: {
     startGame() {
       const gameOption = { ballSpeed: this.ballSpeed / 100, paddleSpeed: this.paddleSpeed / 100, pointsToWin: this.pointsToWin / 10, color: this.color};
       this.$store.commit('changeGameOption', gameOption);
       this.start = 1;
-      this.$router.push(`/PlayMenu/?id=${this.$route.query.id}`)
+      if (this.$route.query.sessionId)
+        this.$router.push(`/PlayMenu/?sessionId=${this.sessionId }`)
+      else this.$router.push(`/PlayMenu/?id=${this.$route.query.id }`)
+      // this.$router.push(`/PlayMenu/?sessionId=${this.sessionId}`)
     },
     resetToDefault() {
       this.ballSpeed = 50;
@@ -50,6 +60,7 @@ export default Vue.extend({
               <v-row>
                 <v-slider
                   v-model="ballSpeed"
+                  :disabled="this.isLocked"
                   min="50"
                   max="250"
                   class="mt-9"
@@ -69,6 +80,7 @@ export default Vue.extend({
                 <v-row>
                   <v-slider
                     v-model="paddleSpeed"
+                    :disabled="this.isLocked"
                     min="30"
                     max="150"
                     class="mt-9"
@@ -87,6 +99,7 @@ export default Vue.extend({
                 </v-subheader>
                 <v-row>
                   <v-slider
+                    :disabled="this.isLocked"
                     v-model="pointsToWin"
                     min="30"
                     max="150"

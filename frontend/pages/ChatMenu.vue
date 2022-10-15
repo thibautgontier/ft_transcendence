@@ -670,7 +670,7 @@ export default Vue.extend({
       this.openPrivateChat(user)
     },
     inviteToPlay(member: User) {
-      this.$router.push(`/PlayMenu/?id=${member.id}`)
+      this.$router.push(`/GameOption/?id=${member.id}`)
     },
     async addFriend(member: User) {
       await axios.patch(

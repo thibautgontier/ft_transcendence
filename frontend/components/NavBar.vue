@@ -2,7 +2,6 @@
 import Vue from 'vue'
 import * as Colyseus from 'colyseus.js'
 import { User } from '../types/User'
-
 export default Vue.extend({
   data(): any {
     return {
@@ -38,7 +37,7 @@ export default Vue.extend({
   },
 	methods: {
 			acceptInvitation() {
-				this.$router.push(`/PlayMenu/?sessionId=${this.sessionId}`)
+				this.$router.push(`/GameOption/?sessionId=${this.sessionId}`)
 			}
 	}
 })
