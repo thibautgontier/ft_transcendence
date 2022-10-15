@@ -110,12 +110,12 @@ export default Vue.extend({
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
       });
-      await axios.patch('game/' + message.winnerId + '/history/add/' + response2.data.id, {
+      await axios.patch('game/' + message.winnerId + '/history/add/' + response2.data.id, {}, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
       });
-      await axios.patch('game/' + message.loserId + '/history/add/' + response2.data.id, {
+      await axios.patch('game/' + message.loserId + '/history/add/' + response2.data.id, {}, {
         headers: {
           'Authorization': 'Bearer ' + this.$store.state.currentUser.accessToken,
         }
