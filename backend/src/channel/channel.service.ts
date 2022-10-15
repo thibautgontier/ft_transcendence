@@ -9,6 +9,7 @@ import { ChannelCreatePrivDto } from './dto/channel-createPriv.dto';
 import { ChannelSendMsgDto } from './dto/channel-sendMessage.dto';
 import { ChannelSwitchToPrivate } from './dto/channel-swicthToPrivate.dto';
 import { ChannelUpdateDto } from './dto/channel-update.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -304,12 +305,11 @@ export class ChannelService {
     const password = await this.prisma.channelPassword.findUnique({
       where: { id: channel.PasswordID },
     });
-    //decrypt here
-    if (
-      (channel.Type == 'protected' && password.Password == body.password) ||
-      channel.Type == 'public'
-    )
-      return true;
+    if (channel.Type == 'protected') {
+      const verifPassword = await bcrypt.compare(body.password, password.Password);
+      if (verifPassword) return true
+    }
+    else if (channel.Type == 'public') return true;
     return false;
   }
 
@@ -441,11 +441,12 @@ export class ChannelService {
         where: { id: idChan },
         data: { Type: 'protected' },
       });
-      // const newPassword = bcrypt.encrypt(body.password);
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(body.Password, salt);
       const pw = await this.prisma.channelPassword.update({
         where: { id: channel.PasswordID },
         data: {
-          Password: body.Password,
+          Password: hashedPassword,
         },
       });
       res.status(HttpStatus.OK).send(channel);
