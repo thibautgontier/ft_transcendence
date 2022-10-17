@@ -1,11 +1,15 @@
-FROM node:16.15
+FROM node:gallium
 
 EXPOSE 3000
 
-COPY ./backend /backend
-COPY ./docker/backend/setup.sh /setup.sh
+WORKDIR /usr/src/app
+
+COPY ./backend/ .
+COPY ./docker/backend/setup.sh ./setup.sh
+
+RUN npm install -s
+RUN npm update -s
 
 ENTRYPOINT [ "bash", "setup.sh" ]
 
-# CMD [ "npm", "install", ";", "npm", "run" ]
 CMD [ "npm", "run", "start" ]

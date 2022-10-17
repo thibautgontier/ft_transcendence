@@ -1,0 +1,129 @@
+ToDo:
+
+SUJET ET GRILLE DE CORRECTION:
+
+• The user should be able to invite other users to play a Pong game through the chat
+interface
+
+◦ The administrators of a channel can ban or mute users for a limited time.
+
+◦ The channel owner is a channel administrator. They can set other users as
+administrators.
+
+• The user should be able to add other users as friends and see their current status
+(online, offline, in a game, and so forth).
+
+Fix le bug du lancement de partie de pong en solo en rechargant le composant
+
+• You must offer some customization options (for example, power-ups or different
+maps). However, the user should be able to select a default version of the game
+without any extra features if they want to.
+
+The user should be able to watch a live play between other users without interfering
+with it.
+
+Ensure that the website is secured. Check the database to verify that
+passwords are encrypted (THOMAS POUR LES MDP DE CHANNEL (A VOIR))
+
+Check si le nickname n'est pas pris quand on le change
+
+User can block other users. This means they won't receive private messages
+from the accounts they blocked nor view their messages in public/private
+channels.
+
+The users can chat. Messages must be sent/received instantly.
+If the user blocked another user, the messages from the blocked person
+must be hidden. The user can access the user profile of other players
+from the chat interface and also invite them for a Pong duel.
+
+There is a spectator mode. The user can watch any live games. They can be
+accessed through the chat interface or the friend interface.
+There can also be a page dedicated to live games from which the user can
+access any of them.
+
+
+
+
+----------------------------------------------------------------------------------
+
+- ajouter le status (admin, bloqué etc) dans les users d'un channel
+
+- Verifier ce qu'il se passe si on se connecte deux fois avec le meme user dans deux fenetres différentes
+
+- Update le nom d'un channel en cas de changement de nom
+
+- ajouter un check pour voir si le channel existe toujours avant de rejoindre
+
+- ajouter le timer avant de commencer la partie de pong
+
+- trouver comment ajuster le :permanent pour les conversations et les membres
+
+Avec Thomas :
+
+- ban pour une durée limitée (demandé par le sujet) / BOUTON A FAIRE SUR LE FRONT
+
+- update la liste des channels à chaque changement de state (onStateChange Colyseus)
+
+- le join des channels devrait se faire à la connexion de l'utilisateur (a voir)
+
+- ajouter un bouton join pour lister tous les channels et en rejoindre
+
+- ajouter une couronne pour les admins du channel
+
+- this.setPatchRate(16.66); pour avoir le jeu en 60fps
+
+- faire en sorte que le jeu ne bouge pas quand la console empiete sur sa height
+
+- FIX LE REFRESH SUR LE CHAT
+
+- RETIRER LA PONGBALL EN CAS DE JEU EN COURS OU DE CHAT
+
+- DESACTIVER LA NAVBAR EN CAS DE PARTIE EN COURS
+
+- Server error de temps en temps sur le chat ! (peut etre lié au mode dev et aux ressources limitées du wsl)
+
+
+- NOTIF POUR REJOINDRE UNE DEMANDE DE GAME
+
+- importer tous les objets du jeu dans le front
+
+
+Avec la team :
+- friendlist
+- changement avatar
+- changement nickname
+- changement statut (offline/online/ingame/absent)
+- ouverture d'un channel privé entre deux personnes
+- update le statut de l'utilisateur à la connexion
+- notification ou pas ?
+- comment accepter les demandes de parties
+- comment demander les demandes d'ami
+
+POUR LE JEU RESPONSIVE :
+<template>
+<v-app dark>
+    <canvas class="template" id="rendering-canvas"></canvas>
+  </div>
+</v-app>
+</template>
+
+<style>
+  .template{
+    aspect-ratio: 16 9;
+    margin: auto;
+  }
+</style>
+
+LANCEMENT DU PROJET
+
+n'importe :
+sudo dockerd
+
+backend :
+sudo docker stop frontend backend
+sudo docker-compose up -d database
+export $(grep -v '^#' ../docker/backend/.env | xargs) && npm run dev
+sudo npx prisma studio -> pour le visualiseur
+
+frontend :
+npm run dev

@@ -1,0 +1,154 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // url      = "postgres://user:1234@localhost:5432/transcendence?schema=public"
+}
+
+model User {
+  id            Int             @id @default(autoincrement())
+  Email         String?         @unique
+  Nickname      String?         @unique
+  IntraName     String?         @unique
+  CreatedAt     DateTime        @default(now())
+  UpdatedAt     DateTime        @updatedAt
+  Avatar        String?
+  Connected     Boolean         @default(false)
+  Status        logStatus       @default(offline)
+  TwoFA         Boolean         @default(false)
+  TwoFaCode     Int?
+  GameProfile   GameProfile?
+  SocialProfile SocialProfile?
+  Friend        SocialProfile[] @relation("friends")
+  Blocked       SocialProfile[] @relation("blocked")
+  PlayerOne     Party[]         @relation("playerOne")
+  PlayerTwo     Party[]         @relation("playerTwo")
+  Winner        Party[]         @relation("winner")
+  ChannelOwner  Channel[]
+  ChannelUser   Channel[]       @relation(name: "chanUsers")
+  ChannelAdmin  Channel[]       @relation(name: "admin")
+  MutedUser     Channel[]       @relation(name: "mutedUser")
+  BanUser       Channel[]       @relation(name: "banUser")
+  UserMessage   Message[]
+  BanModel        BanModel[]
+}
+
+model GameProfile {
+  id      Int     @id @default(autoincrement())
+  Level   Float   @default(0)
+  Xp      Float   @default(0)
+  NbParty Int     @default(0)
+  NbWin   Int     @default(0)
+  History Party[] @relation("history")
+  UserID  Int?    @unique
+  User    User?   @relation(fields: [UserID], references: [id], onDelete: Cascade)
+}
+
+model Party {
+  id            Int           @id @default(autoincrement())
+  CreatedAt     DateTime      @default(now())
+  UpdatedAt     DateTime      @updatedAt
+  PlayerOneID   Int?
+  PlayerOne     User?         @relation(name: "playerOne", fields: [PlayerOneID], references: [id])
+  PlayerTwoID   Int?
+  PlayerTwo     User?         @relation(name: "playerTwo", fields: [PlayerTwoID], references: [id])
+  WinnerID      Int?
+  Winner        User?         @relation(name: "winner", fields: [WinnerID], references: [id])
+  Status        partyStatus   @default(starting)
+  GameHistory   GameProfile[] @relation("history")
+}
+
+model SocialProfile {
+  id       Int       @id @default(autoincrement())
+  Friends  User[]    @relation("friends")
+  Blocked  User[]    @relation("blocked")
+  UserID   Int?      @unique
+  User     User?     @relation(fields: [UserID], references: [id], onDelete: Cascade)
+}
+
+model Channel {
+  id              Int             @id @default(autoincrement())
+  CreatedAt       DateTime        @default(now())
+  UpdatedAt       DateTime        @updatedAt
+  Type            channelType     @default(public)
+  Name            String          @unique
+  Description     String?
+  RoomId          String
+  OwnerID         Int
+  Owner           User            @relation(fields: [OwnerID], references: [id])
+  Users           User[]          @relation("chanUsers")
+  Admins          User[]          @relation("admin")
+  MutedUsers      User[]          @relation("mutedUser")
+  BanUsers        User[]          @relation("banUser")
+  BanModel        BanModel[]
+  Messages        Message[]
+  PasswordID      Int             @unique
+  Password        ChannelPassword @relation(fields: [PasswordID], references: [id], onDelete: Cascade)
+}
+
+model BanModel{
+  id              Int             @id @default(autoincrement())
+  CreatedAt       DateTime        @default(now())
+  Duration        Int
+  Type            Sanction
+  Reason          String
+  UserID          Int
+  User            User            @relation(fields: [UserID], references: [id], onDelete: Cascade)
+  ChannelID       Int
+  Channel         Channel         @relation(fields: [ChannelID], references: [id], onDelete: Cascade)
+}
+
+model ChannelPassword {
+  id              Int             @id @default(autoincrement())
+  Password        String?
+  Channel         Channel?
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @updatedAt
+  Content   String
+  UserID    Int
+  User      User     @relation(fields: [UserID], references: [id])
+  ChannelID Int
+  Channel   Channel  @relation(fields: [ChannelID], references: [id], onDelete: Cascade)
+}
+
+enum logStatus {
+  online
+  offline
+  doNotDistrub
+  AFK
+  invisible
+  inGame
+}
+
+enum Sanction {
+  ban
+  mute
+}
+
+enum partyStatus {
+  starting
+  running
+  finish
+}
+
+enum channelType {
+  private
+  protected
+  public
+}
+
+enum notifyType {
+  newMessage
+  playRequest
+  friendRequest
+}

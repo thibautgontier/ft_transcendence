@@ -2,6 +2,7 @@
 
 date -u
 
-cd backend
+npx prisma generate
+npx prisma db push
 
 exec "$@"
