@@ -48,12 +48,12 @@ export default {
     proxy: true,
   },
   proxy: {
-    '/game/': 'http://backend:3000',
-    '/channel': 'http://backend:3000',
-    '/social/': 'http://backend:3000',
-    '/login/': 'http://backend:3000',
-    '/user': 'http://backend:3000',
-	'/party': 'http://backend:3000',
+    '/game/': 'http://localhost:3000',
+    '/channel': 'http://localhost:3000',
+    '/social/': 'http://localhost:3000',
+    '/login/': 'http://localhost:3000',
+    '/user': 'http://localhost:3000',
+	'/party': 'http://localhost:3000',
   },
 
   router: {
